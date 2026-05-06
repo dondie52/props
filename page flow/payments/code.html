@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PropManage BW - Payments</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#41474e",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f0f4",
+                        "tertiary-fixed": "#ffddb2",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1a1c1e",
+                        "inverse-surface": "#2e3133",
+                        "primary": "#003857",
+                        "surface-dim": "#d9dadd",
+                        "on-secondary-container": "#694000",
+                        "tertiary-fixed-dim": "#f1be76",
+                        "primary-fixed-dim": "#9dcbf4",
+                        "on-background": "#1a1c1e",
+                        "secondary-fixed": "#ffddb9",
+                        "surface-container": "#edeef1",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#92c0e9",
+                        "on-error": "#ffffff",
+                        "tertiary": "#4a2f00",
+                        "surface-container-high": "#e7e8eb",
+                        "primary-fixed": "#cce5ff",
+                        "outline-variant": "#c1c7cf",
+                        "surface-variant": "#e2e2e5",
+                        "outline": "#72787f",
+                        "inverse-primary": "#9dcbf4",
+                        "error": "#ba1a1a",
+                        "surface": "#f9f9fc",
+                        "on-primary-fixed-variant": "#154b6d",
+                        "surface-container-low": "#f3f3f7",
+                        "secondary-fixed-dim": "#ffb961",
+                        "on-tertiary-fixed": "#291800",
+                        "on-primary-fixed": "#001e31",
+                        "surface-bright": "#f9f9fc",
+                        "on-tertiary-container": "#e4b36c",
+                        "secondary-container": "#fea520",
+                        "on-tertiary-fixed-variant": "#624000",
+                        "on-secondary-fixed": "#2b1700",
+                        "on-secondary-fixed-variant": "#663e00",
+                        "primary-container": "#1b4f72",
+                        "surface-container-highest": "#e2e2e5",
+                        "on-primary": "#ffffff",
+                        "background": "#f9f9fc",
+                        "tertiary-container": "#674404",
+                        "surface-tint": "#326286",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#865300",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "lg": "40px",
+                        "xl": "64px",
+                        "md": "24px",
+                        "base": "8px",
+                        "margin": "32px",
+                        "xs": "4px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {},
+                    "fontSize": {
+                        "h3": [
+                            "1.5rem",
+                            {
+                                "lineHeight": "1.3",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "body-sm": [
+                            "0.875rem",
+                            {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "body-lg": [
+                            "1.125rem",
+                            {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "label-caps": [
+                            "0.75rem",
+                            {
+                                "lineHeight": "1",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "h1": [
+                            "2.5rem",
+                            {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                            }
+                        ],
+                        "h2": [
+                            "2rem",
+                            {
+                                "lineHeight": "1.25",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "body-md": [
+                            "1rem",
+                            {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-body-md text-on-surface flex min-h-screen">
+<!-- SideNavBar -->
+<nav class="w-[240px] h-screen fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-md z-20">
+<div class="px-md mb-lg flex items-center gap-3">
+<img alt="PropManage BW Logo" class="w-10 h-10 rounded-full" data-alt="A clean, modern logo for a property management software named PropManage BW. The design features geometric building shapes in deep primary blue (#003857) and vibrant secondary amber (#865300) set against a pristine white background. The style is flat, corporate, and trustworthy, with sharp vector lines and no text. The mood is professional and stable." src="https://lh3.googleusercontent.com/aida/ADBb0uhywXsTQCUXU9gdim-Wo3o_YgbqFx0XPACSArZXU40Y5pa6fg8IgbE_JYUUnWjN1yHUAmG4--4R_HuuGXmi8BYj5kNOFBGB5Nl7qdt_y3YCVCoXrX7E-PaavSSPo_S9rBkW5Kyw3gA52yms1YF7tLwlg2BZHswN27v8EyKDB3deaaWHQst3PLS0DBl4p5NcMQjJxQQfwm1g_t1XToUWSFMiVQNwQLTu9-AyYgiiHKGXbuUXBngX8HcE6g"/>
+<div>
+<h1 class="font-h3 text-h3 text-primary">PropManage BW</h1>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Landlord Portal</span>
+</div>
+</div>
+<div class="px-md mb-md">
+<button class="w-full bg-[#F39C12] text-[#1a1c1e] font-h3 text-body-md font-bold py-3 rounded-lg shadow-sm hover:opacity-90 transition-opacity">Add Property</button>
+</div>
+<ul class="flex-1 flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">domain</span>
+<span class="font-label-caps text-label-caps">Properties</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-caps text-label-caps">Tenants</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-label-caps text-label-caps">Maintenance</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 bg-surface-container-low border-l-4 border-secondary text-primary font-bold px-4 py-3 opacity-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Payments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-caps text-label-caps">Reports</span>
+</a>
+</li>
+</ul>
+<div class="mt-auto flex flex-col gap-1">
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant px-4 py-3 border-l-4 border-transparent hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-caps text-label-caps">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-[240px] flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="h-16 px-md w-full bg-surface-container-lowest border-b border-outline-variant flex justify-between items-center sticky top-0 z-10">
+<div class="flex items-center gap-lg">
+<h2 class="font-h2 text-h2 text-primary">Payments</h2>
+<nav class="hidden md:flex gap-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Properties</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Units</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Leases</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 border border-outline-variant rounded-lg text-body-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-surface" placeholder="Search..." type="text"/>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">help_outline</span></button>
+</div>
+<img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a female property manager in her 30s. She is smiling warmly, wearing a crisp white blouse and a subtle blue blazer. The background is a slightly blurred, bright modern office setting with neutral tones. Lighting is soft, high-key, and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJ8kuCdKoe7lt8wfFIckABdndpsTgOdrzRWOi51q7Byw1aGeJa4jKbvK7MMmXxRa_Yc_s4Wt2KmPE_f-OeYaXQK3eFqcCLrPEZYlXgE94KTUAzrTPd_sAljlobE13K1PsPE14mGTBEy_eiBbLM-HgFyrh7jgcU-2rMWoZZWWjRWDQcPeD3iSdqQdYgEvri0tcsDrjcrrBTbKMQMEbyfk9B6BslvHNJPGQ6b2Ph9YUiph5coh8AlGDYfFBeAAmGQAEHvREENdmdamA"/>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-lg bg-surface">
+<!-- Summary Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-margin">
+<div class="bg-surface-container-lowest rounded-lg p-md shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-[#E5E8E8]">
+<h3 class="font-label-caps text-label-caps text-outline mb-2 uppercase">Total Collected This Month</h3>
+<div class="font-h2 text-h2 text-primary font-bold">P18,500</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-md shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-[#E5E8E8]">
+<h3 class="font-label-caps text-label-caps text-outline mb-2 uppercase">Pending Payments</h3>
+<div class="font-h2 text-h2 text-primary font-bold">P4,200</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-md shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-[#E5E8E8]">
+<h3 class="font-label-caps text-label-caps text-outline mb-2 uppercase">Overdue Amount</h3>
+<div class="font-h2 text-h2 text-error font-bold">P1,800</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-md shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-[#E5E8E8] flex items-center justify-between">
+<div>
+<h3 class="font-label-caps text-label-caps text-outline mb-2 uppercase">Collection Rate</h3>
+<div class="font-h2 text-h2 text-primary font-bold">87%</div>
+</div>
+<div class="relative w-16 h-16">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-variant" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="4"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="87, 100" stroke-width="4"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Payments Table -->
+<div class="bg-surface-container-lowest rounded-lg shadow-[0px_4px_12px_rgba(0,0,0,0.05)] border border-[#E5E8E8] overflow-hidden">
+<div class="px-md py-md border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-h3 text-h3 text-on-surface">Payment History</h3>
+<div class="flex gap-sm">
+<select class="h-[44px] px-4 border border-outline-variant rounded text-body-sm bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+<option>October 2023</option>
+<option>September 2023</option>
+</select>
+<button class="h-[44px] px-4 border border-primary text-primary rounded font-body-sm font-bold hover:bg-surface-container transition-colors">Export</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface border-b border-outline-variant text-outline">
+<tr>
+<th class="px-md py-3 font-normal">Tenant</th>
+<th class="px-md py-3 font-normal">Property</th>
+<th class="px-md py-3 font-normal">Unit</th>
+<th class="px-md py-3 font-normal">Amount</th>
+<th class="px-md py-3 font-normal">Due Date</th>
+<th class="px-md py-3 font-normal">Paid Date</th>
+<th class="px-md py-3 font-normal">Status</th>
+<th class="px-md py-3 font-normal text-right">Receipt</th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<tr class="border-b border-[#E5E8E8] hover:bg-surface-container-lowest transition-colors bg-surface">
+<td class="px-md py-4">John Doe</td>
+<td class="px-md py-4">Sunset Apartments</td>
+<td class="px-md py-4">A101</td>
+<td class="px-md py-4 font-bold">P1,500</td>
+<td class="px-md py-4 text-outline">Oct 1, 2023</td>
+<td class="px-md py-4">Oct 2, 2023</td>
+<td class="px-md py-4"><span class="inline-block px-3 py-1 bg-[#e8f5e9] text-[#2e7d32] rounded-full font-label-caps text-label-caps">Paid</span></td>
+<td class="px-md py-4 text-right"><button class="text-[#1b4f72] hover:opacity-80"><span class="material-symbols-outlined">download</span></button></td>
+</tr>
+<tr class="border-b border-[#E5E8E8] hover:bg-surface-container-lowest transition-colors">
+<td class="px-md py-4">Jane Smith</td>
+<td class="px-md py-4">Sunset Apartments</td>
+<td class="px-md py-4">B204</td>
+<td class="px-md py-4 font-bold">P1,800</td>
+<td class="px-md py-4 text-outline">Oct 1, 2023</td>
+<td class="px-md py-4">-</td>
+<td class="px-md py-4"><span class="inline-block px-3 py-1 bg-[#ffcdd2] text-[#ba1a1a] rounded-full font-label-caps text-label-caps">Overdue</span></td>
+<td class="px-md py-4 text-right"><button class="text-outline opacity-50 cursor-not-allowed" disabled=""><span class="material-symbols-outlined">download</span></button></td>
+</tr>
+<tr class="border-b border-[#E5E8E8] hover:bg-surface-container-lowest transition-colors bg-surface">
+<td class="px-md py-4">Robert Johnson</td>
+<td class="px-md py-4">Pine Grove</td>
+<td class="px-md py-4">Unit 3</td>
+<td class="px-md py-4 font-bold">P2,100</td>
+<td class="px-md py-4 text-outline">Oct 5, 2023</td>
+<td class="px-md py-4">-</td>
+<td class="px-md py-4"><span class="inline-block px-3 py-1 bg-[#fff8e1] text-[#f57f17] rounded-full font-label-caps text-label-caps">Pending</span></td>
+<td class="px-md py-4 text-right"><button class="text-outline opacity-50 cursor-not-allowed" disabled=""><span class="material-symbols-outlined">download</span></button></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</body></html>

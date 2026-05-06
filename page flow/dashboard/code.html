@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PropManage BW - Landlord Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface": "#f9f9fc",
+                        "tertiary-container": "#674404",
+                        "background": "#f9f9fc",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2e5",
+                        "inverse-on-surface": "#f0f0f4",
+                        "primary": "#003857",
+                        "on-tertiary-fixed-variant": "#624000",
+                        "on-secondary-fixed-variant": "#663e00",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fea520",
+                        "on-primary-container": "#92c0e9",
+                        "secondary-fixed": "#ffddb9",
+                        "primary-fixed": "#cce5ff",
+                        "primary-container": "#1b4f72",
+                        "inverse-primary": "#9dcbf4",
+                        "on-surface": "#1a1c1e",
+                        "surface-container-low": "#f3f3f7",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#154b6d",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c1c7cf",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "outline": "#72787f",
+                        "inverse-surface": "#2e3133",
+                        "surface-container-highest": "#e2e2e5",
+                        "secondary-fixed-dim": "#ffb961",
+                        "on-surface-variant": "#41474e",
+                        "tertiary-fixed": "#ffddb2",
+                        "surface-bright": "#f9f9fc",
+                        "secondary": "#865300",
+                        "on-tertiary-fixed": "#291800",
+                        "on-secondary-container": "#694000",
+                        "on-background": "#1a1c1e",
+                        "surface-container-high": "#e7e8eb",
+                        "on-tertiary-container": "#e4b36c",
+                        "on-primary-fixed": "#001e31",
+                        "tertiary": "#4a2f00",
+                        "surface-tint": "#326286",
+                        "tertiary-fixed-dim": "#f1be76",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d9dadd",
+                        "surface-container": "#edeef1",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#2b1700",
+                        "primary-fixed-dim": "#9dcbf4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "64px",
+                        "margin": "32px",
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "lg": "40px"
+                    },
+                    "fontFamily": {},
+                    "fontSize": {
+                        "body-md": ["1rem", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["1.125rem", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h2": ["2rem", {"lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "h1": ["2.5rem", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h3": ["1.5rem", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "label-caps": ["0.75rem", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-sm": ["0.875rem", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-[240px] flex flex-col z-50 bg-surface-container-lowest border-r border-outline-variant shadow-sm transition-all duration-200 ease-in-out">
+<div class="px-md py-md">
+<h1 class="font-h3 text-h3 font-bold text-primary">PropManage BW</h1>
+<p class="font-label-caps text-label-caps text-outline mt-xs">Landlord Dashboard</p>
+</div>
+<div class="flex flex-col mt-sm gap-xs">
+<!-- Active Tab: Dashboard -->
+<a class="text-primary border-r-4 border-secondary-container font-bold bg-surface-container-low px-md py-sm flex items-center transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-sm" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant px-md py-sm flex items-center hover:text-primary hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-sm">domain</span>
+<span class="font-body-md text-body-md">Properties</span>
+</a>
+<a class="text-on-surface-variant px-md py-sm flex items-center hover:text-primary hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-sm">groups</span>
+<span class="font-body-md text-body-md">Tenants</span>
+</a>
+<a class="text-on-surface-variant px-md py-sm flex items-center hover:text-primary hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-sm">payments</span>
+<span class="font-body-md text-body-md">Payments</span>
+</a>
+<a class="text-on-surface-variant px-md py-sm flex items-center hover:text-primary hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-sm">build</span>
+<span class="font-body-md text-body-md">Maintenance</span>
+</a>
+<a class="text-on-surface-variant px-md py-sm flex items-center hover:text-primary hover:bg-surface-container transition-all duration-200 ease-in-out mt-margin" href="#">
+<span class="material-symbols-outlined mr-sm">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+<a class="text-on-surface-variant px-md py-sm flex items-center hover:text-primary hover:bg-surface-container transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined mr-sm">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</div>
+<div class="mt-auto border-t border-surface-variant p-md flex items-center gap-sm">
+<img alt="User Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A close-up, highly professional headshot of a mature, confident real estate property manager. They are wearing a sharp, tailored navy blue blazer over a crisp white shirt. The background is a slightly out-of-focus modern office environment with bright, cool-toned lighting filtering through large glass windows. The overall aesthetic is clean, corporate, and brightly lit, conveying trust, authority, and high-end operational management." src="https://lh3.googleusercontent.com/aida/ADBb0uhywXsTQCUXU9gdim-Wo3o_YgbqFx0XPACSArZXU40Y5pa6fg8IgbE_JYUUnWjN1yHUAmG4--4R_HuuGXmi8BYj5kNOFBGB5Nl7qdt_y3YCVCoXrX7E-PaavSSPo_S9rBkW5Kyw3gA52yms1YF7tLwlg2BZHswN27v8EyKDB3deaaWHQst3PLS0DBl4p5NcMQjJxQQfwm1g_t1XToUWSFMiVQNwQLTu9-AyYgiiHKGXbuUXBngX8HcE6g"/>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-bold text-on-surface">Alex Mercer</span>
+<span class="font-label-caps text-label-caps text-outline">Admin</span>
+</div>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[240px] h-16 flex items-center justify-between px-md z-40 bg-surface-container-lowest border-b border-outline-variant shadow-sm transition-colors duration-200">
+<h2 class="font-h3 text-h3 text-on-surface">Dashboard</h2>
+<div class="flex items-center gap-md">
+<div class="relative hidden lg:flex items-center">
+<span class="material-symbols-outlined absolute left-sm text-outline">search</span>
+<input class="pl-[40px] pr-sm py-2 rounded-full border border-outline-variant bg-surface-container-low focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary font-body-sm text-body-sm text-on-surface w-[300px] outline-none transition-all" placeholder="Search properties, tenants..." type="text"/>
+</div>
+<button class="relative p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-2 w-2 h-2 bg-error rounded-full border border-surface-container-lowest"></span>
+</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant cursor-pointer" data-alt="A close-up, highly professional headshot of a mature, confident real estate property manager. They are wearing a sharp, tailored navy blue blazer over a crisp white shirt. The background is a slightly out-of-focus modern office environment with bright, cool-toned lighting filtering through large glass windows. The overall aesthetic is clean, corporate, and brightly lit, conveying trust, authority, and high-end operational management." src="https://lh3.googleusercontent.com/aida/ADBb0uhywXsTQCUXU9gdim-Wo3o_YgbqFx0XPACSArZXU40Y5pa6fg8IgbE_JYUUnWjN1yHUAmG4--4R_HuuGXmi8BYj5kNOFBGB5Nl7qdt_y3YCVCoXrX7E-PaavSSPo_S9rBkW5Kyw3gA52yms1YF7tLwlg2BZHswN27v8EyKDB3deaaWHQst3PLS0DBl4p5NcMQjJxQQfwm1g_t1XToUWSFMiVQNwQLTu9-AyYgiiHKGXbuUXBngX8HcE6g"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-[240px] mt-[64px] p-gutter min-h-screen">
+<!-- Stats Row -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-caps text-label-caps text-outline uppercase">Total Properties</span>
+<span class="material-symbols-outlined text-primary-container">domain</span>
+</div>
+<div class="font-h1 text-h1 text-primary">8</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-caps text-label-caps text-outline uppercase">Occupied Units</span>
+<span class="material-symbols-outlined text-primary-container">door_front</span>
+</div>
+<div class="flex items-end gap-2">
+<span class="font-h1 text-h1 text-primary">24</span>
+<span class="font-body-lg text-body-lg text-outline mb-1">/ 32</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full mt-sm overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 75%;"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-caps text-label-caps text-outline uppercase">Rent Due This Month</span>
+<span class="material-symbols-outlined text-primary-container">payments</span>
+</div>
+<div class="font-h1 text-h1 text-primary">P18,500</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col justify-between relative">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label-caps text-label-caps text-outline uppercase flex items-center gap-xs">
+                        Open Maintenance
+                        <span class="w-2 h-2 rounded-full bg-error inline-block"></span>
+</span>
+<span class="material-symbols-outlined text-primary-container">build</span>
+</div>
+<div class="font-h1 text-h1 text-primary">3</div>
+</div>
+</section>
+<!-- Complex Layout Row -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Left Column: Recent Payments Table (Spans 2 cols) -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-h3 text-h3 text-on-surface">Recent Payments</h3>
+<a class="font-body-sm text-body-sm text-primary-container hover:underline font-semibold" href="#">View all</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-variant">
+<th class="pb-sm font-label-caps text-label-caps text-outline uppercase font-semibold pl-2">Tenant</th>
+<th class="pb-sm font-label-caps text-label-caps text-outline uppercase font-semibold">Property</th>
+<th class="pb-sm font-label-caps text-label-caps text-outline uppercase font-semibold">Unit</th>
+<th class="pb-sm font-label-caps text-label-caps text-outline uppercase font-semibold">Amount</th>
+<th class="pb-sm font-label-caps text-label-caps text-outline uppercase font-semibold">Date</th>
+<th class="pb-sm font-label-caps text-label-caps text-outline uppercase font-semibold pr-2">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-surface-variant/50 hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm pl-2">Sarah Jenkins</td>
+<td class="py-sm">Sunset Villas</td>
+<td class="py-sm">A-12</td>
+<td class="py-sm font-medium">P1,200</td>
+<td class="py-sm text-on-surface-variant">Oct 01, 2023</td>
+<td class="py-sm pr-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps">Paid</span>
+</td>
+</tr>
+<tr class="border-b border-surface-variant/50 bg-surface-bright hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm pl-2">Marcus Thorne</td>
+<td class="py-sm">Oakwood Heights</td>
+<td class="py-sm">B-04</td>
+<td class="py-sm font-medium">P950</td>
+<td class="py-sm text-on-surface-variant">Oct 02, 2023</td>
+<td class="py-sm pr-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps">Paid</span>
+</td>
+</tr>
+<tr class="border-b border-surface-variant/50 hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm pl-2">Elena Rostova</td>
+<td class="py-sm">Sunset Villas</td>
+<td class="py-sm">A-08</td>
+<td class="py-sm font-medium">P1,200</td>
+<td class="py-sm text-on-surface-variant">Oct 05, 2023</td>
+<td class="py-sm pr-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps">Pending</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm pl-2">David Kim</td>
+<td class="py-sm">Riverfront Lofts</td>
+<td class="py-sm">302</td>
+<td class="py-sm font-medium">P1,800</td>
+<td class="py-sm text-on-surface-variant">Sep 28, 2023</td>
+<td class="py-sm pr-2">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-caps text-label-caps">Overdue</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Right Column: Stacked Cards -->
+<div class="flex flex-col gap-gutter">
+<!-- Occupancy Chart Card -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col h-full">
+<h3 class="font-h3 text-h3 text-on-surface mb-md">Occupancy by Property</h3>
+<div class="flex-1 flex items-end gap-sm h-[180px] relative border-b border-l border-surface-variant pb-2 pl-2">
+<!-- Horizontal Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pt-2 pb-2 pl-2 pointer-events-none">
+<div class="w-full border-t border-surface-variant/40"></div>
+<div class="w-full border-t border-surface-variant/40"></div>
+<div class="w-full border-t border-surface-variant/40"></div>
+<div class="w-full border-t border-surface-variant/40"></div>
+</div>
+<!-- Bars -->
+<div class="flex-1 flex flex-col items-center justify-end z-10 group">
+<div class="w-full max-w-[40px] bg-primary-container rounded-t-sm hover:bg-primary transition-colors" style="height: 85%;"></div>
+<span class="font-label-caps text-label-caps text-outline mt-xs truncate w-full text-center" title="Sunset Villas">Sunset</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end z-10 group">
+<div class="w-full max-w-[40px] bg-primary-container rounded-t-sm hover:bg-primary transition-colors" style="height: 60%;"></div>
+<span class="font-label-caps text-label-caps text-outline mt-xs truncate w-full text-center" title="Oakwood H.">Oakwood</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-end z-10 group">
+<div class="w-full max-w-[40px] bg-primary-container rounded-t-sm hover:bg-primary transition-colors" style="height: 95%;"></div>
+<span class="font-label-caps text-label-caps text-outline mt-xs truncate w-full text-center" title="Riverfront">River</span>
+</div>
+</div>
+</div>
+<!-- Maintenance Summary Card -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-h3 text-h3 text-on-surface">Recent Requests</h3>
+<a class="font-body-sm text-body-sm text-primary-container hover:underline font-semibold" href="#">View all</a>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Row 1 -->
+<div class="flex items-center justify-between p-sm bg-surface-container-low rounded border border-surface-variant">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Leaking Pipe</span>
+<span class="font-label-caps text-label-caps text-outline">Sunset Villas • A-08</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-error-container text-on-error-container font-label-caps text-label-caps rounded-full">High</span>
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps rounded-full">Open</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between p-sm bg-surface-container-lowest rounded border border-surface-variant">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">AC Not Cooling</span>
+<span class="font-label-caps text-label-caps text-outline">Oakwood • B-02</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps rounded-full">Medium</span>
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps rounded-full">In Progress</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between p-sm bg-surface-container-lowest rounded border border-surface-variant">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Broken Blinds</span>
+<span class="font-label-caps text-label-caps text-outline">Riverfront • 105</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-caps text-label-caps rounded-full">Low</span>
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps rounded-full">Open</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>
