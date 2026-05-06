@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Building2, CreditCard, Users, Wrench } from "lucide-react";
 import Sidebar from "@/components/layout/Sidebar";
@@ -16,6 +17,14 @@ type Props = {
 };
 
 export default function DashboardView({ stats, paymentRows, maintenanceRows, occupancyData }: Props) {
+  const getOccupancyLabel = (value: unknown, index?: number) => {
+    const label = String(value ?? "").trim();
+    if (label) return label;
+    if (index === 0) return "CBD";
+    if (index === 1) return "West Gate";
+    return `Property ${Number(index ?? 0) + 1}`;
+  };
+
   return (
     <div className="flex min-h-screen bg-bg-page">
       <aside className="fixed inset-y-0 left-0 z-30">
@@ -118,9 +127,9 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={occupancyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e8e8" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} tickFormatter={(value, index) => getOccupancyLabel(value, index)} />
                   <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                  <Tooltip />
+                  <Tooltip labelFormatter={(label: ReactNode) => getOccupancyLabel(label)} />
                   <Bar dataKey="occupied" fill="#1b4f72" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -131,4 +140,3 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
     </div>
   );
 }
-

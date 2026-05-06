@@ -5,9 +5,62 @@ import { createSupabaseServerActionClient } from "@/lib/supabase-server";
 
 const CITIES = ["Gaborone", "Francistown", "Maun", "Kasane", "Lobatse", "Molepolole", "Jwaneng"] as const;
 const PROPERTY_TYPES = ["Apartment", "Complex", "House"] as const;
+const PROPERTY_PHOTOS_BUCKET = "property-photos";
 
 function assertNonEmpty(value: string, field: string) {
   if (!value.trim()) throw new Error(`${field} is required.`);
+}
+
+async function getCurrentProfile(supabase: ReturnType<typeof createSupabaseServerActionClient>) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const email = user?.email?.toLowerCase();
+  if (!user?.id || !email) throw new Error("Sign in to continue.");
+
+  let { data: profile, error } = await supabase
+    .from("profiles")
+    .select("id,role")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+  if (!profile && !error) {
+    const fallback = await supabase
+      .from("profiles")
+      .select("id,role")
+      .eq("email", email)
+      .is("auth_user_id", null)
+      .maybeSingle();
+    profile = fallback.data;
+    error = fallback.error;
+  }
+  if (error) throw new Error(error.message);
+  if (!profile?.id) throw new Error("No profile found for this account.");
+  return profile;
+}
+
+async function getCurrentLandlordId(supabase: ReturnType<typeof createSupabaseServerActionClient>) {
+  const profile = await getCurrentProfile(supabase);
+  if (profile.role === "tenant") throw new Error("Tenant accounts cannot manage landlord onboarding.");
+  if (profile.role === "admin") return null;
+
+  const { data: landlord, error } = await supabase
+    .from("landlords")
+    .select("id")
+    .eq("profile_id", profile.id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!landlord?.id) throw new Error("No landlord record found for this account.");
+  return landlord.id;
+}
+
+async function assertCanManageProperty(supabase: ReturnType<typeof createSupabaseServerActionClient>, propertyId: string) {
+  const landlordId = await getCurrentLandlordId(supabase);
+  let query = supabase.from("properties").select("id").eq("id", propertyId);
+  if (landlordId) query = query.eq("landlord_id", landlordId);
+
+  const { data: property, error } = await query.maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!property?.id) throw new Error("Property not found for this account.");
 }
 
 export async function createPropertyAction(input: {
@@ -35,12 +88,12 @@ export async function createPropertyAction(input: {
 
   const supabase = createSupabaseServerActionClient();
 
-  const { data: landlord } = await supabase.from("landlords").select("id").limit(1).maybeSingle();
-  if (!landlord?.id) throw new Error("No landlord record found for this account.");
+  const landlordId = await getCurrentLandlordId(supabase);
+  if (!landlordId) throw new Error("Admins must create properties from a landlord-scoped account.");
 
   const { data, error } = await supabase
     .from("properties")
-    .insert({ landlord_id: landlord.id, name, address, city, type })
+    .insert({ landlord_id: landlordId, name, address, city, type })
     .select("id")
     .single();
 
@@ -67,6 +120,7 @@ export async function bulkCreateUnitsAction(input: {
 }) {
   assertNonEmpty(input.propertyId, "Property");
   const supabase = createSupabaseServerActionClient();
+  await assertCanManageProperty(supabase, input.propertyId);
 
   const unitNumbers =
     input.mode === "paste"
@@ -95,20 +149,79 @@ export async function bulkCreateUnitsAction(input: {
   return { created: unitNumbers.length };
 }
 
+function sanitizeFilename(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9.\-_]/g, "-");
+}
+
+export async function uploadPropertyPhotosAction(formData: FormData) {
+  const propertyId = String(formData.get("propertyId") ?? "").trim();
+  assertNonEmpty(propertyId, "Property");
+
+  const files = formData.getAll("photos").filter((value): value is File => value instanceof File && value.size > 0);
+  if (!files.length) return { uploaded: 0 };
+  if (files.length > 8) throw new Error("Please upload up to 8 photos at a time.");
+
+  const supabase = createSupabaseServerActionClient();
+  await assertCanManageProperty(supabase, propertyId);
+
+  const { count: existingCount, error: countError } = await supabase
+    .from("property_photos")
+    .select("id", { count: "exact", head: true })
+    .eq("property_id", propertyId);
+  if (countError) throw new Error(countError.message);
+
+  const rows: { property_id: string; storage_path: string; is_primary: boolean }[] = [];
+  let shouldSetPrimary = (existingCount ?? 0) === 0;
+
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) throw new Error(`"${file.name}" is not an image file.`);
+    if (file.size > 5 * 1024 * 1024) throw new Error(`"${file.name}" exceeds the 5MB limit.`);
+
+    const path = `properties/${propertyId}/${crypto.randomUUID()}-${sanitizeFilename(file.name)}`;
+    const { error: uploadError } = await supabase.storage.from(PROPERTY_PHOTOS_BUCKET).upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type,
+    });
+    if (uploadError) throw new Error(uploadError.message);
+
+    rows.push({
+      property_id: propertyId,
+      storage_path: path,
+      is_primary: shouldSetPrimary,
+    });
+    shouldSetPrimary = false;
+  }
+
+  const { error: insertError } = await supabase.from("property_photos").insert(rows);
+  if (insertError) throw new Error(insertError.message);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/properties");
+  return { uploaded: rows.length };
+}
+
 export async function saveOnboardingStateAction(input: { state: Record<string, unknown> }) {
   const supabase = createSupabaseServerActionClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user?.email) return { ok: true };
+  if (!user?.id || !user.email) return { ok: true };
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({ onboarding_state: input.state })
-    .eq("email", user.email.toLowerCase());
+  let { error } = await supabase.from("profiles").update({ onboarding_state: input.state }).eq("auth_user_id", user.id);
+  if (error) throw new Error(error.message);
+
+  const { data: profile } = await supabase.from("profiles").select("id").eq("auth_user_id", user.id).maybeSingle();
+  if (!profile?.id) {
+    const fallback = await supabase
+      .from("profiles")
+      .update({ onboarding_state: input.state })
+      .eq("email", user.email.toLowerCase())
+      .is("auth_user_id", null);
+    error = fallback.error;
+  }
 
   if (error) throw new Error(error.message);
   return { ok: true };
 }
-

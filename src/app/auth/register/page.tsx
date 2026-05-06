@@ -37,25 +37,13 @@ export default function Page() {
     }
     setError("");
     setLoading(true);
-    const roleLabel = role[0].toUpperCase() + role.slice(1);
     const { error: signUpError } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
-      options: { data: { full_name: name, role: roleLabel } },
+      options: { data: { full_name: name.trim(), role } },
     });
     if (signUpError) {
       setError(signUpError.message);
-      setLoading(false);
-      return;
-    }
-
-    const { error: profileError } = await supabase.from("profiles").upsert({
-      full_name: name.trim(),
-      email: normalizedEmail,
-      role,
-    });
-    if (profileError) {
-      setError(profileError.message);
       setLoading(false);
       return;
     }

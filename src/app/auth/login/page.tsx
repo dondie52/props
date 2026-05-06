@@ -36,8 +36,18 @@ export default function Page() {
       return;
     }
     const userEmail = signInData.user?.email?.toLowerCase();
-    if (userEmail) {
-      const { data: profile } = await supabase.from("profiles").select("role").eq("email", userEmail).maybeSingle();
+    const userId = signInData.user?.id;
+    if (userId) {
+      let { data: profile } = await supabase.from("profiles").select("role").eq("auth_user_id", userId).maybeSingle();
+      if (!profile && userEmail) {
+        const { data: fallbackProfile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("email", userEmail)
+          .is("auth_user_id", null)
+          .maybeSingle();
+        profile = fallbackProfile;
+      }
       const targetRoute = profile?.role === "tenant" ? "/tenant/dashboard" : "/dashboard";
       router.push(targetRoute);
       return;
