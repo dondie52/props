@@ -5,6 +5,7 @@ import { Building2, CheckCircle2, ClipboardList, Home, Loader2, Users } from "lu
 import {
   bulkCreateUnitsAction,
   createPropertyAction,
+  createPropertyWithHousesAction,
   saveOnboardingStateAction,
 } from "@/app/dashboard/onboarding/actions";
 
@@ -19,12 +20,15 @@ export default function OnboardingWizard() {
   const [error, setError] = useState("");
 
   const [propertyId, setPropertyId] = useState<string | null>(null);
+  const [propertySetupMode, setPropertySetupMode] = useState<"single" | "multi">("single");
   const [property, setProperty] = useState({
     name: "",
     address: "",
     city: "Gaborone",
     type: "Apartment",
   });
+  const [numberOfHouses, setNumberOfHouses] = useState(10);
+  const [bedroomsPerHouse, setBedroomsPerHouse] = useState(2);
 
   const [unitsMode, setUnitsMode] = useState<"generate" | "paste">("generate");
   const [unitsCount, setUnitsCount] = useState(6);
@@ -59,10 +63,22 @@ export default function OnboardingWizard() {
     setError("");
     startTransition(async () => {
       try {
-        const result = await createPropertyAction(property);
+        const result =
+          propertySetupMode === "multi"
+            ? await createPropertyWithHousesAction({
+                ...property,
+                numberOfHouses,
+                bedroomsPerHouse,
+              })
+            : await createPropertyAction(property);
         setPropertyId(result.propertyId);
-        setStep(2);
-        markProgress({ step: 2, propertyId: result.propertyId });
+        if (propertySetupMode === "multi") {
+          setStep(3);
+          markProgress({ step: 3, propertyId: result.propertyId });
+        } else {
+          setStep(2);
+          markProgress({ step: 2, propertyId: result.propertyId });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to create property.");
       }
@@ -124,6 +140,35 @@ export default function OnboardingWizard() {
               <h2 className="text-xl font-semibold text-primary">1) Create your first property</h2>
               <p className="mt-1 text-sm text-text-sub">Keep it minimal—you can add details later.</p>
 
+              <div className="mt-4">
+                <Field label="Setup mode">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPropertySetupMode("single")}
+                      className={`h-11 rounded-base border px-3 text-sm font-semibold ${
+                        propertySetupMode === "single"
+                          ? "border-primary bg-primary text-white"
+                          : "border-border-ghost bg-white text-primary"
+                      }`}
+                    >
+                      Single building
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPropertySetupMode("multi")}
+                      className={`h-11 rounded-base border px-3 text-sm font-semibold ${
+                        propertySetupMode === "multi"
+                          ? "border-primary bg-primary text-white"
+                          : "border-border-ghost bg-white text-primary"
+                      }`}
+                    >
+                      Multi-residence
+                    </button>
+                  </div>
+                </Field>
+              </div>
+
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <Field label="Property name">
                   <input
@@ -167,6 +212,30 @@ export default function OnboardingWizard() {
                     onChange={(e) => setProperty((p) => ({ ...p, address: e.target.value }))}
                   />
                 </Field>
+                {propertySetupMode === "multi" ? (
+                  <>
+                    <Field label="Number of houses">
+                      <input
+                        type="number"
+                        min={1}
+                        max={100}
+                        className="h-11 w-full rounded-base border border-border-ghost bg-white px-3 text-sm focus:border-primary focus:outline-none"
+                        value={numberOfHouses}
+                        onChange={(e) => setNumberOfHouses(Number(e.target.value))}
+                      />
+                    </Field>
+                    <Field label="Bedrooms per house">
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        className="h-11 w-full rounded-base border border-border-ghost bg-white px-3 text-sm focus:border-primary focus:outline-none"
+                        value={bedroomsPerHouse}
+                        onChange={(e) => setBedroomsPerHouse(Number(e.target.value))}
+                      />
+                    </Field>
+                  </>
+                ) : null}
               </div>
 
               {error ? <p className="mt-4 text-sm text-error">{error}</p> : null}
@@ -178,7 +247,7 @@ export default function OnboardingWizard() {
                 className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-base bg-accent px-6 text-sm font-semibold text-white disabled:opacity-70"
               >
                 {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Building2 className="h-4 w-4" />}
-                Create property
+                {propertySetupMode === "multi" ? "Create property & houses" : "Create property"}
               </button>
             </>
           ) : null}
@@ -315,7 +384,7 @@ export default function OnboardingWizard() {
               <div className="mt-6 rounded-base border border-border-ghost bg-bg-page p-5">
                 <p className="text-sm font-semibold text-text-main">Next best actions</p>
                 <ul className="mt-3 space-y-2 text-sm text-text-sub">
-                  <li>Go to Properties and add rent amounts for each unit.</li>
+                  <li>Go to Properties and add rent amounts for each unit or house.</li>
                   <li>Start logging payments as they come in.</li>
                   <li>Use Maintenance to track issues end-to-end.</li>
                 </ul>
@@ -348,7 +417,7 @@ export default function OnboardingWizard() {
 
           <div className="mt-5 grid gap-3">
             <InfoCard title="Templates" text="Cities & property types are pre-filled for Botswana." />
-            <InfoCard title="Bulk actions" text="Generate units instantly instead of creating them one by one." />
+            <InfoCard title="Bulk actions" text="Generate units instantly or create multiple houses in one flow." />
             <InfoCard title="Progress saved" text="If you leave, your setup can be resumed later." />
           </div>
         </aside>

@@ -17,24 +17,31 @@ type UnitRow = {
   status: "occupied" | "vacant" | "active" | "expiring";
 };
 
+type HouseRow = {
+  number: string;
+  bedrooms: number;
+};
+
 export default function Page() {
   const params = useParams<{ id: string }>();
   const propertyId = params?.id;
   const [selectedUnit, setSelectedUnit] = useState<UnitRow | null>(null);
   const [property, setProperty] = useState({ name: "Property", address: "", type: "" });
   const [units, setUnits] = useState<UnitRow[]>([]);
+  const [houses, setHouses] = useState<HouseRow[]>([]);
 
   useEffect(() => {
     if (!propertyId) return;
 
     const loadProperty = async () => {
-      const [{ data: propertyData }, { data: unitData }] = await Promise.all([
+      const [{ data: propertyData }, { data: unitData }, { data: houseData }] = await Promise.all([
         supabase.from("properties").select("name,address,city,type").eq("id", propertyId).single(),
         supabase
           .from("units")
           .select("unit_number,rent_amount,status,tenants(full_name,lease_end)")
           .eq("property_id", propertyId)
           .order("unit_number", { ascending: true }),
+        supabase.from("houses").select("house_number,bedroom_count").eq("property_id", propertyId).order("house_number"),
       ]);
 
       if (propertyData) {
@@ -70,6 +77,12 @@ export default function Page() {
       });
 
       setUnits(mappedUnits);
+      setHouses(
+        (houseData ?? []).map((house) => ({
+          number: house.house_number ?? "-",
+          bedrooms: Number(house.bedroom_count ?? 0),
+        })),
+      );
     };
 
     void loadProperty();
@@ -82,8 +95,9 @@ export default function Page() {
       const numeric = Number(unit.rent.replace(/[^\d.-]/g, ""));
       return sum + (Number.isNaN(numeric) ? 0 : numeric);
     }, 0);
-    return { total, occupied, vacant: total - occupied, revenue };
-  }, [units]);
+    const totalBedrooms = houses.reduce((sum, house) => sum + house.bedrooms, 0);
+    return { total, occupied, vacant: total - occupied, revenue, houses: houses.length, totalBedrooms };
+  }, [units, houses]);
 
   return (
     <DashboardShell title="Property Details">
@@ -113,7 +127,15 @@ export default function Page() {
             </div>
           </Card>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
+            <div className="rounded-base border border-border-ghost bg-bg-page p-4">
+              <p className="text-xs text-text-muted">Houses</p>
+              <p className="mt-1 text-xl font-semibold text-text-main">{summary.houses}</p>
+            </div>
+            <div className="rounded-base border border-border-ghost bg-bg-page p-4">
+              <p className="text-xs text-text-muted">Bedrooms</p>
+              <p className="mt-1 text-xl font-semibold text-text-main">{summary.totalBedrooms}</p>
+            </div>
             <div className="rounded-base border border-border-ghost bg-bg-page p-4">
               <p className="text-xs text-text-muted">Total Units</p>
               <p className="mt-1 text-xl font-semibold text-text-main">{summary.total}</p>
@@ -131,6 +153,19 @@ export default function Page() {
               <p className="mt-1 text-xl font-semibold text-text-main">P{summary.revenue.toLocaleString()}</p>
             </div>
           </div>
+          {houses.length > 0 ? (
+            <Card>
+              <h2 className="mb-4 text-lg font-semibold text-primary">Houses</h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {houses.map((house) => (
+                  <div key={house.number} className="rounded-base border border-border-ghost bg-bg-page p-3">
+                    <p className="text-sm font-semibold text-text-main">{house.number}</p>
+                    <p className="text-xs text-text-muted">{house.bedrooms} bedrooms</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          ) : null}
           <Card>
             <h2 className="mb-4 text-lg font-semibold text-primary">Units</h2>
             <div className="hidden md:block">

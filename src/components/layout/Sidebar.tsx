@@ -119,7 +119,7 @@ export default function Sidebar({ navItems = landlordNavItems, isOpen = false, o
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 h-screen w-[260px] border-r border-border-ghost bg-bg-card transition-transform lg:static lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-40 h-screen w-[260px] border-r border-border-ghost bg-bg-card transition-transform lg:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
