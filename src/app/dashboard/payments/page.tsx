@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Download } from "lucide-react";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
+import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
 import StatCard from "@/components/ui/StatCard";
@@ -70,15 +69,7 @@ export default function Page() {
       .trim();
 
   return (
-    <div className="flex min-h-screen bg-bg-page">
-      <aside className="fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
-      <div className="ml-60 flex-1">
-        <div className="fixed left-60 right-0 top-0 z-20">
-          <Topbar title="Payments" />
-        </div>
-        <main className="space-y-6 p-8 pt-24">
+    <DashboardShell title="Payments">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
             <StatCard title="Collected" value={formatMoney(stats.collected)} icon={<span className="text-base">P</span>} />
             <StatCard title="Pending" value={formatMoney(stats.pending)} icon={<span className="text-base">P</span>} />
@@ -88,7 +79,7 @@ export default function Page() {
           <Card>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-primary">Payment History</h2>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <select className="h-11 rounded-base border border-border-ghost px-3 text-sm">
                   <option>May 2026</option>
                   <option>Apr 2026</option>
@@ -98,28 +89,44 @@ export default function Page() {
                 </button>
               </div>
             </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  <th className="pb-3">Tenant</th><th className="pb-3">Property</th><th className="pb-3">Unit</th><th className="pb-3">Amount</th><th className="pb-3">Due Date</th><th className="pb-3">Paid Date</th><th className="pb-3">Status</th><th className="pb-3">Receipt</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={`${row.tenant}-${row.unit}`} className="border-t border-border-ghost hover:bg-bg-page">
-                    <td className="py-3">{row.tenant}</td><td>{row.property}</td><td>{row.unit}</td><td>{formatMoney(row.amount)}</td><td>{row.due}</td><td>{row.paid}</td><td><StatusChip status={row.status} /></td>
-                    <td>
-                      <button type="button" aria-label="Download receipt" className="text-primary-mid">
-                        <Download className="h-4 w-4" />
-                      </button>
-                    </td>
+            <div className="hidden md:block">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    <th className="pb-3">Tenant</th><th className="pb-3">Property</th><th className="pb-3">Unit</th><th className="pb-3">Amount</th><th className="pb-3">Due Date</th><th className="pb-3">Paid Date</th><th className="pb-3">Status</th><th className="pb-3">Receipt</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={`${row.tenant}-${row.unit}`} className="border-t border-border-ghost hover:bg-bg-page">
+                      <td className="py-3">{row.tenant}</td><td>{row.property}</td><td>{row.unit}</td><td>{formatMoney(row.amount)}</td><td>{row.due}</td><td>{row.paid}</td><td><StatusChip status={row.status} /></td>
+                      <td>
+                        <button type="button" aria-label="Download receipt" className="text-primary-mid">
+                          <Download className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="space-y-3 md:hidden">
+              {rows.map((row) => (
+                <article key={`${row.tenant}-${row.unit}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-text-main">{row.tenant}</p>
+                    <StatusChip status={row.status} />
+                  </div>
+                  <p className="text-xs text-text-muted">
+                    {row.property} - Unit {row.unit}
+                  </p>
+                  <p className="mt-1 text-sm text-text-main">{formatMoney(row.amount)}</p>
+                  <p className="text-xs text-text-muted">Due {row.due}</p>
+                </article>
+              ))}
+            </div>
           </Card>
-        </main>
-      </div>
+
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Record Payment">
         <div className="space-y-3">
           <select className="h-11 w-full rounded-base border border-border-ghost px-3">
@@ -149,6 +156,6 @@ export default function Page() {
           </div>
         </div>
       </Modal>
-    </div>
+    </DashboardShell>
   );
 }

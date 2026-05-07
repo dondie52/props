@@ -64,8 +64,8 @@ export default function Page() {
           <p className="mt-2 text-sm text-text-sub">Create your secure property management workspace.</p>
         </div>
 
-        <form onSubmit={onSubmit} className="rounded-large border border-border-ghost bg-bg-card p-8 shadow-modal md:p-10">
-          <h2 className="text-5xl font-bold leading-none text-black">Create Account</h2>
+        <form onSubmit={onSubmit} className="rounded-large border border-border-ghost bg-bg-card p-6 shadow-modal md:p-10">
+          <h2 className="text-3xl font-bold leading-none text-black md:text-5xl">Create Account</h2>
           <p className="mt-2 text-sm text-text-sub">Set up your PropManage BW profile.</p>
 
           <div className="mt-7 rounded-pill bg-[#eef2f6] p-1.5">

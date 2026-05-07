@@ -77,7 +77,7 @@ export default function Home() {
           <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
             Property Management Elevated
           </p>
-          <h1 className="text-5xl font-bold leading-tight text-primary">
+          <h1 className="text-3xl font-bold leading-tight text-primary md:text-5xl">
             Manage Your Properties
             <br />
             <span className="text-[#946100]">With Ease</span>

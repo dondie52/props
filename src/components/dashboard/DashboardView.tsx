@@ -4,8 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Building2, CreditCard, Users, Wrench } from "lucide-react";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
+import DashboardShell from "@/components/layout/DashboardShell";
 import StatCard from "@/components/ui/StatCard";
 import StatusChip from "@/components/ui/StatusChip";
 
@@ -26,15 +25,7 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
   };
 
   return (
-    <div className="flex min-h-screen bg-bg-page">
-      <aside className="fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
-      <div className="ml-60 flex-1">
-        <div className="fixed left-60 right-0 top-0 z-20">
-          <Topbar title="Dashboard" />
-        </div>
-        <main className="min-h-screen bg-bg-page p-8 pt-24">
+    <DashboardShell title="Dashboard">
           {stats.totalProperties === 0 ? (
             <section className="mb-6 rounded-large border border-border-ghost bg-bg-card p-6 shadow-card">
               <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
@@ -67,32 +58,49 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
                   View all
                 </Link>
               </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                    <th className="pb-3">Tenant</th>
-                    <th className="pb-3">Property</th>
-                    <th className="pb-3">Unit</th>
-                    <th className="pb-3">Amount</th>
-                    <th className="pb-3">Date</th>
-                    <th className="pb-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paymentRows.map((row) => (
-                    <tr key={`${row.tenant}-${row.unit}`} className="border-b border-border-ghost hover:bg-bg-page">
-                      <td className="py-3">{row.tenant}</td>
-                      <td>{row.property}</td>
-                      <td>{row.unit}</td>
-                      <td>{row.amount}</td>
-                      <td>{row.date}</td>
-                      <td>
-                        <StatusChip status={row.status} />
-                      </td>
+              <div className="hidden md:block">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
+                      <th className="pb-3">Tenant</th>
+                      <th className="pb-3">Property</th>
+                      <th className="pb-3">Unit</th>
+                      <th className="pb-3">Amount</th>
+                      <th className="pb-3">Date</th>
+                      <th className="pb-3">Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {paymentRows.map((row) => (
+                      <tr key={`${row.tenant}-${row.unit}`} className="border-b border-border-ghost hover:bg-bg-page">
+                        <td className="py-3">{row.tenant}</td>
+                        <td>{row.property}</td>
+                        <td>{row.unit}</td>
+                        <td>{row.amount}</td>
+                        <td>{row.date}</td>
+                        <td>
+                          <StatusChip status={row.status} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="space-y-3 md:hidden">
+                {paymentRows.map((row) => (
+                  <article key={`${row.tenant}-${row.unit}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
+                    <p className="font-medium text-text-main">{row.tenant}</p>
+                    <p className="text-xs text-text-muted">
+                      {row.property} - Unit {row.unit}
+                    </p>
+                    <div className="mt-2 flex items-center justify-between">
+                      <p className="text-sm text-text-main">{row.amount}</p>
+                      <StatusChip status={row.status} />
+                    </div>
+                    <p className="mt-1 text-xs text-text-muted">{row.date}</p>
+                  </article>
+                ))}
+              </div>
             </section>
 
             <section className="rounded-base border border-border-ghost bg-bg-card p-6 shadow-card">
@@ -135,8 +143,6 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
               </ResponsiveContainer>
             </div>
           </section>
-        </main>
-      </div>
-    </div>
+    </DashboardShell>
   );
 }

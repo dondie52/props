@@ -100,9 +100,9 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-bg-page">
       <TenantNavbar />
-      <main className="mx-auto max-w-7xl space-y-6 p-8 pt-20">
+      <main className="mx-auto max-w-7xl space-y-6 p-4 pt-20 md:p-8">
         <Card className="rounded-large">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-primary">Welcome back, {tenantName}</h1>
               <p className="text-sm text-text-muted">Unit {unitName} · {propertyName}</p>
@@ -143,30 +143,43 @@ export default function Page() {
         </Card>
         <Card>
           <h2 className="mb-4 text-lg font-semibold text-primary">Payment History</h2>
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                <th className="pb-3">Date</th>
-                <th className="pb-3">Amount</th>
-                <th className="pb-3">Status</th>
-                <th className="pb-3">Receipt</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((payment) => (
-                <tr key={payment.id} className="border-b border-border-ghost hover:bg-bg-page">
-                  <td className="py-3">{payment.date}</td>
-                  <td>{formatMoney(payment.amount)}</td>
-                  <td>
-                    <StatusChip status={payment.status} />
-                  </td>
-                  <td>
-                    <Download className="h-4 w-4 text-primary-mid" />
-                  </td>
+          <div className="hidden md:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
+                  <th className="pb-3">Date</th>
+                  <th className="pb-3">Amount</th>
+                  <th className="pb-3">Status</th>
+                  <th className="pb-3">Receipt</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {payments.map((payment) => (
+                  <tr key={payment.id} className="border-b border-border-ghost hover:bg-bg-page">
+                    <td className="py-3">{payment.date}</td>
+                    <td>{formatMoney(payment.amount)}</td>
+                    <td>
+                      <StatusChip status={payment.status} />
+                    </td>
+                    <td>
+                      <Download className="h-4 w-4 text-primary-mid" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="space-y-3 md:hidden">
+            {payments.map((payment) => (
+              <article key={payment.id} className="rounded-base border border-border-ghost bg-bg-page p-3">
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-text-main">{formatMoney(payment.amount)}</p>
+                  <StatusChip status={payment.status} />
+                </div>
+                <p className="text-xs text-text-muted">{payment.date}</p>
+              </article>
+            ))}
+          </div>
         </Card>
         <Card>
           <div className="mb-4 flex items-center justify-between">
