@@ -119,24 +119,34 @@ export default function Sidebar({ navItems = landlordNavItems, isOpen = false, o
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 h-screen w-[260px] border-r border-border-ghost bg-bg-card transition-transform lg:translate-x-0 ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
+      className={`fixed inset-y-0 left-0 z-40 flex h-screen w-[280px] flex-col border-r border-border-ghost bg-bg-card transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
       }`}
     >
-      <div className="px-6 py-6 border-b border-border-ghost">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Image src={logo} alt="PropManage BW logo" className="h-8 w-8 object-contain" />
-            <p className="text-primary font-bold text-lg">PropManage BW</p>
-          </div>
-          <button type="button" onClick={onClose} className="text-text-muted lg:hidden" aria-label="Close sidebar">
+      <div className="flex h-20 shrink-0 items-center px-8 border-b border-border-ghost/50">
+        <div className="flex items-center justify-between w-full">
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 transition-transform group-hover:scale-110">
+              <Image src={logo} alt="PropManage BW logo" className="h-6 w-6 brightness-0 invert" />
+            </div>
+            <div className="flex flex-col">
+              <p className="text-primary font-bold text-lg tracking-tight leading-none">PropManage</p>
+              <p className="text-accent font-extrabold text-[10px] tracking-[0.2em] uppercase mt-1">Botswana</p>
+            </div>
+          </Link>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-text-muted transition-all hover:bg-bg-page hover:text-text-main lg:hidden"
+            aria-label="Close sidebar"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      <div className="flex h-[calc(100%-145px)] flex-col">
-        <nav className="py-4">
+      <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6 scrollbar-hide">
+        <nav className="space-y-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -146,39 +156,47 @@ export default function Sidebar({ navItems = landlordNavItems, isOpen = false, o
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`h-11 px-6 flex items-center gap-3 border-l-[3px] ${
+                className={`group flex h-11 items-center gap-3 rounded-xl px-4 text-sm font-semibold transition-all duration-200 ${
                   isActive
-                    ? "border-accent bg-bg-page text-primary font-medium"
-                    : "border-transparent text-text-sub hover:bg-bg-page"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                    : "text-text-sub hover:bg-primary/5 hover:text-primary"
                 }`}
               >
-                <Icon className="size-4" />
+                <Icon className={`h-5 w-5 transition-colors ${
+                  isActive ? "text-white" : "text-text-muted group-hover:text-primary"
+                }`} />
                 <span>{item.label}</span>
+                {isActive && (
+                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-white/40 shadow-sm" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <div className="mt-auto border-t border-border-ghost px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-pill bg-primary-mid text-white flex items-center justify-center font-medium">
-              {initials}
-            </div>
-            <div>
-              <p className="text-text-main font-medium">{displayName}</p>
-              <p className="text-text-muted text-sm">{displayEmail || "No email"}</p>
+        <div className="mt-auto space-y-4 pt-6">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-mid/10 to-primary/5 p-4 group">
+            <div className="absolute -right-2 -top-2 h-12 w-12 rounded-full bg-primary/5 transition-transform group-hover:scale-150" />
+            <div className="relative flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-mid to-primary text-white font-bold shadow-lg ring-2 ring-white">
+                {initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold text-text-main leading-tight">{displayName}</p>
+                <p className="truncate text-[11px] text-text-muted font-medium leading-tight mt-0.5">{displayEmail || "No email"}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="mx-2 mb-4 h-11 rounded-base px-6 text-error flex items-center gap-3 hover:bg-bg-page"
-        >
-          <LogOut className="size-4" />
-          <span>Log out</span>
-        </button>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-text-sub transition-all hover:bg-error/5 hover:text-error"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </div>
     </aside>
   );

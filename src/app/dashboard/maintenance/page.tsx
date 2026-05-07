@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useEffect } from "react";
+import { Wrench, Filter, Plus, ChevronRight, Clock, CheckCircle2, LayoutGrid, Search, MoreHorizontal } from "lucide-react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
-import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
@@ -12,14 +11,73 @@ import { getLandlordScope } from "@/lib/dashboard-scope";
 type Ticket = {
   id: string;
   title: string;
+  category: string;
   property: string;
+  unitId: string;
+  unitNumber: string;
+  createdAt: string;
   urgency: "low" | "medium" | "high";
   status: "open" | "in-progress" | "resolved";
 };
 
+type UnitOption = {
+  id: string;
+  label: string;
+};
+
 export default function Page() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [unitOptions, setUnitOptions] = useState<UnitOption[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [form, setForm] = useState({
+    unitId: "",
+    category: "Plumbing",
+    description: "",
+    urgency: "medium" as Ticket["urgency"],
+  });
+
+  const formatDate = (value: string) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Date unavailable";
+    return new Intl.DateTimeFormat("en-BW", { day: "2-digit", month: "short", year: "numeric" }).format(date);
+  };
+
+  const mapTicket = (row: unknown): Ticket => {
+    const rowObj = row as {
+      id?: unknown;
+      category?: unknown;
+      description?: unknown;
+      urgency?: unknown;
+      status?: unknown;
+      unit_id?: unknown;
+      created_at?: unknown;
+      units?: unknown;
+    };
+    const unit = Array.isArray(rowObj.units) ? rowObj.units[0] : rowObj.units;
+    const unitObj = unit as { unit_number?: unknown; properties?: unknown } | undefined;
+    const property = unitObj && Array.isArray(unitObj.properties) ? unitObj.properties[0] : unitObj?.properties;
+    const propertyObj = property as { name?: unknown } | undefined;
+    const urgency =
+      rowObj.urgency === "high" || rowObj.urgency === "medium" || rowObj.urgency === "low" ? rowObj.urgency : "low";
+    const status =
+      rowObj.status === "open" || rowObj.status === "in-progress" || rowObj.status === "resolved" ? rowObj.status : "open";
+    const category = String(rowObj.category ?? "General");
+
+    return {
+      id: String(rowObj.id ?? ""),
+      title: (rowObj.description as string | undefined) ?? category,
+      category,
+      property: String(propertyObj?.name ?? "Unknown property"),
+      unitId: String(rowObj.unit_id ?? ""),
+      unitNumber: String(unitObj?.unit_number ?? "-"),
+      createdAt: String(rowObj.created_at ?? ""),
+      urgency,
+      status,
+    };
+  };
+
   const move = async (id: string) => {
     const ticket = tickets.find((item) => item.id === id);
     if (!ticket) return;
@@ -36,95 +94,283 @@ export default function Page() {
         return;
       }
 
+      const { data: units } = await supabase
+        .from("units")
+        .select("id,unit_number,properties(name)")
+        .in("id", scope.unitIds)
+        .order("unit_number", { ascending: true });
+
+      setUnitOptions(
+        (units ?? []).map((row) => {
+          const rowObj = row as unknown as { id?: unknown; unit_number?: unknown; properties?: unknown };
+          const property = Array.isArray(rowObj.properties) ? rowObj.properties[0] : rowObj.properties;
+          const propertyObj = property as { name?: unknown } | undefined;
+          return {
+            id: String(rowObj.id ?? ""),
+            label: `${String(propertyObj?.name ?? "Unknown property")} - Unit ${String(rowObj.unit_number ?? "-")}`,
+          };
+        })
+      );
+
       const { data } = await supabase
         .from("maintenance_requests")
-        .select("id,category,description,urgency,status,units(unit_number,properties(name))")
+        .select("id,unit_id,category,description,urgency,status,created_at,units(unit_number,properties(name))")
         .in("unit_id", scope.unitIds)
         .order("created_at", { ascending: false });
 
-      const mapped: Ticket[] = (data ?? []).map((row) => {
-        const rowObj = row as unknown as { id?: unknown; category?: unknown; description?: unknown; urgency?: unknown; status?: unknown; units?: unknown };
-        const unit = Array.isArray(rowObj.units) ? rowObj.units[0] : rowObj.units;
-        const property = unit && Array.isArray(unit.properties) ? unit.properties[0] : unit?.properties;
-        const urgency =
-          rowObj.urgency === "high" || rowObj.urgency === "medium" || rowObj.urgency === "low" ? rowObj.urgency : "low";
-        const status =
-          rowObj.status === "open" || rowObj.status === "in-progress" || rowObj.status === "resolved" ? rowObj.status : "open";
-        return {
-          id: String(rowObj.id ?? ""),
-          title: (rowObj.description as string | undefined) ?? (rowObj.category as string | undefined) ?? "Maintenance issue",
-          property: property?.name ?? "Unknown property",
-          urgency,
-          status,
-        };
-      });
-      setTickets(mapped);
+      setTickets((data ?? []).map(mapTicket));
     };
     void loadTickets();
   }, []);
 
+  const selectedUnitOptions = useMemo(() => unitOptions.filter((unit) => unit.id), [unitOptions]);
+
+  const submitRequest = async (event: FormEvent) => {
+    event.preventDefault();
+    setFormError("");
+
+    if (!form.unitId) {
+      setFormError("Select a property and unit.");
+      return;
+    }
+
+    if (!form.description.trim()) {
+      setFormError("Add a short description.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { data, error } = await supabase
+      .from("maintenance_requests")
+      .insert({
+        unit_id: form.unitId,
+        category: form.category,
+        description: form.description.trim(),
+        urgency: form.urgency,
+        status: "open",
+      })
+      .select("id,unit_id,category,description,urgency,status,created_at,units(unit_number,properties(name))")
+      .single();
+    setIsSubmitting(false);
+
+    if (error) {
+      setFormError(error.message);
+      return;
+    }
+
+    if (data) {
+      setTickets((current) => [mapTicket(data), ...current]);
+    }
+    setForm({ unitId: "", category: "Plumbing", description: "", urgency: "medium" });
+    setIsOpen(false);
+  };
+
   const columns = ["open", "in-progress", "resolved"] as const;
   return (
     <DashboardShell title="Maintenance">
-          <div className="mb-6 flex flex-col gap-3 rounded-base border border-border-ghost bg-bg-card p-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Property</option></select>
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Category</option></select>
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Urgency</option></select>
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Status</option></select>
-            </div>
-            <button type="button" onClick={() => setIsOpen(true)} className="h-11 rounded-base bg-accent px-4 text-white">
-              New Request
-            </button>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-white p-8 rounded-2xl border border-border-ghost shadow-sm">
+          <div className="flex items-center gap-4">
+             <div className="h-14 w-14 rounded-2xl bg-primary-900 flex items-center justify-center text-white shadow-lg">
+                <Wrench className="h-7 w-7" />
+             </div>
+             <div>
+                <h1 className="text-3xl font-black tracking-tight text-text-main">Maintenance Board</h1>
+                <p className="text-sm font-medium text-text-muted mt-1">Track and resolve service requests across your portfolio</p>
+             </div>
           </div>
-          <div className="overflow-x-auto">
-            <div className="grid min-w-[720px] gap-6 md:min-w-0 md:grid-cols-3">
-          {columns.map((column) => (
-            <Card key={column}>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold capitalize text-primary">{column.replace("-", " ")}</h2>
-                <span className="rounded-pill bg-bg-page px-2 py-1 text-xs text-text-muted">
-                  {tickets.filter((ticket) => ticket.status === column).length}
-                </span>
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="btn-accent h-12 px-8 flex items-center gap-2 font-bold shadow-lg shadow-accent/20 transition-transform active:scale-95"
+          >
+            <Plus className="h-4 w-4" />
+            New Request
+          </button>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+             <div className="relative">
+                <Filter className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+                <select className="input-field pl-9 h-10 text-xs font-bold uppercase tracking-wider pr-10 appearance-none bg-white min-w-[160px]">
+                  <option>All Properties</option>
+                </select>
+             </div>
+             <select className="input-field h-10 text-xs font-bold uppercase tracking-wider appearance-none bg-white min-w-[140px]">
+               <option>Any Category</option>
+             </select>
+           </div>
+           <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="relative flex-1 sm:flex-none">
+                <Search className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+                <input placeholder="Search tickets..." className="input-field pl-9 h-10 text-xs w-full sm:w-48 bg-white" />
               </div>
-              <div className="space-y-3">
-                {tickets.filter((ticket) => ticket.status === column).map((ticket) => (
-                  <div key={ticket.id} className="rounded-base border border-border-ghost bg-white p-4 shadow-card">
-                    <div className="mb-2 flex items-center justify-between">
-                      <p className="text-xs text-text-muted">General</p>
-                      <StatusChip status={ticket.urgency} />
-                    </div>
-                    <p className="font-medium text-text-main">{ticket.property}</p>
-                    <p className="text-sm text-text-muted">Unit {ticket.id}B</p>
-                    <p className="mt-1 text-sm text-text-sub">{ticket.title}</p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <p className="text-xs text-text-muted">06 May 2026</p>
-                    {column !== "resolved" ? (
-                      <button type="button" onClick={() => move(ticket.id)} className="text-sm text-primary-mid">
-                        Move Forward →
-                      </button>
-                    ) : null}
-                    </div>
+              <button className="p-2 text-text-muted hover:text-primary transition-colors">
+                 <LayoutGrid className="h-5 w-5" />
+              </button>
+           </div>
+        </div>
+
+        <div className="overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-8 min-w-[1000px]">
+            {columns.map((column) => (
+              <div key={column} className="flex-1 flex flex-col min-w-[320px]">
+                <div className="mb-5 flex items-center justify-between px-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-2.5 w-2.5 rounded-full ${column === 'open' ? 'bg-rose-500' : column === 'in-progress' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-text-main">{column.replace("-", " ")}</h2>
+                    <span className="flex h-5 min-w-[24px] items-center justify-center rounded-lg bg-bg-page border border-border-ghost/60 px-1.5 text-[10px] font-black text-text-muted">
+                      {tickets.filter((ticket) => ticket.status === column).length}
+                    </span>
                   </div>
-                ))}
+                  <button className="text-text-muted hover:text-primary transition-colors">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="flex-1 space-y-4 rounded-3xl bg-bg-page/40 p-4 border border-dashed border-border-ghost/60 min-h-[600px]">
+                  {tickets.filter((ticket) => ticket.status === column).map((ticket) => (
+                    <div
+                      key={ticket.id}
+                      className="group relative rounded-2xl border border-border-ghost bg-white p-5 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 hover:ring-1 hover:ring-primary/10"
+                    >
+                      <div className="mb-4 flex items-start justify-between">
+                        <div className="flex flex-col gap-1">
+                           <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">{ticket.category}</span>
+                           <StatusChip status={ticket.urgency} />
+                        </div>
+                        <button className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-primary transition-all">
+                           <MoreHorizontal className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div className="space-y-1">
+                        <h3 className="text-base font-black text-text-main leading-tight line-clamp-2 group-hover:text-primary transition-colors">{ticket.title}</h3>
+                        <div className="flex items-center gap-1.5">
+                           <div className="h-1 w-1 rounded-full bg-slate-300" />
+                           <p className="text-[11px] font-bold text-text-muted uppercase tracking-tight">{ticket.property} · Unit {ticket.unitNumber}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex items-center justify-between border-t border-border-ghost/50 pt-4">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-text-muted">
+                           <Clock className="h-3 w-3 opacity-40" />
+                           <span>{formatDate(ticket.createdAt)}</span>
+                        </div>
+                        {column !== "resolved" ? (
+                          <button
+                            type="button"
+                            onClick={() => move(ticket.id)}
+                            className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-wider hover:gap-2 transition-all"
+                          >
+                            Move Forward
+                            <ChevronRight className="h-3 w-3" />
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-black text-emerald-600 uppercase tracking-wider">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Resolved
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {tickets.filter((ticket) => ticket.status === column).length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-12 text-center opacity-40">
+                      <div className="h-12 w-12 rounded-full border-2 border-dashed border-slate-300 mb-3" />
+                      <p className="text-xs font-medium text-slate-400">Empty column</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </Card>
-          ))}
-            </div>
-          </div>
-      
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Request">
-        <div className="space-y-3">
-          <select className="h-11 w-full rounded-base border border-border-ghost px-3">
-            <option>Category</option>
-          </select>
-          <textarea className="w-full rounded-base border border-border-ghost px-3 py-2" rows={4} placeholder="Description" />
-          <div className="flex gap-2">
-            <button type="button" className="h-10 rounded-pill border border-border-ghost px-4 text-sm">Low</button>
-            <button type="button" className="h-10 rounded-pill bg-primary px-4 text-sm text-white">Medium</button>
-            <button type="button" className="h-10 rounded-pill border border-border-ghost px-4 text-sm">High</button>
+            ))}
           </div>
         </div>
+      </div>
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Maintenance Request">
+        <form onSubmit={submitRequest} className="space-y-5">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Property & Unit</label>
+              <select
+                className="input-field"
+                value={form.unitId}
+                onChange={(event) => setForm((current) => ({ ...current, unitId: event.target.value }))}
+              >
+                <option value="">Select property...</option>
+                {selectedUnitOptions.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Category</label>
+              <select
+                className="input-field"
+                value={form.category}
+                onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+              >
+                {["Plumbing", "Electrical", "General Repair", "Appliance"].map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Description</label>
+              <textarea
+                className="w-full rounded-xl border border-border-muted bg-white px-4 py-3 text-sm placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/5"
+                rows={4}
+                placeholder="Describe the issue in detail..."
+                value={form.description}
+                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Urgency Level</label>
+              <div className="flex gap-3">
+                {(["low", "medium", "high"] as const).map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setForm((current) => ({ ...current, urgency: level }))}
+                    className={`flex-1 h-10 rounded-lg border text-xs font-bold transition-all ${
+                      form.urgency === level
+                        ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                        : "border-border-muted text-text-sub hover:bg-bg-page"
+                    }`}
+                  >
+                    {level[0].toUpperCase() + level.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {formError ? (
+            <div className="rounded-lg bg-error/5 p-3 text-xs font-medium text-error">
+              {formError}
+            </div>
+          ) : null}
+
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setIsOpen(false)} className="btn-outline flex-1 h-11">
+              Cancel
+            </button>
+            <button type="submit" disabled={isSubmitting} className="btn-primary flex-1 h-11">
+              {isSubmitting ? "Creating..." : "Create Request"}
+            </button>
+          </div>
+        </form>
       </Modal>
     </DashboardShell>
   );

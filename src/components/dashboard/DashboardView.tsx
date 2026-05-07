@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Building2, CreditCard, Users, Wrench } from "lucide-react";
 import DashboardShell from "@/components/layout/DashboardShell";
@@ -26,59 +25,71 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
 
   return (
     <DashboardShell title="Dashboard">
-          {stats.totalProperties === 0 ? (
-            <section className="mb-6 rounded-large border border-border-ghost bg-bg-card p-6 shadow-card">
-              <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-                <div>
-                  <h2 className="text-lg font-semibold text-primary">Set up your first property</h2>
-                  <p className="mt-1 text-sm text-text-sub">Get to your first dashboard insights in under 3 minutes.</p>
-                </div>
-                <Link
-                  href="/dashboard/onboarding"
-                  className="inline-flex h-11 items-center rounded-base bg-accent px-6 text-sm font-semibold text-white"
-                >
-                  Get started
-                </Link>
+      <div className="space-y-6">
+        {stats.totalProperties === 0 ? (
+          <section className="overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary-900 to-primary-800 p-[1px] shadow-xl">
+            <div className="flex flex-col items-center justify-between gap-6 rounded-[15px] bg-white p-8 md:flex-row">
+              <div className="text-center md:text-left">
+                <h2 className="text-2xl font-bold text-primary-900">Welcome to PropManage BW</h2>
+                <p className="mt-2 text-text-sub max-w-md">Your property management journey starts here. Add your first property to unlock powerful insights and automated workflows.</p>
               </div>
-            </section>
-          ) : null}
+              <Link href="/dashboard/onboarding" className="btn-accent px-10 py-3 shadow-lg shadow-accent/20">
+                Add Your First Property
+              </Link>
+            </div>
+          </section>
+        ) : null}
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-            <StatCard title="Total Properties" value={String(stats.totalProperties)} icon={<Building2 className="h-5 w-5" />} />
-            <StatCard title="Occupied Units" value={stats.occupiedText} icon={<Users className="h-5 w-5" />} />
-            <StatCard title="Rent Due" value={stats.rentDueText} icon={<CreditCard className="h-5 w-5" />} />
-            <StatCard title="Open Maintenance" value={String(stats.openMaintenance)} icon={<Wrench className="h-5 w-5" />} />
-          </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard title="Total Properties" value={String(stats.totalProperties)} icon={<Building2 className="h-5 w-5" />} />
+          <StatCard title="Occupied Units" value={stats.occupiedText} icon={<Users className="h-5 w-5" />} />
+          <StatCard title="Rent Due" value={stats.rentDueText} icon={<CreditCard className="h-5 w-5" />} />
+          <StatCard title="Open Maintenance" value={String(stats.openMaintenance)} icon={<Wrench className="h-5 w-5" />} />
+        </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <section className="rounded-base border border-border-ghost bg-bg-card p-6 shadow-card lg:col-span-2">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-primary">Recent Payments</h2>
-                <Link href="/dashboard/payments" className="text-sm text-primary-mid">
-                  View all
-                </Link>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <section className="rounded-2xl border border-border-ghost bg-bg-card p-6 shadow-card lg:col-span-2">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-text-main tracking-tight">Recent Payments</h2>
+                <p className="text-xs text-text-muted">Track the latest income from your tenants</p>
               </div>
-              <div className="hidden md:block">
-                <table className="w-full text-sm">
+              <Link href="/dashboard/payments" className="btn-outline px-4 py-1.5 text-xs">
+                View All Payments
+              </Link>
+            </div>
+            <div className="hidden md:block">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                      <th className="pb-3">Tenant</th>
-                      <th className="pb-3">Property</th>
-                      <th className="pb-3">Unit</th>
-                      <th className="pb-3">Amount</th>
-                      <th className="pb-3">Date</th>
-                      <th className="pb-3">Status</th>
+                    <tr className="border-b border-border-ghost text-[11px] font-bold uppercase tracking-widest text-text-muted/80">
+                      <th className="pb-4 pr-4">Tenant</th>
+                      <th className="pb-4 pr-4">Property / Unit</th>
+                      <th className="pb-4 pr-4 text-right">Amount</th>
+                      <th className="pb-4 pr-4">Date</th>
+                      <th className="pb-4 text-right">Status</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border-ghost/50">
                     {paymentRows.map((row) => (
-                      <tr key={`${row.tenant}-${row.unit}`} className="border-b border-border-ghost hover:bg-bg-page">
-                        <td className="py-3">{row.tenant}</td>
-                        <td>{row.property}</td>
-                        <td>{row.unit}</td>
-                        <td>{row.amount}</td>
-                        <td>{row.date}</td>
-                        <td>
+                      <tr key={`${row.tenant}-${row.unit}`} className="group transition-all hover:bg-bg-page/80">
+                        <td className="py-4 pr-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-50 text-[10px] font-bold text-primary ring-1 ring-primary/10">
+                              {row.tenant.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <span className="font-semibold text-text-main">{row.tenant}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 pr-4">
+                          <div className="flex flex-col">
+                            <span className="text-sm text-text-main/90">{row.property}</span>
+                            <span className="text-[11px] text-text-muted">Unit {row.unit}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 pr-4 text-right font-bold text-text-main">{row.amount}</td>
+                        <td className="py-4 pr-4 text-text-sub">{row.date}</td>
+                        <td className="py-4 text-right">
                           <StatusChip status={row.status} />
                         </td>
                       </tr>
@@ -86,79 +97,119 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
                   </tbody>
                 </table>
               </div>
-              {paymentRows.length === 0 ? (
-                <div className="rounded-base border border-dashed border-border-ghost bg-bg-page p-4 text-sm text-text-muted">
-                  No payments yet. Add a tenant and record your first payment to populate this section.
-                </div>
-              ) : null}
-              <div className="space-y-3 md:hidden">
-                {paymentRows.map((row) => (
-                  <article key={`${row.tenant}-${row.unit}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
-                    <p className="font-medium text-text-main">{row.tenant}</p>
-                    <p className="text-xs text-text-muted">
-                      {row.property} - Unit {row.unit}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <p className="text-sm text-text-main">{row.amount}</p>
-                      <StatusChip status={row.status} />
-                    </div>
-                    <p className="mt-1 text-xs text-text-muted">{row.date}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="rounded-base border border-border-ghost bg-bg-card p-6 shadow-card">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-primary">Maintenance</h2>
-                <Link href="/dashboard/maintenance" className="text-sm text-primary-mid">
-                  View all
-                </Link>
-              </div>
-              <div className="space-y-3">
-                {maintenanceRows.map((row) => (
-                  <div key={`${row.category}-${row.unit}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-semibold text-text-main">{row.category}</p>
-                      <StatusChip status={row.urgency} />
-                    </div>
-                    <p className="mt-1 text-xs text-text-muted">Unit {row.unit}</p>
-                  </div>
-                ))}
-                {maintenanceRows.length === 0 ? (
-                  <div className="rounded-base border border-dashed border-border-ghost bg-bg-page p-4 text-sm text-text-muted">
-                    No maintenance requests yet.
-                  </div>
-                ) : null}
-              </div>
-            </section>
-          </div>
-
-          <section className="mt-6 rounded-base border border-border-ghost bg-bg-card p-6 shadow-card">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-primary">Occupancy</h2>
-              <Link href="/dashboard/properties" className="text-sm text-primary-mid">
-                View properties
-              </Link>
             </div>
-            <div className="h-72">
-              {occupancyData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={occupancyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e8e8" />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} tickFormatter={(value, index) => getOccupancyLabel(value, index)} />
-                    <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                    <Tooltip labelFormatter={(label: ReactNode) => getOccupancyLabel(label)} />
-                    <Bar dataKey="occupied" fill="#1b4f72" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex h-full items-center justify-center rounded-base border border-dashed border-border-ghost bg-bg-page text-sm text-text-muted">
-                  Occupancy data will appear after you add properties and units.
+            {paymentRows.length === 0 ? (
+              <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border-ghost bg-bg-page/50 p-12 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm mb-4">
+                  <CreditCard className="h-8 w-8 text-text-muted" />
                 </div>
-              )}
+                <p className="text-base font-semibold text-text-main">No payment records found</p>
+                <p className="mt-1 text-sm text-text-muted max-w-[240px]">Once you record tenant payments, they will appear here.</p>
+              </div>
+            ) : null}
+            <div className="space-y-4 md:hidden">
+              {paymentRows.map((row) => (
+                <article key={`${row.tenant}-${row.unit}`} className="rounded-xl border border-border-ghost bg-white p-4 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-50 text-[10px] font-bold text-primary ring-1 ring-primary/10">
+                        {row.tenant.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <p className="font-bold text-text-main leading-tight">{row.tenant}</p>
+                    </div>
+                    <StatusChip status={row.status} />
+                  </div>
+                  <div className="flex items-end justify-between border-t border-border-ghost pt-3 mt-3">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[11px] font-medium text-text-muted uppercase tracking-wider">{row.property}</span>
+                      <span className="text-xs text-text-sub">Unit {row.unit} • {row.date}</span>
+                    </div>
+                    <p className="text-base font-black text-primary">{row.amount}</p>
+                  </div>
+                </article>
+              ))}
             </div>
           </section>
+
+          <section className="rounded-2xl border border-border-ghost bg-bg-card p-6 shadow-card flex flex-col">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-text-main tracking-tight">Maintenance</h2>
+                <p className="text-xs text-text-muted">Active service requests</p>
+              </div>
+              <Link href="/dashboard/maintenance" className="btn-outline px-4 py-1.5 text-xs">
+                Manage
+              </Link>
+            </div>
+            <div className="space-y-4 flex-1">
+              {maintenanceRows.map((row) => (
+                <div key={`${row.category}-${row.unit}`} className="group flex items-center justify-between rounded-xl border border-border-ghost bg-white p-4 transition-all hover:border-primary/20 hover:shadow-card-hover">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-2 w-2 rounded-full ${row.urgency === 'high' ? 'bg-error animate-pulse' : row.urgency === 'medium' ? 'bg-warning' : 'bg-success'}`} />
+                    <div>
+                      <p className="text-sm font-bold text-text-main leading-none">{row.category}</p>
+                      <p className="mt-1.5 text-[11px] font-medium text-text-muted">UNIT {row.unit}</p>
+                    </div>
+                  </div>
+                  <StatusChip status={row.urgency} />
+                </div>
+              ))}
+              {maintenanceRows.length === 0 ? (
+                <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border-ghost bg-bg-page/50 p-8 text-center min-h-[200px]">
+                  <Wrench className="mb-3 h-10 w-10 text-text-muted/60" />
+                  <p className="text-sm font-semibold text-text-main">Clean slate!</p>
+                  <p className="mt-1 text-xs text-text-muted">No pending maintenance tasks.</p>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        </div>
+
+        <section className="rounded-2xl border border-border-ghost bg-bg-card p-6 shadow-card">
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-text-main tracking-tight">Occupancy Overview</h2>
+              <p className="text-xs text-text-muted">Portfolio performance by property</p>
+            </div>
+            <Link href="/dashboard/properties" className="btn-outline px-4 py-1.5 text-xs">
+              Portfolio Details
+            </Link>
+          </div>
+          <div className="h-80">
+            {occupancyData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={occupancyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-ghost)" vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 11, fontWeight: 500, fill: "var(--color-text-muted)" }}
+                    tickFormatter={(value, index) => getOccupancyLabel(value, index)}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 11, fontWeight: 500, fill: "var(--color-text-muted)" }}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    cursor={{ fill: "var(--color-bg-page)" }}
+                    contentStyle={{ borderRadius: "var(--radius-large)", border: "none", boxShadow: "var(--shadow-chart-tooltip)" }}
+                  />
+                  <Bar dataKey="occupied" fill="var(--color-primary)" radius={[6, 6, 0, 0]} barSize={32} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border-ghost bg-bg-page/50 text-center">
+                <Building2 className="mb-3 h-10 w-10 text-text-muted" />
+                <p className="text-sm font-medium text-text-sub">No occupancy data available</p>
+                <p className="mt-1 text-xs text-text-muted">Occupancy data will appear after you add properties and units.</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
     </DashboardShell>
   );
 }
