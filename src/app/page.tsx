@@ -105,7 +105,7 @@ export default function Home() {
 
         <div className="rounded-lg border border-border-ghost bg-bg-card p-3 shadow-card">
           <Image
-            src="/illustrations/hero.svg"
+            src="/illustrations/hero-city.png"
             alt="PropManage dashboard preview"
             width={1200}
             height={800}
