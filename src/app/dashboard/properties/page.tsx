@@ -7,6 +7,7 @@ import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
+import { getLandlordScope } from "@/lib/dashboard-scope";
 
 type PropertyCardRow = {
   id: string;
@@ -27,10 +28,16 @@ export default function Page() {
 
   useEffect(() => {
     const loadProperties = async () => {
+      const scope = await getLandlordScope(supabase);
+      if (!scope.landlordId || scope.propertyIds.length === 0) {
+        setProperties([]);
+        return;
+      }
+
       const [{ data: propertyData }, { data: unitData }, { data: houseData }] = await Promise.all([
-        supabase.from("properties").select("id,name,address,city,type"),
-        supabase.from("units").select("id,property_id,status"),
-        supabase.from("houses").select("property_id,bedroom_count"),
+        supabase.from("properties").select("id,name,address,city,type").in("id", scope.propertyIds),
+        supabase.from("units").select("id,property_id,status").in("property_id", scope.propertyIds),
+        supabase.from("houses").select("property_id,bedroom_count").in("property_id", scope.propertyIds),
       ]);
 
       const unitTotals = new Map<string, { total: number; occupied: number }>();
