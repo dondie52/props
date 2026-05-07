@@ -48,7 +48,7 @@ export default function Page() {
           .maybeSingle();
         profile = fallbackProfile;
       }
-      const targetRoute = profile?.role === "tenant" ? "/tenant/dashboard" : "/dashboard";
+      const targetRoute = profile?.role === "admin" ? "/admin" : profile?.role === "tenant" ? "/tenant/dashboard" : "/dashboard";
       router.push(targetRoute);
       return;
     }
@@ -68,8 +68,8 @@ export default function Page() {
           <p className="mt-2 text-sm text-text-sub">Operational clarity for property professionals.</p>
         </div>
 
-        <form onSubmit={onSubmit} className="rounded-large border border-border-ghost bg-bg-card p-8 shadow-modal md:p-10">
-          <h2 className="text-5xl font-bold leading-none text-black">Login</h2>
+        <form onSubmit={onSubmit} className="rounded-large border border-border-ghost bg-bg-card p-6 shadow-modal md:p-10">
+          <h2 className="text-3xl font-bold leading-none text-black md:text-5xl">Login</h2>
 
           <label className="mb-2 mt-8 block text-sm font-semibold tracking-wide text-text-main">Email Address</label>
           <input

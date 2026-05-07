@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useEffect } from "react";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
+import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
 import Modal from "@/components/ui/Modal";
@@ -66,17 +65,9 @@ export default function Page() {
 
   const columns = ["open", "in-progress", "resolved"] as const;
   return (
-    <div className="flex min-h-screen bg-bg-page">
-      <aside className="fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
-      <div className="ml-60 flex-1">
-        <div className="fixed left-60 right-0 top-0 z-20">
-          <Topbar title="Maintenance" />
-        </div>
-        <main className="p-8 pt-24">
-          <div className="mb-6 flex items-center justify-between rounded-base border border-border-ghost bg-bg-card p-4">
-            <div className="flex items-center gap-3">
+    <DashboardShell title="Maintenance">
+          <div className="mb-6 flex flex-col gap-3 rounded-base border border-border-ghost bg-bg-card p-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap items-center gap-3">
               <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Property</option></select>
               <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Category</option></select>
               <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Urgency</option></select>
@@ -86,7 +77,8 @@ export default function Page() {
               New Request
             </button>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="overflow-x-auto">
+            <div className="grid min-w-[720px] gap-6 md:min-w-0 md:grid-cols-3">
           {columns.map((column) => (
             <Card key={column}>
               <div className="mb-4 flex items-center justify-between">
@@ -118,9 +110,9 @@ export default function Page() {
               </div>
             </Card>
           ))}
+            </div>
           </div>
-        </main>
-      </div>
+      
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Request">
         <div className="space-y-3">
           <select className="h-11 w-full rounded-base border border-border-ghost px-3">
@@ -134,6 +126,6 @@ export default function Page() {
           </div>
         </div>
       </Modal>
-    </div>
+    </DashboardShell>
   );
 }

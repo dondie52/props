@@ -1,11 +1,8 @@
 "use client";
 
-"use client";
-
 import { Camera, CreditCard } from "lucide-react";
 import { useState } from "react";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
+import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 
 const tabs = ["Profile", "Security", "Billing", "Notifications"] as const;
@@ -14,26 +11,21 @@ export default function Page() {
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("Profile");
 
   return (
-    <div className="flex min-h-screen bg-bg-page">
-      <aside className="fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
-      <div className="ml-60 flex-1">
-        <div className="fixed left-60 right-0 top-0 z-20">
-          <Topbar title="Settings" />
-        </div>
-        <main className="flex gap-6 p-8 pt-24">
+    <DashboardShell title="Settings">
+        <div className="flex flex-col gap-6 lg:flex-row">
           <Card className="w-60 shrink-0 p-4">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`mb-1 block w-full border-l-[3px] py-3 pl-3 text-left text-sm ${activeTab === tab ? "border-accent bg-bg-page text-primary font-medium" : "border-transparent text-text-sub hover:bg-bg-page"}`}
-              >
-                {tab}
-              </button>
-            ))}
+            <div className="flex gap-1 overflow-x-auto md:block">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={`mb-1 block whitespace-nowrap border-l-[3px] px-3 py-3 text-left text-sm md:w-full ${activeTab === tab ? "border-accent bg-bg-page text-primary font-medium" : "border-transparent text-text-sub hover:bg-bg-page"}`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </Card>
           <Card className="flex-1 p-8">
             {activeTab === "Profile" ? (
@@ -99,8 +91,7 @@ export default function Page() {
             ) : null}
             {activeTab === "Notifications" ? <p className="text-text-sub">Notification preferences coming soon.</p> : null}
           </Card>
-        </main>
-      </div>
-    </div>
+        </div>
+    </DashboardShell>
   );
 }

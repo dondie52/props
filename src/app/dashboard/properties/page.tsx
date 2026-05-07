@@ -3,8 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
+import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
@@ -71,16 +70,8 @@ export default function Page() {
   );
 
   return (
-    <div className="flex min-h-screen bg-bg-page">
-      <aside className="fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
-      <div className="ml-60 flex-1">
-        <div className="fixed left-60 right-0 top-0 z-20">
-          <Topbar title="Properties" />
-        </div>
-        <main className="space-y-6 p-8 pt-24">
-          <div className="flex items-center justify-between">
+    <DashboardShell title="Properties">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <h1 className="text-2xl font-semibold text-primary">My Properties</h1>
             <button
               type="button"
@@ -172,8 +163,7 @@ export default function Page() {
               </Card>
             ))}
           </div>
-        </main>
-      </div>
+      
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Add Property">
         <div className="space-y-3">
           <input className="h-11 w-full rounded-base border border-border-ghost px-3" placeholder="Property Name" />
@@ -191,6 +181,6 @@ export default function Page() {
           </div>
         </div>
       </Modal>
-    </div>
+    </DashboardShell>
   );
 }

@@ -4,8 +4,7 @@ import Link from "next/link";
 import { Pencil, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import Sidebar from "@/components/layout/Sidebar";
-import Topbar from "@/components/layout/Topbar";
+import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
 import { supabase } from "@/lib/supabase";
@@ -87,15 +86,7 @@ export default function Page() {
   }, [units]);
 
   return (
-    <div className="flex min-h-screen bg-bg-page">
-      <aside className="fixed inset-y-0 left-0 z-30">
-        <Sidebar />
-      </aside>
-      <div className="ml-60 flex-1">
-        <div className="fixed left-60 right-0 top-0 z-20">
-          <Topbar title="Property Details" />
-        </div>
-        <main className="space-y-6 p-8 pt-24">
+    <DashboardShell title="Property Details">
           <p className="text-sm text-text-muted">
             <Link href="/dashboard/properties" className="text-primary-mid">
               Properties
@@ -103,7 +94,7 @@ export default function Page() {
             / {property.name}
           </p>
           <Card>
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <h1 className="text-2xl font-bold text-primary">{property.name}</h1>
                 <p className="text-text-muted">{property.address}</p>
@@ -111,7 +102,7 @@ export default function Page() {
                   {property.type}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex w-full gap-2 md:w-auto">
                 <button type="button" className="h-11 rounded-base border border-primary px-4 text-sm text-primary">
                   Edit
                 </button>
@@ -142,50 +133,68 @@ export default function Page() {
           </div>
           <Card>
             <h2 className="mb-4 text-lg font-semibold text-primary">Units</h2>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                  <th className="pb-3">Unit No</th>
-                  <th className="pb-3">Tenant</th>
-                  <th className="pb-3">Rent</th>
-                  <th className="pb-3">Lease End</th>
-                  <th className="pb-3">Status</th>
-                  <th className="pb-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {units.map((unit) => (
-                  <tr
-                    key={unit.number}
-                    className="cursor-pointer border-b border-border-ghost hover:bg-bg-page"
-                    onClick={() => setSelectedUnit(unit)}
-                  >
-                    <td className="py-3">{unit.number}</td>
-                    <td>{unit.tenant}</td>
-                    <td>{unit.rent}</td>
-                    <td>{unit.leaseEnd}</td>
-                    <td>
-                      <StatusChip status={unit.status} />
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-2 text-sm">
-                        <button type="button" className="text-primary-mid">
-                          View
-                        </button>
-                        <button type="button" aria-label="Edit unit" className="text-text-muted">
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+            <div className="hidden md:block">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
+                    <th className="pb-3">Unit No</th>
+                    <th className="pb-3">Tenant</th>
+                    <th className="pb-3">Rent</th>
+                    <th className="pb-3">Lease End</th>
+                    <th className="pb-3">Status</th>
+                    <th className="pb-3">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {units.map((unit) => (
+                    <tr
+                      key={unit.number}
+                      className="cursor-pointer border-b border-border-ghost hover:bg-bg-page"
+                      onClick={() => setSelectedUnit(unit)}
+                    >
+                      <td className="py-3">{unit.number}</td>
+                      <td>{unit.tenant}</td>
+                      <td>{unit.rent}</td>
+                      <td>{unit.leaseEnd}</td>
+                      <td>
+                        <StatusChip status={unit.status} />
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2 text-sm">
+                          <button type="button" className="text-primary-mid">
+                            View
+                          </button>
+                          <button type="button" aria-label="Edit unit" className="text-text-muted">
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="space-y-3 md:hidden">
+              {units.map((unit) => (
+                <article
+                  key={unit.number}
+                  className="rounded-base border border-border-ghost bg-bg-page p-3"
+                  onClick={() => setSelectedUnit(unit)}
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-text-main">Unit {unit.number}</p>
+                    <StatusChip status={unit.status} />
+                  </div>
+                  <p className="text-sm text-text-sub">{unit.tenant}</p>
+                  <p className="text-xs text-text-muted">{unit.rent}</p>
+                  <p className="text-xs text-text-muted">Lease end: {unit.leaseEnd}</p>
+                </article>
+              ))}
+            </div>
           </Card>
-        </main>
-      </div>
+      
       {selectedUnit ? (
-        <aside className="fixed inset-y-0 right-0 z-40 w-[320px] border-l border-border-ghost bg-bg-card p-6 shadow-modal">
+        <aside className="fixed inset-x-0 bottom-0 z-40 max-h-[85vh] overflow-y-auto rounded-t-large border border-border-ghost bg-bg-card p-6 shadow-modal md:inset-y-0 md:left-auto md:right-0 md:w-[320px] md:rounded-none md:border-l">
           <button type="button" aria-label="Close details panel" className="ml-auto block text-text-muted" onClick={() => setSelectedUnit(null)}>
             <X className="h-5 w-5" />
           </button>
@@ -227,6 +236,6 @@ export default function Page() {
           </div>
         </aside>
       ) : null}
-    </div>
+    </DashboardShell>
   );
 }
