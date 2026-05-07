@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getLandlordScope } from "@/lib/dashboard-scope";
 
 export type StatusValue =
   | "paid"
@@ -52,11 +53,34 @@ function first<T>(value: T | T[] | null | undefined): T | null {
 }
 
 export async function getDashboardStats(supabase: Client) {
+  const scope = await getLandlordScope(supabase);
+  if (!scope.landlordId) {
+    return {
+      totalProperties: 0,
+      occupiedText: "0/0",
+      rentDueText: formatMoney(0),
+      openMaintenance: 0,
+    };
+  }
+
+  if (scope.propertyIds.length === 0) {
+    return {
+      totalProperties: 0,
+      occupiedText: "0/0",
+      rentDueText: formatMoney(0),
+      openMaintenance: 0,
+    };
+  }
+
   const [{ data: properties }, { data: units }, { data: payments }, { data: maintenance }] = await Promise.all([
-    supabase.from("properties").select("id"),
-    supabase.from("units").select("id,status"),
-    supabase.from("payments").select("id,amount,status"),
-    supabase.from("maintenance_requests").select("id,status"),
+    supabase.from("properties").select("id").in("id", scope.propertyIds),
+    supabase.from("units").select("id,status").in("id", scope.unitIds),
+    scope.tenantIds.length
+      ? supabase.from("payments").select("id,amount,status").in("tenant_id", scope.tenantIds)
+      : Promise.resolve({ data: [] }),
+    scope.unitIds.length
+      ? supabase.from("maintenance_requests").select("id,status").in("unit_id", scope.unitIds)
+      : Promise.resolve({ data: [] }),
   ]);
 
   const allUnits = units ?? [];
@@ -76,9 +100,13 @@ export async function getDashboardStats(supabase: Client) {
 }
 
 export async function getRecentPayments(supabase: Client, limit = 5): Promise<DashboardPaymentRow[]> {
+  const scope = await getLandlordScope(supabase);
+  if (!scope.landlordId || scope.tenantIds.length === 0) return [];
+
   const { data } = await supabase
     .from("payments")
     .select("amount,payment_date,status,tenants(full_name,units(unit_number,properties(name)))")
+    .in("tenant_id", scope.tenantIds)
     .order("payment_date", { ascending: false })
     .limit(limit);
 
@@ -104,9 +132,13 @@ export async function getRecentPayments(supabase: Client, limit = 5): Promise<Da
 }
 
 export async function getMaintenanceSummary(supabase: Client, limit = 3): Promise<DashboardMaintenanceRow[]> {
+  const scope = await getLandlordScope(supabase);
+  if (!scope.landlordId || scope.unitIds.length === 0) return [];
+
   const { data } = await supabase
     .from("maintenance_requests")
     .select("category,urgency,units(unit_number)")
+    .in("unit_id", scope.unitIds)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -123,9 +155,12 @@ export async function getMaintenanceSummary(supabase: Client, limit = 3): Promis
 }
 
 export async function getOccupancyData(supabase: Client) {
+  const scope = await getLandlordScope(supabase);
+  if (!scope.landlordId || scope.propertyIds.length === 0) return [];
+
   const [{ data: properties }, { data: units }] = await Promise.all([
-    supabase.from("properties").select("id,name"),
-    supabase.from("units").select("id,property_id,status"),
+    supabase.from("properties").select("id,name").in("id", scope.propertyIds),
+    supabase.from("units").select("id,property_id,status").in("property_id", scope.propertyIds),
   ]);
 
   const unitsByProperty = new Map<string, number>();

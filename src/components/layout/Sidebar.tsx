@@ -34,17 +34,42 @@ export default function Sidebar() {
   useEffect(() => {
     let mounted = true;
 
-    const loadUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const applyUser = async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> } | null) => {
+      if (!mounted) return;
+      if (!user) {
+        setDisplayName("User");
+        setDisplayEmail("");
+        return;
+      }
 
-      if (!mounted || !user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name,email")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
 
       const metadataName =
         typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : "";
-      setDisplayName(metadataName || user.email?.split("@")[0] || "User");
-      setDisplayEmail(user.email ?? "");
+      const profileName = typeof profile?.full_name === "string" ? profile.full_name.trim() : "";
+      const profileEmail = typeof profile?.email === "string" ? profile.email.trim() : "";
+
+      setDisplayName(profileName || metadataName || user.email?.split("@")[0] || "User");
+      setDisplayEmail(profileEmail || user.email || "");
+    };
+
+    const loadUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.user) {
+        await applyUser(session.user);
+        return;
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      await applyUser(user);
     };
 
     loadUser();
@@ -52,19 +77,7 @@ export default function Sidebar() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) return;
-
-      const user = session?.user;
-      if (!user) {
-        setDisplayName("User");
-        setDisplayEmail("");
-        return;
-      }
-
-      const metadataName =
-        typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : "";
-      setDisplayName(metadataName || user.email?.split("@")[0] || "User");
-      setDisplayEmail(user.email ?? "");
+      void applyUser(session?.user ?? null);
     });
 
     return () => {
