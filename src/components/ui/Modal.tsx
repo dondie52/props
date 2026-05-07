@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useId } from "react";
 import { X } from "lucide-react";
 
 type ModalProps = {
@@ -9,6 +9,8 @@ type ModalProps = {
 };
 
 export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const titleId = useId();
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
@@ -31,9 +33,10 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
       >
         <div className="flex items-center justify-between border-b border-border-ghost px-8 py-5">
-          <h3 className="text-lg font-semibold text-text-main">{title}</h3>
+          <h3 id={titleId} className="text-lg font-semibold text-text-main">{title}</h3>
           <button
             type="button"
             onClick={onClose}

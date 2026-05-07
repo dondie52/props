@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useEffect } from "react";
 import { Wrench, Filter, Plus, ChevronRight, Clock, CheckCircle2, LayoutGrid, Search, MoreHorizontal } from "lucide-react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import StatusChip from "@/components/ui/StatusChip";
 import Modal from "@/components/ui/Modal";
@@ -12,14 +11,73 @@ import { getLandlordScope } from "@/lib/dashboard-scope";
 type Ticket = {
   id: string;
   title: string;
+  category: string;
   property: string;
+  unitId: string;
+  unitNumber: string;
+  createdAt: string;
   urgency: "low" | "medium" | "high";
   status: "open" | "in-progress" | "resolved";
 };
 
+type UnitOption = {
+  id: string;
+  label: string;
+};
+
 export default function Page() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [unitOptions, setUnitOptions] = useState<UnitOption[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [form, setForm] = useState({
+    unitId: "",
+    category: "Plumbing",
+    description: "",
+    urgency: "medium" as Ticket["urgency"],
+  });
+
+  const formatDate = (value: string) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Date unavailable";
+    return new Intl.DateTimeFormat("en-BW", { day: "2-digit", month: "short", year: "numeric" }).format(date);
+  };
+
+  const mapTicket = (row: unknown): Ticket => {
+    const rowObj = row as {
+      id?: unknown;
+      category?: unknown;
+      description?: unknown;
+      urgency?: unknown;
+      status?: unknown;
+      unit_id?: unknown;
+      created_at?: unknown;
+      units?: unknown;
+    };
+    const unit = Array.isArray(rowObj.units) ? rowObj.units[0] : rowObj.units;
+    const unitObj = unit as { unit_number?: unknown; properties?: unknown } | undefined;
+    const property = unitObj && Array.isArray(unitObj.properties) ? unitObj.properties[0] : unitObj?.properties;
+    const propertyObj = property as { name?: unknown } | undefined;
+    const urgency =
+      rowObj.urgency === "high" || rowObj.urgency === "medium" || rowObj.urgency === "low" ? rowObj.urgency : "low";
+    const status =
+      rowObj.status === "open" || rowObj.status === "in-progress" || rowObj.status === "resolved" ? rowObj.status : "open";
+    const category = String(rowObj.category ?? "General");
+
+    return {
+      id: String(rowObj.id ?? ""),
+      title: (rowObj.description as string | undefined) ?? category,
+      category,
+      property: String(propertyObj?.name ?? "Unknown property"),
+      unitId: String(rowObj.unit_id ?? ""),
+      unitNumber: String(unitObj?.unit_number ?? "-"),
+      createdAt: String(rowObj.created_at ?? ""),
+      urgency,
+      status,
+    };
+  };
+
   const move = async (id: string) => {
     const ticket = tickets.find((item) => item.id === id);
     if (!ticket) return;
@@ -36,32 +94,76 @@ export default function Page() {
         return;
       }
 
+      const { data: units } = await supabase
+        .from("units")
+        .select("id,unit_number,properties(name)")
+        .in("id", scope.unitIds)
+        .order("unit_number", { ascending: true });
+
+      setUnitOptions(
+        (units ?? []).map((row) => {
+          const rowObj = row as unknown as { id?: unknown; unit_number?: unknown; properties?: unknown };
+          const property = Array.isArray(rowObj.properties) ? rowObj.properties[0] : rowObj.properties;
+          const propertyObj = property as { name?: unknown } | undefined;
+          return {
+            id: String(rowObj.id ?? ""),
+            label: `${String(propertyObj?.name ?? "Unknown property")} - Unit ${String(rowObj.unit_number ?? "-")}`,
+          };
+        })
+      );
+
       const { data } = await supabase
         .from("maintenance_requests")
-        .select("id,category,description,urgency,status,units(unit_number,properties(name))")
+        .select("id,unit_id,category,description,urgency,status,created_at,units(unit_number,properties(name))")
         .in("unit_id", scope.unitIds)
         .order("created_at", { ascending: false });
 
-      const mapped: Ticket[] = (data ?? []).map((row) => {
-        const rowObj = row as unknown as { id?: unknown; category?: unknown; description?: unknown; urgency?: unknown; status?: unknown; units?: unknown };
-        const unit = Array.isArray(rowObj.units) ? rowObj.units[0] : rowObj.units;
-        const property = unit && Array.isArray(unit.properties) ? unit.properties[0] : unit?.properties;
-        const urgency =
-          rowObj.urgency === "high" || rowObj.urgency === "medium" || rowObj.urgency === "low" ? rowObj.urgency : "low";
-        const status =
-          rowObj.status === "open" || rowObj.status === "in-progress" || rowObj.status === "resolved" ? rowObj.status : "open";
-        return {
-          id: String(rowObj.id ?? ""),
-          title: (rowObj.description as string | undefined) ?? (rowObj.category as string | undefined) ?? "Maintenance issue",
-          property: property?.name ?? "Unknown property",
-          urgency,
-          status,
-        };
-      });
-      setTickets(mapped);
+      setTickets((data ?? []).map(mapTicket));
     };
     void loadTickets();
   }, []);
+
+  const selectedUnitOptions = useMemo(() => unitOptions.filter((unit) => unit.id), [unitOptions]);
+
+  const submitRequest = async (event: FormEvent) => {
+    event.preventDefault();
+    setFormError("");
+
+    if (!form.unitId) {
+      setFormError("Select a property and unit.");
+      return;
+    }
+
+    if (!form.description.trim()) {
+      setFormError("Add a short description.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { data, error } = await supabase
+      .from("maintenance_requests")
+      .insert({
+        unit_id: form.unitId,
+        category: form.category,
+        description: form.description.trim(),
+        urgency: form.urgency,
+        status: "open",
+      })
+      .select("id,unit_id,category,description,urgency,status,created_at,units(unit_number,properties(name))")
+      .single();
+    setIsSubmitting(false);
+
+    if (error) {
+      setFormError(error.message);
+      return;
+    }
+
+    if (data) {
+      setTickets((current) => [mapTicket(data), ...current]);
+    }
+    setForm({ unitId: "", category: "Plumbing", description: "", urgency: "medium" });
+    setIsOpen(false);
+  };
 
   const columns = ["open", "in-progress", "resolved"] as const;
   return (
@@ -135,7 +237,7 @@ export default function Page() {
                     >
                       <div className="mb-4 flex items-start justify-between">
                         <div className="flex flex-col gap-1">
-                           <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">Ticket #{ticket.id.slice(0, 4)}</span>
+                           <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">{ticket.category}</span>
                            <StatusChip status={ticket.urgency} />
                         </div>
                         <button className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-primary transition-all">
@@ -147,14 +249,14 @@ export default function Page() {
                         <h3 className="text-base font-black text-text-main leading-tight line-clamp-2 group-hover:text-primary transition-colors">{ticket.title}</h3>
                         <div className="flex items-center gap-1.5">
                            <div className="h-1 w-1 rounded-full bg-slate-300" />
-                           <p className="text-[11px] font-bold text-text-muted uppercase tracking-tight">{ticket.property} · Unit {ticket.id.slice(0, 4)}</p>
+                           <p className="text-[11px] font-bold text-text-muted uppercase tracking-tight">{ticket.property} · Unit {ticket.unitNumber}</p>
                         </div>
                       </div>
 
                       <div className="mt-6 flex items-center justify-between border-t border-border-ghost/50 pt-4">
                         <div className="flex items-center gap-1.5 text-[10px] font-bold text-text-muted">
                            <Clock className="h-3 w-3 opacity-40" />
-                           <span>06 MAY</span>
+                           <span>{formatDate(ticket.createdAt)}</span>
                         </div>
                         {column !== "resolved" ? (
                           <button
@@ -189,22 +291,36 @@ export default function Page() {
       </div>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Maintenance Request">
-        <div className="space-y-5">
+        <form onSubmit={submitRequest} className="space-y-5">
           <div className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-bold text-text-main">Property & Unit</label>
-              <select className="input-field">
-                <option>Select property...</option>
+              <select
+                className="input-field"
+                value={form.unitId}
+                onChange={(event) => setForm((current) => ({ ...current, unitId: event.target.value }))}
+              >
+                <option value="">Select property...</option>
+                {selectedUnitOptions.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.label}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-text-main">Category</label>
-              <select className="input-field">
-                <option>Plumbing</option>
-                <option>Electrical</option>
-                <option>General Repair</option>
-                <option>Appliance</option>
+              <select
+                className="input-field"
+                value={form.category}
+                onChange={(event) => setForm((current) => ({ ...current, category: event.target.value }))}
+              >
+                {["Plumbing", "Electrical", "General Repair", "Appliance"].map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -214,38 +330,47 @@ export default function Page() {
                 className="w-full rounded-xl border border-border-muted bg-white px-4 py-3 text-sm placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/5"
                 rows={4}
                 placeholder="Describe the issue in detail..."
+                value={form.description}
+                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-bold text-text-main">Urgency Level</label>
               <div className="flex gap-3">
-                {["Low", "Medium", "High"].map((level) => (
+                {(["low", "medium", "high"] as const).map((level) => (
                   <button
                     key={level}
                     type="button"
+                    onClick={() => setForm((current) => ({ ...current, urgency: level }))}
                     className={`flex-1 h-10 rounded-lg border text-xs font-bold transition-all ${
-                      level === "Medium"
+                      form.urgency === level
                         ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
                         : "border-border-muted text-text-sub hover:bg-bg-page"
                     }`}
                   >
-                    {level}
+                    {level[0].toUpperCase() + level.slice(1)}
                   </button>
                 ))}
               </div>
             </div>
           </div>
 
+          {formError ? (
+            <div className="rounded-lg bg-error/5 p-3 text-xs font-medium text-error">
+              {formError}
+            </div>
+          ) : null}
+
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={() => setIsOpen(false)} className="btn-outline flex-1 h-11">
               Cancel
             </button>
-            <button type="button" className="btn-primary flex-1 h-11">
-              Create Request
+            <button type="submit" disabled={isSubmitting} className="btn-primary flex-1 h-11">
+              {isSubmitting ? "Creating..." : "Create Request"}
             </button>
           </div>
-        </div>
+        </form>
       </Modal>
     </DashboardShell>
   );

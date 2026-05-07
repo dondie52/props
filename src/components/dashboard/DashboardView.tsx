@@ -179,25 +179,25 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
             {occupancyData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={occupancyData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-ghost)" vertical={false} />
                   <XAxis
                     dataKey="name"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 11, fontWeight: 500, fill: "#94a3b8" }}
+                    tick={{ fontSize: 11, fontWeight: 500, fill: "var(--color-text-muted)" }}
                     tickFormatter={(value, index) => getOccupancyLabel(value, index)}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fontSize: 11, fontWeight: 500, fill: "#94a3b8" }}
+                    tick={{ fontSize: 11, fontWeight: 500, fill: "var(--color-text-muted)" }}
                     allowDecimals={false}
                   />
                   <Tooltip
-                    cursor={{ fill: 'rgba(0, 56, 87, 0.02)' }}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' }}
+                    cursor={{ fill: "var(--color-bg-page)" }}
+                    contentStyle={{ borderRadius: "var(--radius-large)", border: "none", boxShadow: "var(--shadow-chart-tooltip)" }}
                   />
-                  <Bar dataKey="occupied" fill="#003857" radius={[6, 6, 0, 0]} barSize={32} />
+                  <Bar dataKey="occupied" fill="var(--color-primary)" radius={[6, 6, 0, 0]} barSize={32} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

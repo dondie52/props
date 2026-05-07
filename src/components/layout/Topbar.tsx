@@ -26,6 +26,7 @@ export default function Topbar({ title, onOpenSidebar }: TopbarProps) {
         <div className="relative hidden md:block group">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-primary" />
           <input
+            aria-label="Search dashboard"
             type="search"
             placeholder="Search everything..."
             className="h-10 w-72 rounded-xl border border-border-muted bg-bg-page/50 pl-10 pr-4 text-sm transition-all focus:border-primary/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/5 shadow-sm"

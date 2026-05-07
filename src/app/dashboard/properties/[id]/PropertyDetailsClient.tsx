@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Pencil, X, ChevronRight, Building2, Users, LayoutGrid, Coins, Plus, MoreHorizontal, Mail, Calendar, MapPin, Search } from "lucide-react";
-import { FormEvent, useMemo, useState, useTransition } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
@@ -65,6 +65,8 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
     leaseEnd: "",
     rentAmount: "",
   });
+  const detailsPanelRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const summary = useMemo(() => {
     const total = initialUnits.length;
@@ -75,6 +77,7 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
 
   const openUnit = (unit: UnitRow) => {
     setError("");
+    previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (unit.status === "vacant") {
       setAssigningUnit(unit);
       setTenantForm({ fullName: "", email: "", leaseStart: today(), leaseEnd: "", rentAmount: String(unit.rentAmount || "") });
@@ -82,6 +85,29 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
     }
     setSelectedUnit(unit);
   };
+
+  const closeUnitDetails = () => {
+    setSelectedUnit(null);
+    previousFocusRef.current?.focus();
+  };
+
+  const onUnitCardKeyDown = (event: KeyboardEvent<HTMLElement>, unit: UnitRow) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    openUnit(unit);
+  };
+
+  useEffect(() => {
+    if (!selectedUnit) return;
+
+    detailsPanelRef.current?.focus();
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") closeUnitDetails();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedUnit]);
 
   const onAddUnit = (event: FormEvent) => {
     event.preventDefault();
@@ -300,8 +326,11 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
             {initialUnits.map((unit) => (
               <article
                 key={unit.id}
+                role="button"
+                tabIndex={0}
                 className="rounded-xl border border-border-ghost bg-bg-page/30 p-4 transition-all active:bg-bg-page"
                 onClick={() => openUnit(unit)}
+                onKeyDown={(event) => onUnitCardKeyDown(event, unit)}
               >
                 <div className="flex items-center justify-between">
                   <p className="font-bold text-text-main">Unit {unit.number}</p>
@@ -321,19 +350,33 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
       </div>
 
       {selectedUnit ? (
-        <aside className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border-ghost bg-white shadow-2xl transition-all md:w-[480px]">
+        <>
+          <button
+            type="button"
+            aria-label="Close details panel"
+            className="fixed inset-0 z-40 cursor-default bg-slate-900/30 backdrop-blur-[1px]"
+            onClick={closeUnitDetails}
+          />
+        <aside
+          ref={detailsPanelRef}
+          className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border-ghost bg-white shadow-2xl transition-all md:w-[480px]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="unit-details-title"
+          tabIndex={-1}
+        >
           <div className="flex items-center justify-between bg-bg-page/30 border-b border-border-ghost px-8 py-6">
             <div className="flex items-center gap-3">
                <div className="h-8 w-8 rounded-xl bg-primary-900 flex items-center justify-center text-white">
                  <LayoutGrid className="h-4 w-4" />
                </div>
-               <h3 className="text-xl font-black tracking-tight text-text-main">Unit {selectedUnit.number}</h3>
+               <h3 id="unit-details-title" className="text-xl font-black tracking-tight text-text-main">Unit {selectedUnit.number}</h3>
             </div>
             <button
               type="button"
               aria-label="Close details panel"
               className="rounded-xl p-2.5 text-text-muted transition-all hover:bg-white hover:text-error hover:shadow-sm"
-              onClick={() => setSelectedUnit(null)}
+              onClick={closeUnitDetails}
             >
               <X className="h-5 w-5" />
             </button>
@@ -436,6 +479,7 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
             </button>
           </div>
         </aside>
+        </>
       ) : null}
 
       <Modal isOpen={isAddingUnit} onClose={() => setIsAddingUnit(false)} title="Add New Unit">

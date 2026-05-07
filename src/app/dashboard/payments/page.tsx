@@ -23,6 +23,7 @@ type PaymentRow = {
 export default function Page() {
   const [isOpen, setIsOpen] = useState(false);
   const [rows, setRows] = useState<PaymentRow[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState("all");
 
   useEffect(() => {
     const loadPayments = async () => {
@@ -70,13 +71,33 @@ export default function Page() {
     void loadPayments();
   }, []);
 
-  const stats = useMemo(() => {
-    const collected = rows.filter((row) => row.status === "paid").reduce((sum, row) => sum + row.amount, 0);
-    const pending = rows.filter((row) => row.status === "pending").reduce((sum, row) => sum + row.amount, 0);
-    const overdue = rows.filter((row) => row.status === "overdue").reduce((sum, row) => sum + row.amount, 0);
-    const rate = rows.length ? Math.round((rows.filter((row) => row.status === "paid").length / rows.length) * 100) : 0;
-    return { collected, pending, overdue, rate };
+  const monthOptions = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat("en-BW", { month: "short", year: "numeric" });
+    const options = new Map<string, string>();
+
+    rows.forEach((row) => {
+      if (!row.due || row.due === "-") return;
+      const date = new Date(row.due);
+      if (Number.isNaN(date.getTime())) return;
+      const key = date.toISOString().slice(0, 7);
+      options.set(key, formatter.format(date));
+    });
+
+    return Array.from(options, ([value, label]) => ({ value, label })).sort((a, b) => b.value.localeCompare(a.value));
   }, [rows]);
+
+  const filteredRows = useMemo(() => {
+    if (selectedMonth === "all") return rows;
+    return rows.filter((row) => row.due.startsWith(selectedMonth));
+  }, [rows, selectedMonth]);
+
+  const stats = useMemo(() => {
+    const collected = filteredRows.filter((row) => row.status === "paid").reduce((sum, row) => sum + row.amount, 0);
+    const pending = filteredRows.filter((row) => row.status === "pending").reduce((sum, row) => sum + row.amount, 0);
+    const overdue = filteredRows.filter((row) => row.status === "overdue").reduce((sum, row) => sum + row.amount, 0);
+    const rate = filteredRows.length ? Math.round((filteredRows.filter((row) => row.status === "paid").length / filteredRows.length) * 100) : 0;
+    return { collected, pending, overdue, rate };
+  }, [filteredRows]);
 
   const formatMoney = (value: number) =>
     new Intl.NumberFormat("en-BW", { style: "currency", currency: "BWP", maximumFractionDigits: 0 })
@@ -160,6 +181,18 @@ export default function Page() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
+              <select
+                className="input-field h-10 min-w-[150px] appearance-none bg-bg-page/50 pr-10 text-xs"
+                value={selectedMonth}
+                onChange={(event) => setSelectedMonth(event.target.value)}
+              >
+                <option value="all">All months</option>
+                {monthOptions.map((month) => (
+                  <option key={month.value} value={month.value}>
+                    {month.label}
+                  </option>
+                ))}
+              </select>
               <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
                 <input placeholder="Search ledger..." className="input-field pl-10 h-10 text-xs w-full sm:w-64 bg-bg-page/50" />
@@ -190,7 +223,7 @@ export default function Page() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border-ghost/60">
-                  {rows.map((row) => (
+                  {filteredRows.map((row) => (
                     <tr key={`${row.tenant}-${row.unit}-${row.due}`} className="group transition-all hover:bg-bg-page/50">
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
@@ -257,7 +290,7 @@ export default function Page() {
           </div>
 
           <div className="space-y-4 p-6 md:hidden">
-            {rows.map((row) => (
+            {filteredRows.map((row) => (
               <article key={`${row.tenant}-${row.unit}-${row.due}`} className="rounded-2xl border border-border-ghost bg-white p-5 shadow-sm active:scale-[0.98] transition-transform">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">

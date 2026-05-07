@@ -5,9 +5,18 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-primary: #003857;
+    --color-bg-page: #f8fafc;
+    --color-border-ghost: #f1f5f9;
+    --color-text-muted: #64748b;
+    --shadow-chart-tooltip: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --radius-large: 12px;
+  }
+
   body {
     @apply bg-bg-page text-text-main antialiased;
-    font-family: "Inter", sans-serif;
+    font-family: Inter, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
