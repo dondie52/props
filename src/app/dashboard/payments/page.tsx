@@ -9,6 +9,7 @@ import StatusChip from "@/components/ui/StatusChip";
 import StatCard from "@/components/ui/StatCard";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
+import { getLandlordScope } from "@/lib/dashboard-scope";
 
 type PaymentRow = {
   tenant: string;
@@ -26,9 +27,16 @@ export default function Page() {
 
   useEffect(() => {
     const loadPayments = async () => {
+      const scope = await getLandlordScope(supabase);
+      if (!scope.landlordId || scope.tenantIds.length === 0) {
+        setRows([]);
+        return;
+      }
+
       const { data } = await supabase
         .from("payments")
         .select("amount,due_date,payment_date,status,tenants(full_name,units(unit_number,properties(name)))")
+        .in("tenant_id", scope.tenantIds)
         .order("due_date", { ascending: false });
 
       const mapped: PaymentRow[] = (data ?? []).map((row) => {

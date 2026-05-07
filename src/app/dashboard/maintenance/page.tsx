@@ -8,6 +8,7 @@ import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
+import { getLandlordScope } from "@/lib/dashboard-scope";
 
 type Ticket = {
   id: string;
@@ -30,9 +31,16 @@ export default function Page() {
 
   useEffect(() => {
     const loadTickets = async () => {
+      const scope = await getLandlordScope(supabase);
+      if (!scope.landlordId || scope.unitIds.length === 0) {
+        setTickets([]);
+        return;
+      }
+
       const { data } = await supabase
         .from("maintenance_requests")
         .select("id,category,description,urgency,status,units(unit_number,properties(name))")
+        .in("unit_id", scope.unitIds)
         .order("created_at", { ascending: false });
 
       const mapped: Ticket[] = (data ?? []).map((row) => {
