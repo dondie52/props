@@ -86,6 +86,11 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
                   </tbody>
                 </table>
               </div>
+              {paymentRows.length === 0 ? (
+                <div className="rounded-base border border-dashed border-border-ghost bg-bg-page p-4 text-sm text-text-muted">
+                  No payments yet. Add a tenant and record your first payment to populate this section.
+                </div>
+              ) : null}
               <div className="space-y-3 md:hidden">
                 {paymentRows.map((row) => (
                   <article key={`${row.tenant}-${row.unit}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
@@ -120,6 +125,11 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
                     <p className="mt-1 text-xs text-text-muted">Unit {row.unit}</p>
                   </div>
                 ))}
+                {maintenanceRows.length === 0 ? (
+                  <div className="rounded-base border border-dashed border-border-ghost bg-bg-page p-4 text-sm text-text-muted">
+                    No maintenance requests yet.
+                  </div>
+                ) : null}
               </div>
             </section>
           </div>
@@ -132,15 +142,21 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
               </Link>
             </div>
             <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={occupancyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e8e8" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} tickFormatter={(value, index) => getOccupancyLabel(value, index)} />
-                  <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                  <Tooltip labelFormatter={(label: ReactNode) => getOccupancyLabel(label)} />
-                  <Bar dataKey="occupied" fill="#1b4f72" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {occupancyData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={occupancyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e8e8" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} tickFormatter={(value, index) => getOccupancyLabel(value, index)} />
+                    <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                    <Tooltip labelFormatter={(label: ReactNode) => getOccupancyLabel(label)} />
+                    <Bar dataKey="occupied" fill="#1b4f72" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center rounded-base border border-dashed border-border-ghost bg-bg-page text-sm text-text-muted">
+                  Occupancy data will appear after you add properties and units.
+                </div>
+              )}
             </div>
           </section>
     </DashboardShell>
