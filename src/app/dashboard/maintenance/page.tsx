@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useEffect } from "react";
+import { Wrench, Filter, Plus, ChevronRight, Clock, CheckCircle2, LayoutGrid, Search, MoreHorizontal } from "lucide-react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import StatusChip from "@/components/ui/StatusChip";
 import Modal from "@/components/ui/Modal";
@@ -66,74 +67,109 @@ export default function Page() {
   return (
     <DashboardShell title="Maintenance">
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-text-main">Maintenance Board</h1>
-            <p className="text-sm text-text-muted mt-1">Track and manage property maintenance requests</p>
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-white p-8 rounded-2xl border border-border-ghost shadow-sm">
+          <div className="flex items-center gap-4">
+             <div className="h-14 w-14 rounded-2xl bg-primary-900 flex items-center justify-center text-white shadow-lg">
+                <Wrench className="h-7 w-7" />
+             </div>
+             <div>
+                <h1 className="text-3xl font-black tracking-tight text-text-main">Maintenance Board</h1>
+                <p className="text-sm font-medium text-text-muted mt-1">Track and resolve service requests across your portfolio</p>
+             </div>
           </div>
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="btn-accent px-6"
+            className="btn-accent h-12 px-8 flex items-center gap-2 font-bold shadow-lg shadow-accent/20 transition-transform active:scale-95"
           >
+            <Plus className="h-4 w-4" />
             New Request
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <select className="input-field max-w-[160px]"><option>All Properties</option></select>
-          <select className="input-field max-w-[160px]"><option>All Categories</option></select>
-          <select className="input-field max-w-[160px]"><option>Any Urgency</option></select>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+           <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+             <div className="relative">
+                <Filter className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+                <select className="input-field pl-9 h-10 text-xs font-bold uppercase tracking-wider pr-10 appearance-none bg-white min-w-[160px]">
+                  <option>All Properties</option>
+                </select>
+             </div>
+             <select className="input-field h-10 text-xs font-bold uppercase tracking-wider appearance-none bg-white min-w-[140px]">
+               <option>Any Category</option>
+             </select>
+           </div>
+           <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="relative flex-1 sm:flex-none">
+                <Search className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+                <input placeholder="Search tickets..." className="input-field pl-9 h-10 text-xs w-full sm:w-48 bg-white" />
+              </div>
+              <button className="p-2 text-text-muted hover:text-primary transition-colors">
+                 <LayoutGrid className="h-5 w-5" />
+              </button>
+           </div>
         </div>
 
-        <div className="overflow-x-auto pb-6">
-          <div className="flex gap-6 min-w-[900px] lg:min-w-0">
+        <div className="overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-8 min-w-[1000px]">
             {columns.map((column) => (
-              <div key={column} className="flex-1 flex flex-col min-w-[300px]">
-                <div className="mb-4 flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold uppercase tracking-wider text-text-sub">{column.replace("-", " ")}</h2>
-                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-slate-200 px-1.5 text-[10px] font-bold text-slate-600">
+              <div key={column} className="flex-1 flex flex-col min-w-[320px]">
+                <div className="mb-5 flex items-center justify-between px-2">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-2.5 w-2.5 rounded-full ${column === 'open' ? 'bg-rose-500' : column === 'in-progress' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-text-main">{column.replace("-", " ")}</h2>
+                    <span className="flex h-5 min-w-[24px] items-center justify-center rounded-lg bg-bg-page border border-border-ghost/60 px-1.5 text-[10px] font-black text-text-muted">
                       {tickets.filter((ticket) => ticket.status === column).length}
                     </span>
                   </div>
+                  <button className="text-text-muted hover:text-primary transition-colors">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
                 </div>
 
-                <div className="flex-1 space-y-4 rounded-2xl bg-slate-100/50 p-3 ring-1 ring-inset ring-slate-200/50 min-h-[500px]">
+                <div className="flex-1 space-y-4 rounded-3xl bg-bg-page/40 p-4 border border-dashed border-border-ghost/60 min-h-[600px]">
                   {tickets.filter((ticket) => ticket.status === column).map((ticket) => (
                     <div
                       key={ticket.id}
-                      className="group relative rounded-xl border border-border-ghost bg-white p-4 shadow-sm transition-all hover:border-primary/20 hover:shadow-md"
+                      className="group relative rounded-2xl border border-border-ghost bg-white p-5 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 hover:ring-1 hover:ring-primary/10"
                     >
-                      <div className="mb-3 flex items-start justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded">General</span>
-                        <StatusChip status={ticket.urgency} />
+                      <div className="mb-4 flex items-start justify-between">
+                        <div className="flex flex-col gap-1">
+                           <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">Ticket #{ticket.id.slice(0, 4)}</span>
+                           <StatusChip status={ticket.urgency} />
+                        </div>
+                        <button className="opacity-0 group-hover:opacity-100 p-1 text-text-muted hover:text-primary transition-all">
+                           <MoreHorizontal className="h-4 w-4" />
+                        </button>
                       </div>
 
-                      <div>
-                        <p className="text-sm font-bold text-text-main leading-tight">{ticket.property}</p>
-                        <p className="text-xs text-text-muted mt-1">Unit {ticket.id.slice(0, 4)}</p>
+                      <div className="space-y-1">
+                        <h3 className="text-base font-black text-text-main leading-tight line-clamp-2 group-hover:text-primary transition-colors">{ticket.title}</h3>
+                        <div className="flex items-center gap-1.5">
+                           <div className="h-1 w-1 rounded-full bg-slate-300" />
+                           <p className="text-[11px] font-bold text-text-muted uppercase tracking-tight">{ticket.property} · Unit {ticket.id.slice(0, 4)}</p>
+                        </div>
                       </div>
 
-                      <p className="mt-3 text-sm text-text-sub line-clamp-2">{ticket.title}</p>
-
-                      <div className="mt-4 flex items-center justify-between border-t border-border-ghost pt-3">
-                        <span className="text-[10px] text-text-muted font-medium">06 May 2026</span>
+                      <div className="mt-6 flex items-center justify-between border-t border-border-ghost/50 pt-4">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-text-muted">
+                           <Clock className="h-3 w-3 opacity-40" />
+                           <span>06 MAY</span>
+                        </div>
                         {column !== "resolved" ? (
                           <button
                             type="button"
                             onClick={() => move(ticket.id)}
-                            className="text-[11px] font-bold text-primary hover:underline"
+                            className="flex items-center gap-1 text-[10px] font-black text-primary uppercase tracking-wider hover:gap-2 transition-all"
                           >
-                            Next Stage →
+                            Move Forward
+                            <ChevronRight className="h-3 w-3" />
                           </button>
                         ) : (
-                          <span className="text-[10px] font-bold text-success flex items-center gap-1">
-                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
+                          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 text-[10px] font-black text-emerald-600 uppercase tracking-wider">
+                            <CheckCircle2 className="h-3 w-3" />
                             Resolved
-                          </span>
+                          </div>
                         )}
                       </div>
                     </div>

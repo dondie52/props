@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Eye, Mail } from "lucide-react";
+import { Eye, Mail, Users, Search, Filter, UserPlus, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
@@ -75,69 +75,69 @@ export default function Page() {
   return (
     <DashboardShell title="Tenants">
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-text-main">Tenants</h1>
-            <p className="text-sm text-text-muted mt-1">Directory of all residents across your properties</p>
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-white p-8 rounded-2xl border border-border-ghost shadow-sm">
+          <div className="flex items-center gap-4">
+             <div className="h-14 w-14 rounded-2xl bg-primary-900 flex items-center justify-center text-white shadow-lg">
+                <Users className="h-7 w-7" />
+             </div>
+             <div>
+                <h1 className="text-3xl font-black tracking-tight text-text-main">Tenant Directory</h1>
+                <p className="text-sm font-medium text-text-muted mt-1">Manage and communicate with all property residents</p>
+             </div>
           </div>
-          <Link href="/dashboard/properties" className="btn-accent px-6">
-            Assign New Tenant
+          <Link href="/dashboard/properties" className="btn-accent h-12 px-8 flex items-center gap-2 font-bold shadow-lg shadow-accent/20 transition-transform active:scale-95">
+            <UserPlus className="h-4 w-4" />
+            Assign Tenant
           </Link>
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
-            <svg
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="input-field pl-10"
-              placeholder="Search by name or email..."
+              className="input-field pl-10 h-11 bg-white shadow-sm"
+              placeholder="Search by name, email, or property..."
             />
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-text-sub">Filter:</span>
-            <select
-              value={status}
-              onChange={(event) => setStatus(event.target.value)}
-              className="input-field min-w-[140px]"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="expiring">Expiring</option>
-              <option value="overdue">Overdue</option>
-            </select>
+            <div className="relative">
+              <Filter className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-muted" />
+              <select
+                value={status}
+                onChange={(event) => setStatus(event.target.value)}
+                className="input-field pl-9 h-11 min-w-[160px] text-xs font-bold uppercase tracking-wider appearance-none bg-white pr-10 shadow-sm"
+              >
+                <option value="all">All Residents</option>
+                <option value="active">Active Leases</option>
+                <option value="expiring">Expiring Soon</option>
+                <option value="overdue">Lease Overdue</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <Card className="p-0 overflow-hidden border-none shadow-md ring-1 ring-border-ghost">
+        <Card className="p-0 overflow-hidden border-none shadow-xl ring-1 ring-border-ghost">
           <div className="hidden md:block">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="bg-bg-page/50 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                    <th className="px-6 py-4">Tenant</th>
-                    <th className="px-6 py-4">Property & Unit</th>
-                    <th className="px-6 py-4">Rent</th>
-                    <th className="px-6 py-4">Lease End</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
+                  <tr className="bg-bg-page/40 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">
+                    <th className="px-8 py-5">Tenant Information</th>
+                    <th className="px-8 py-5">Assigned Property</th>
+                    <th className="px-8 py-5">Monthly Rent</th>
+                    <th className="px-8 py-5">Lease End</th>
+                    <th className="px-8 py-5 text-right">Status</th>
+                    <th className="px-8 py-5 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-ghost">
+                <tbody className="divide-y divide-border-ghost/60">
                   {filtered.map((tenant) => (
-                    <tr key={tenant.name} className="group transition-colors hover:bg-bg-page/50">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/5 text-sm font-bold text-primary ring-1 ring-inset ring-primary/10">
+                    <tr key={tenant.name} className="group transition-all hover:bg-bg-page/50">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-[11px] font-black text-slate-600 border border-slate-200 group-hover:bg-primary-900 group-hover:text-white group-hover:border-primary-900 transition-all shadow-sm">
                             {tenant.name
                               .split(" ")
                               .filter(Boolean)
@@ -146,33 +146,42 @@ export default function Page() {
                               .join("")}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate font-bold text-text-main">{tenant.name}</p>
-                            <p className="truncate text-xs text-text-muted">{tenant.email}</p>
+                            <p className="truncate font-black text-text-main group-hover:text-primary transition-colors leading-tight">{tenant.name}</p>
+                            <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                               <Mail className="h-3 w-3 opacity-40" />
+                               {tenant.email}
+                            </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <p className="font-medium text-text-main">{tenant.property}</p>
-                        <p className="text-xs text-text-muted">Unit {tenant.unit}</p>
+                      <td className="px-8 py-6">
+                        <div className="flex flex-col">
+                           <p className="font-bold text-text-main leading-tight">{tenant.property}</p>
+                           <p className="mt-1 text-[10px] font-black text-text-muted uppercase bg-bg-page inline-block px-1.5 py-0.5 rounded border border-border-ghost/50 self-start">Unit {tenant.unit}</p>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 font-bold text-text-main">{tenant.rent}</td>
-                      <td className="px-6 py-4 text-text-sub">{tenant.leaseEnd}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6">
+                        <span className="font-black text-text-main tracking-tight">{tenant.rent}</span>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className="text-sm font-bold text-text-sub">{tenant.leaseEnd}</span>
+                      </td>
+                      <td className="px-8 py-6 text-right">
                         <StatusChip status={tenant.status} />
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-1">
+                      <td className="px-8 py-6">
+                        <div className="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             type="button"
-                            aria-label="View tenant"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-primary"
+                            className="h-9 w-9 flex items-center justify-center rounded-xl text-text-muted hover:bg-primary-50 hover:text-primary transition-all border border-transparent hover:border-primary/20"
+                            title="View Tenant Profile"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
                           <button
                             type="button"
-                            aria-label="Email tenant"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-primary"
+                            className="h-9 w-9 flex items-center justify-center rounded-xl text-text-muted hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-200"
+                            title="Email Resident"
                           >
                             <Mail className="h-4 w-4" />
                           </button>
@@ -185,45 +194,59 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="space-y-4 p-4 md:hidden">
+          <div className="space-y-4 p-6 md:hidden">
             {filtered.map((tenant) => (
-              <article key={tenant.name} className="rounded-xl border border-border-ghost bg-bg-page/30 p-4">
-                <div className="flex items-center justify-between">
+              <article key={tenant.name} className="rounded-2xl border border-border-ghost bg-white p-5 shadow-sm active:scale-[0.98] transition-transform">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/5 text-xs font-bold text-primary">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-[10px] font-black text-slate-600 border border-slate-200">
                       {tenant.name.split(" ").filter(Boolean).slice(0, 2).map(n => n[0]).join("")}
                     </div>
                     <div>
-                      <p className="font-bold text-text-main leading-tight">{tenant.name}</p>
-                      <p className="text-[10px] text-text-muted mt-0.5">{tenant.email}</p>
+                      <p className="font-black text-text-main leading-tight">{tenant.name}</p>
+                      <p className="text-[10px] font-bold text-text-muted uppercase tracking-tight mt-0.5">{tenant.email}</p>
                     </div>
                   </div>
                   <StatusChip status={tenant.status} />
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-lg bg-white p-2 border border-border-ghost">
-                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-tighter">Property</p>
-                    <p className="mt-0.5 font-medium text-text-main truncate">{tenant.property}</p>
+
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border-ghost/50">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5 text-text-muted">
+                       <MapPin className="h-3 w-3" />
+                       <span className="text-[9px] font-black uppercase tracking-wider">Residence</span>
+                    </div>
+                    <p className="text-xs font-bold text-text-main truncate">{tenant.property} · {tenant.unit}</p>
                   </div>
-                  <div className="rounded-lg bg-white p-2 border border-border-ghost">
-                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-tighter">Rent</p>
-                    <p className="mt-0.5 font-medium text-text-main">{tenant.rent}</p>
+                  <div className="flex flex-col gap-1 items-end">
+                    <div className="flex items-center gap-1.5 text-text-muted">
+                       <span className="text-[9px] font-black uppercase tracking-wider">Lease End</span>
+                    </div>
+                    <p className="text-xs font-black text-text-sub uppercase">{tenant.leaseEnd}</p>
                   </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between pt-4 border-t border-border-ghost/50">
+                   <p className="text-lg font-black text-primary tracking-tight">{tenant.rent}</p>
+                   <div className="flex gap-2">
+                      <button className="h-8 px-3 rounded-lg bg-bg-page border border-border-ghost text-[10px] font-black uppercase tracking-wider text-text-muted hover:text-primary transition-colors">Profile</button>
+                      <button className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100"><Mail className="h-3.5 w-3.5" /></button>
+                   </div>
                 </div>
               </article>
             ))}
           </div>
 
-          <div className="border-t border-border-ghost bg-bg-page/50 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-text-muted">
-                Showing <span className="text-text-main font-bold">{filtered.length}</span> of <span className="text-text-main font-bold">{tenants.length}</span> tenants
+          <div className="border-t border-border-ghost bg-bg-page/30 px-8 py-5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs font-bold text-text-muted uppercase tracking-[0.1em]">
+                Showing <span className="text-primary">{filtered.length}</span> of <span className="text-text-main">{tenants.length}</span> registered residents
               </p>
-              <div className="flex gap-2">
-                <button type="button" className="btn-outline h-8 px-3 text-xs">
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button type="button" className="flex-1 sm:flex-none btn-outline h-9 px-5 text-[10px] font-black uppercase tracking-widest disabled:opacity-30" disabled>
                   Previous
                 </button>
-                <button type="button" className="btn-outline h-8 px-3 text-xs">
+                <button type="button" className="flex-1 sm:flex-none btn-outline h-9 px-5 text-[10px] font-black uppercase tracking-widest disabled:opacity-30" disabled>
                   Next
                 </button>
               </div>

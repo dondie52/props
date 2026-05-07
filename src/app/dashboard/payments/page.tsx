@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Search, Filter, ArrowUpRight, TrendingUp, CreditCard, Clock, AlertCircle, RefreshCw, FileText } from "lucide-react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
-import StatCard from "@/components/ui/StatCard";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
 import { getLandlordScope } from "@/lib/dashboard-scope";
@@ -88,45 +87,90 @@ export default function Page() {
   return (
     <DashboardShell title="Payments">
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-white p-8 rounded-2xl border border-border-ghost shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold text-text-main">Payments</h1>
-            <p className="text-sm text-text-muted mt-1">Monitor rent collection and financial health</p>
+            <h1 className="text-3xl font-black tracking-tight text-text-main">Financial Ledger</h1>
+            <p className="text-sm font-medium text-text-muted mt-1">Real-time monitoring of your rental income and collections</p>
           </div>
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="btn-accent px-6"
+            className="btn-accent h-12 px-8 flex items-center gap-2 font-bold shadow-lg shadow-accent/20 transition-transform active:scale-95"
           >
+            <CreditCard className="h-4 w-4" />
             Record Payment
           </button>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard title="Collected" value={formatMoney(stats.collected)} icon={<span className="font-bold">P</span>} />
-          <StatCard title="Pending" value={formatMoney(stats.pending)} icon={<span className="font-bold text-warning">P</span>} />
-          <StatCard title="Overdue" value={formatMoney(stats.overdue)} icon={<span className="font-bold text-error">P</span>} />
-          <StatCard title="Collection Rate" value={`${stats.rate}%`} icon={<span className="font-bold text-success">%</span>} />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+             <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Collected</p>
+                <div className="h-8 w-8 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+             </div>
+             <p className="text-2xl font-black text-text-main tracking-tight">{formatMoney(stats.collected)}</p>
+             <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-emerald-600 uppercase">
+                <ArrowUpRight className="h-3 w-3" />
+                On Track
+             </div>
+          </div>
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+             <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Pending</p>
+                <div className="h-8 w-8 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                  <Clock className="h-4 w-4" />
+                </div>
+             </div>
+             <p className="text-2xl font-black text-text-main tracking-tight">{formatMoney(stats.pending)}</p>
+             <p className="mt-2 text-[10px] font-bold text-text-muted uppercase tracking-wider">Awaiting Verification</p>
+          </div>
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+             <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Overdue</p>
+                <div className="h-8 w-8 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
+                  <AlertCircle className="h-4 w-4" />
+                </div>
+             </div>
+             <p className="text-2xl font-black text-rose-600 tracking-tight">{formatMoney(stats.overdue)}</p>
+             <p className="mt-2 text-[10px] font-bold text-rose-500/80 uppercase tracking-wider">Requires Attention</p>
+          </div>
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+             <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">Collection Rate</p>
+                <div className="h-8 w-8 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600">
+                  <RefreshCw className="h-4 w-4" />
+                </div>
+             </div>
+             <p className="text-2xl font-black text-text-main tracking-tight">{stats.rate}%</p>
+             <div className="mt-3 h-1.5 w-full bg-bg-page rounded-full overflow-hidden border border-border-ghost/50">
+                <div className="h-full bg-primary-900 rounded-full" style={{ width: `${stats.rate}%` }} />
+             </div>
+          </div>
         </div>
 
-        <Card className="p-0 overflow-hidden border-none shadow-md ring-1 ring-border-ghost">
-          <div className="flex flex-col gap-4 border-b border-border-ghost px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-lg font-bold text-text-main">Rent Ledger</h2>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="relative">
-                <select className="input-field pr-10 appearance-none min-w-[140px]">
-                  <option>May 2026</option>
-                  <option>Apr 2026</option>
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+        <Card className="p-0 overflow-hidden border-none shadow-xl ring-1 ring-border-ghost">
+          <div className="flex flex-col gap-6 border-b border-border-ghost bg-white px-8 py-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-xl font-black tracking-tight text-text-main">Rent Ledger</h2>
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-bg-page rounded-lg border border-border-ghost/50">
+                 <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Live View</span>
               </div>
-              <button className="btn-outline px-4 gap-2">
-                <Download className="h-4 w-4" />
-                Export CSV
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative w-full sm:w-auto">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+                <input placeholder="Search ledger..." className="input-field pl-10 h-10 text-xs w-full sm:w-64 bg-bg-page/50" />
+              </div>
+              <button className="btn-outline h-10 px-4 gap-2 text-xs font-bold uppercase tracking-wider">
+                <Filter className="h-3.5 w-3.5" />
+                Filter
+              </button>
+              <button className="btn-outline h-10 px-4 gap-2 text-xs font-bold uppercase tracking-wider">
+                <Download className="h-3.5 w-3.5" />
+                Export
               </button>
             </div>
           </div>
@@ -135,56 +179,75 @@ export default function Page() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="bg-bg-page/50 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                    <th className="px-6 py-4">Tenant</th>
-                    <th className="px-6 py-4">Unit</th>
-                    <th className="px-6 py-4 text-right">Amount</th>
-                    <th className="px-6 py-4">Due Date</th>
-                    <th className="px-6 py-4">Method</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-center">Receipt</th>
+                  <tr className="bg-bg-page/40 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">
+                    <th className="px-8 py-5">Tenant / Property</th>
+                    <th className="px-8 py-5">Unit</th>
+                    <th className="px-8 py-5 text-right">Amount</th>
+                    <th className="px-8 py-5">Due Date</th>
+                    <th className="px-8 py-5">Method</th>
+                    <th className="px-8 py-5 text-right">Status</th>
+                    <th className="px-8 py-5 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-ghost">
+                <tbody className="divide-y divide-border-ghost/60">
                   {rows.map((row) => (
-                    <tr key={`${row.tenant}-${row.unit}-${row.due}`} className="group transition-colors hover:bg-bg-page/50">
-                      <td className="px-6 py-4">
-                        <p className="font-bold text-text-main">{row.tenant}</p>
-                        <p className="text-xs text-text-muted">{row.property}</p>
+                    <tr key={`${row.tenant}-${row.unit}-${row.due}`} className="group transition-all hover:bg-bg-page/50">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[11px] font-black text-slate-600 border border-slate-200 group-hover:bg-primary-900 group-hover:text-white group-hover:border-primary-900 transition-all">
+                              {row.tenant.split(' ').map(n => n[0]).join('')}
+                           </div>
+                           <div>
+                              <p className="font-bold text-text-main leading-none group-hover:text-primary transition-colors">{row.tenant}</p>
+                              <p className="mt-1.5 text-[11px] font-medium text-text-muted uppercase tracking-tight">{row.property}</p>
+                           </div>
+                        </div>
                       </td>
-                      <td className="px-6 py-4 text-text-sub font-medium">{row.unit}</td>
-                      <td className="px-6 py-4 text-right font-bold text-text-main">{formatMoney(row.amount)}</td>
-                      <td className="px-6 py-4">
-                        <p className="text-text-main font-medium">{row.due}</p>
-                        {row.status === "paid" && (
-                          <p className="text-[10px] text-success font-medium">Paid: {row.paid}</p>
-                        )}
+                      <td className="px-8 py-6">
+                        <span className="text-xs font-black text-text-sub bg-bg-page px-2 py-1 rounded border border-border-ghost/50">{row.unit}</span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6 text-right font-black text-text-main tracking-tight">{formatMoney(row.amount)}</td>
+                      <td className="px-8 py-6">
+                        <div className="flex flex-col">
+                           <span className="text-sm font-bold text-text-main">{row.due}</span>
+                           {row.status === "paid" && (
+                             <span className="mt-0.5 text-[10px] font-bold text-emerald-600 uppercase">Settled: {row.paid}</span>
+                           )}
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
                         {row.method === "system" ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/5 px-2.5 py-0.5 text-xs font-bold text-primary ring-1 ring-inset ring-primary/10">
-                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                            Auto Rent
-                          </span>
+                          <div className="inline-flex items-center gap-2 rounded-lg bg-primary-900 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-sm">
+                            <RefreshCw className="h-3 w-3" />
+                            Auto
+                          </div>
                         ) : (
-                          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-200">
+                          <div className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-600 border border-slate-200">
+                            <CreditCard className="h-3 w-3" />
                             {row.method || "Manual"}
-                          </span>
+                          </div>
                         )}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6 text-right">
                         <StatusChip status={row.status} />
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          type="button"
-                          aria-label="Download receipt"
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-primary"
-                        >
-                          <Download className="h-4 w-4" />
-                        </button>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center justify-center gap-2">
+                           <button
+                             type="button"
+                             className="h-9 w-9 flex items-center justify-center rounded-xl text-text-muted hover:bg-primary-50 hover:text-primary transition-all border border-transparent hover:border-primary/20"
+                             title="View Receipt"
+                           >
+                             <FileText className="h-4 w-4" />
+                           </button>
+                           <button
+                             type="button"
+                             className="h-9 w-9 flex items-center justify-center rounded-xl text-text-muted hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-200"
+                             title="Download PDF"
+                           >
+                             <Download className="h-4 w-4" />
+                           </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -193,31 +256,40 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="space-y-4 p-4 md:hidden">
+          <div className="space-y-4 p-6 md:hidden">
             {rows.map((row) => (
-              <article key={`${row.tenant}-${row.unit}-${row.due}`} className="rounded-xl border border-border-ghost bg-bg-page/30 p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-bold text-text-main">{row.tenant}</p>
-                    <p className="text-xs text-text-muted">{row.property} · Unit {row.unit}</p>
+              <article key={`${row.tenant}-${row.unit}-${row.due}`} className="rounded-2xl border border-border-ghost bg-white p-5 shadow-sm active:scale-[0.98] transition-transform">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                     <div className="h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 text-[10px] font-black text-slate-600 border border-slate-200">
+                        {row.tenant.split(' ').map(n => n[0]).join('')}
+                     </div>
+                     <div>
+                       <p className="font-black text-text-main leading-tight">{row.tenant}</p>
+                       <p className="text-[10px] font-bold text-text-muted uppercase tracking-tight mt-0.5">{row.property} · {row.unit}</p>
+                     </div>
                   </div>
                   <StatusChip status={row.status} />
                 </div>
-                <div className="mt-4 flex items-end justify-between">
+
+                <div className="flex items-center justify-between pt-4 border-t border-border-ghost/50">
                   <div>
-                    <p className="text-sm font-bold text-text-main">{formatMoney(row.amount)}</p>
-                    <p className="text-[10px] text-text-muted mt-0.5">Due {row.due}</p>
+                    <p className="text-lg font-black text-primary tracking-tight">{formatMoney(row.amount)}</p>
+                    <p className="text-[10px] font-bold text-text-muted uppercase mt-0.5">DUE: {row.due}</p>
                   </div>
-                  {row.method === "system" ? (
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-primary">
-                      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      Auto
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-medium text-text-muted">{row.method || "Manual"}</span>
-                  )}
+                  <div className="flex flex-col items-end gap-2">
+                    {row.method === "system" ? (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-primary-900 text-[9px] font-black text-white uppercase tracking-widest">
+                        <RefreshCw className="h-2.5 w-2.5" />
+                        Auto
+                      </div>
+                    ) : (
+                      <div className="px-2 py-1 rounded bg-slate-100 text-[9px] font-black text-slate-600 uppercase tracking-widest border border-slate-200">
+                        {row.method || "Manual"}
+                      </div>
+                    )}
+                    <button className="text-[10px] font-black text-primary uppercase underline tracking-wider">Receipt</button>
+                  </div>
                 </div>
               </article>
             ))}

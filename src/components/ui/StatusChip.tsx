@@ -18,25 +18,25 @@ type StatusChipProps = {
 };
 
 const toneMap: Record<Status, string> = {
-  paid: "bg-success-light text-success-dark border-success/20",
-  occupied: "bg-success-light text-success-dark border-success/20",
-  active: "bg-success-light text-success-dark border-success/20",
-  resolved: "bg-success-light text-success-dark border-success/20",
-  pending: "bg-warning-light text-warning-dark border-warning/20",
-  expiring: "bg-warning-light text-warning-dark border-warning/20",
-  "in-progress": "bg-warning-light text-warning-dark border-warning/20",
-  medium: "bg-warning-light text-warning-dark border-warning/20",
-  overdue: "bg-error-light text-error-dark border-error/20",
-  open: "bg-error-light text-error-dark border-error/20",
-  high: "bg-error-light text-error-dark border-error/20",
-  vacant: "bg-bg-page text-text-sub border-border-muted",
-  low: "bg-bg-page text-text-sub border-border-muted",
+  paid: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  occupied: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  active: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  resolved: "bg-emerald-50 text-emerald-700 border-emerald-200/60",
+  pending: "bg-amber-50 text-amber-700 border-amber-200/60",
+  expiring: "bg-amber-50 text-amber-700 border-amber-200/60",
+  "in-progress": "bg-amber-50 text-amber-700 border-amber-200/60",
+  medium: "bg-amber-50 text-amber-700 border-amber-200/60",
+  overdue: "bg-rose-50 text-rose-700 border-rose-200/60",
+  open: "bg-rose-50 text-rose-700 border-rose-200/60",
+  high: "bg-rose-50 text-rose-700 border-rose-200/60",
+  vacant: "bg-slate-50 text-slate-600 border-slate-200/60",
+  low: "bg-slate-50 text-slate-600 border-slate-200/60",
 };
 
 export default function StatusChip({ status }: StatusChipProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize transition-colors ${toneMap[status]}`}
+      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-colors ${toneMap[status]}`}
     >
       {status.replace("-", " ")}
     </span>

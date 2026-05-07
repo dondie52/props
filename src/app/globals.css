@@ -17,19 +17,29 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-base bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:bg-primary-dark disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-base bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary-light hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.1), transparent);
   }
 
   .btn-accent {
-    @apply inline-flex items-center justify-center rounded-base bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:bg-accent-dark disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-base bg-accent px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-accent-light hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.2), transparent);
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-base border border-border-muted bg-white px-4 py-2 text-sm font-medium text-text-main transition-all hover:bg-bg-page hover:border-text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center rounded-base border border-border-muted bg-white px-4 py-2.5 text-sm font-semibold text-text-main shadow-sm transition-all hover:bg-bg-page hover:border-text-muted hover:shadow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .input-field {
-    @apply h-11 w-full rounded-base border border-border-muted bg-white px-3 text-sm transition-all placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50;
+    @apply h-11 w-full rounded-base border border-border-muted bg-white px-3 text-sm transition-all placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/5 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm;
+  }
+
+  .card-premium {
+    @apply rounded-large border border-border-ghost bg-bg-card p-6 shadow-card transition-all hover:shadow-card-hover;
+  }
+
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-glass;
   }
 }
 

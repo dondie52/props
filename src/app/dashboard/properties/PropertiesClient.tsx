@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { Building2, Home, MapPin, Search, Plus, ArrowRight, LayoutGrid } from "lucide-react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import Modal from "@/components/ui/Modal";
@@ -30,33 +31,30 @@ export default function PropertiesClient({ initialProperties }: { initialPropert
   return (
     <DashboardShell title="Properties">
       <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-white p-6 rounded-2xl border border-border-ghost shadow-sm">
           <div>
-            <h1 className="text-2xl font-bold text-text-main">Properties</h1>
-            <p className="text-sm text-text-muted mt-1">Manage and track your property portfolio</p>
+            <h1 className="text-2xl font-bold tracking-tight text-text-main">Property Portfolio</h1>
+            <p className="text-sm text-text-muted mt-1">Manage {initialProperties.length} properties across your collection</p>
           </div>
-          <Link href="/dashboard/onboarding" className="btn-accent px-6">
+          <Link href="/dashboard/onboarding" className="btn-accent px-6 py-3 flex items-center gap-2 shadow-lg shadow-accent/20">
+            <Plus className="h-4 w-4" />
             Add New Property
           </Link>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative w-full max-w-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search properties by name..."
-              className="input-field pl-10"
+              placeholder="Search properties by name or location..."
+              className="input-field pl-10 h-11 bg-white shadow-sm"
             />
-            <svg
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-semibold text-text-muted uppercase tracking-wider">
+            <LayoutGrid className="h-4 w-4" />
+            Grid View
           </div>
         </div>
 
@@ -84,40 +82,54 @@ export default function PropertiesClient({ initialProperties }: { initialPropert
           </section>
         ) : null}
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((property) => (
-            <Card key={property.id} className="flex flex-col overflow-hidden p-0">
+            <Card key={property.id} className="flex flex-col overflow-hidden p-0 group border-none ring-1 ring-border-ghost hover:ring-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
+              <div className="h-2 bg-primary/10 group-hover:bg-primary/30 transition-colors" />
               <div className="flex-1 p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-text-main group-hover:text-primary transition-colors">{property.name}</h3>
-                    <p className="mt-1 text-sm text-text-muted line-clamp-1">{property.address}</p>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-primary shadow-sm ring-1 ring-primary/10">
+                    <Building2 className="h-6 w-6" />
                   </div>
-                  <span className="inline-flex items-center rounded-full bg-primary/5 px-2.5 py-0.5 text-xs font-medium text-primary">
+                  <span className="inline-flex items-center rounded-md border border-primary/20 bg-primary-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                     {property.type}
                   </span>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-bg-page/50 p-3 ring-1 ring-inset ring-border-ghost">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Total Units</p>
-                    <p className="mt-1 text-lg font-bold text-text-main">{property.totalUnits}</p>
-                  </div>
-                  <div className="rounded-xl bg-bg-page/50 p-3 ring-1 ring-inset ring-border-ghost">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Occupied</p>
-                    <p className="mt-1 text-lg font-bold text-success">{property.occupiedUnits}</p>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold tracking-tight text-text-main group-hover:text-primary transition-colors">{property.name}</h3>
+                  <div className="flex items-center gap-1.5 text-text-muted">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    <p className="text-sm line-clamp-1">{property.address}</p>
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium text-text-sub">Occupancy Rate</span>
-                    <span className="font-bold text-text-main">{property.occupancy}%</span>
+                <div className="mt-8 grid grid-cols-2 gap-4">
+                  <div className="rounded-2xl bg-bg-page/40 p-4 border border-border-ghost/50">
+                    <div className="flex items-center gap-2 mb-1.5 text-text-muted">
+                      <Home className="h-3.5 w-3.5" />
+                      <p className="text-[10px] font-bold uppercase tracking-widest">Units</p>
+                    </div>
+                    <p className="text-2xl font-black text-text-main leading-none">{property.totalUnits}</p>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-bg-page ring-1 ring-inset ring-border-ghost">
+                  <div className="rounded-2xl bg-bg-page/40 p-4 border border-border-ghost/50">
+                    <div className="flex items-center gap-2 mb-1.5 text-text-muted">
+                      <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      <p className="text-[10px] font-bold uppercase tracking-widest">Active</p>
+                    </div>
+                    <p className="text-2xl font-black text-emerald-600 leading-none">{property.occupiedUnits}</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-text-sub uppercase tracking-wider">Occupancy</span>
+                    <span className="text-xs font-black text-text-main">{property.occupancy}%</span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-bg-page border border-border-ghost/30">
                     <div
-                      className={`h-full transition-all duration-500 ${
-                        property.occupancy > 80 ? 'bg-success' : property.occupancy > 40 ? 'bg-accent' : 'bg-error'
+                      className={`h-full transition-all duration-700 ease-out rounded-full ${
+                        property.occupancy > 80 ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]' : property.occupancy > 40 ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.3)]'
                       }`}
                       style={{ width: `${property.occupancy}%` }}
                     />
@@ -125,18 +137,19 @@ export default function PropertiesClient({ initialProperties }: { initialPropert
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 border-t border-border-ghost bg-bg-page/30 p-4">
+              <div className="flex items-center gap-3 bg-bg-page/50 p-6 border-t border-border-ghost/50">
                 <Link
                   href={`/dashboard/properties/${property.id}`}
-                  className="flex-1 btn-outline h-9 text-xs"
+                  className="flex-1 btn-outline py-2.5 text-xs font-bold"
                 >
-                  View Details
+                  Details
                 </Link>
                 <Link
                   href={`/dashboard/properties/${property.id}`}
-                  className="flex-1 btn-primary h-9 text-xs"
+                  className="flex-1 btn-primary py-2.5 text-xs font-bold flex items-center justify-center gap-2"
                 >
-                  Add Unit
+                  Units
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
             </Card>

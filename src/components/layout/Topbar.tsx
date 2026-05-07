@@ -7,49 +7,57 @@ type TopbarProps = {
 
 export default function Topbar({ title, onOpenSidebar }: TopbarProps) {
   return (
-    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-border-ghost bg-bg-card/80 px-4 backdrop-blur-md md:px-6">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-border-ghost bg-bg-card/80 px-4 backdrop-blur-md md:px-8">
+      <div className="flex items-center gap-4">
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-text-main lg:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-page text-text-muted transition-all hover:bg-primary/5 hover:text-primary lg:hidden"
           onClick={onOpenSidebar}
           aria-label="Open sidebar"
         >
           <Menu className="h-5 w-5" />
         </button>
-        <h1 className="text-lg font-semibold text-text-main">{title}</h1>
+        <div>
+          <h1 className="text-xl font-bold text-text-main tracking-tight">{title}</h1>
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+      <div className="flex items-center gap-2 md:gap-4">
+        <div className="relative hidden md:block group">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-primary" />
           <input
             type="search"
-            placeholder="Search..."
-            className="h-9 w-64 rounded-lg border border-border-muted bg-bg-page/50 pl-9 pr-3 text-sm transition-all focus:border-primary/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/5"
+            placeholder="Search everything..."
+            className="h-10 w-72 rounded-xl border border-border-muted bg-bg-page/50 pl-10 pr-4 text-sm transition-all focus:border-primary/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/5 shadow-sm"
           />
         </div>
 
-        <button
-          type="button"
-          aria-label="Search"
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-text-main md:hidden"
-        >
-          <Search className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1.5 border-r border-border-ghost pr-2 md:pr-4">
+          <button
+            type="button"
+            aria-label="Search"
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-text-muted transition-all hover:bg-bg-page hover:text-text-main md:hidden"
+          >
+            <Search className="h-5 w-5" />
+          </button>
 
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-text-main"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-error ring-2 ring-white" />
-        </button>
+          <button
+            type="button"
+            aria-label="Notifications"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl text-text-muted transition-all hover:bg-bg-page hover:text-primary"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-accent ring-2 ring-white" />
+          </button>
+        </div>
 
-        <div className="flex items-center gap-2 pl-2">
-          <div className="h-8 w-8 rounded-full bg-primary-mid text-white flex items-center justify-center text-xs font-semibold shadow-sm ring-2 ring-white">
-            TS
+        <div className="flex items-center gap-3 pl-1">
+          <div className="hidden sm:block text-right">
+            <p className="text-xs font-semibold text-text-main leading-none">Property Manager</p>
+            <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider font-bold">Landlord</p>
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-mid to-primary text-white flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-white transition-transform hover:scale-105 cursor-pointer">
+            PM
           </div>
         </div>
       </div>

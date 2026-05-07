@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pencil, X } from "lucide-react";
+import { Pencil, X, ChevronRight, Building2, Users, LayoutGrid, Coins, Plus, MoreHorizontal, Mail, Calendar, MapPin, Search } from "lucide-react";
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import DashboardShell from "@/components/layout/DashboardShell";
@@ -126,116 +126,166 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
 
   return (
     <DashboardShell title="Property Details">
-      <div className="space-y-6">
-        <nav className="flex items-center gap-2 text-sm text-text-muted">
-          <Link href="/dashboard/properties" className="hover:text-primary transition-colors">
+      <div className="space-y-8">
+        <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-text-muted">
+          <Link href="/dashboard/properties" className="hover:text-primary transition-colors flex items-center gap-1">
+            <Building2 className="h-3 w-3" />
             Properties
           </Link>
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="font-medium text-text-main">{property.name}</span>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-primary">{property.name}</span>
         </nav>
 
-        <Card className="overflow-hidden border-none shadow-md ring-1 ring-border-ghost">
-          <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between bg-white p-8 rounded-2xl border border-border-ghost shadow-sm">
+          <div className="flex items-start gap-5">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-900 text-white shadow-lg">
+              <Building2 className="h-7 w-7" />
+            </div>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-text-main">{property.name}</h1>
-                <span className="inline-flex items-center rounded-full bg-primary/5 px-2.5 py-0.5 text-xs font-medium text-primary">
+                <h1 className="text-3xl font-black tracking-tight text-text-main">{property.name}</h1>
+                <span className="inline-flex items-center rounded-md border border-primary/20 bg-primary-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
                   {property.type}
                 </span>
               </div>
-              <p className="mt-1 text-text-muted">{property.address}</p>
-            </div>
-            <div className="flex w-full gap-3 md:w-auto">
-              <button type="button" className="btn-outline flex-1 md:flex-none">
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit Property
-              </button>
-              <button type="button" onClick={() => setIsAddingUnit(true)} className="btn-accent flex-1 md:flex-none">
-                Add Unit
-              </button>
+              <p className="mt-1.5 font-medium text-text-muted flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                {property.address}
+              </p>
             </div>
           </div>
-        </Card>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-border-ghost bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-text-muted">Total Units</p>
-            <p className="mt-2 text-2xl font-bold text-text-main">{summary.total}</p>
-          </div>
-          <div className="rounded-xl border border-border-ghost bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-text-muted">Occupancy</p>
-            <p className="mt-2 text-2xl font-bold text-success">{summary.occupied}</p>
-          </div>
-          <div className="rounded-xl border border-border-ghost bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-text-muted">Vacant</p>
-            <p className="mt-2 text-2xl font-bold text-error">{summary.vacant}</p>
-          </div>
-          <div className="rounded-xl border border-border-ghost bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-text-muted">Est. Revenue</p>
-            <p className="mt-2 text-2xl font-bold text-text-main">{formatMoney(summary.revenue)}</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" className="btn-outline h-11 px-5 font-bold">
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit Property
+            </button>
+            <button type="button" onClick={() => setIsAddingUnit(true)} className="btn-accent h-11 px-6 font-bold shadow-lg shadow-accent/20">
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Unit
+            </button>
           </div>
         </div>
 
-        <Card className="p-0 overflow-hidden">
-          <div className="border-b border-border-ghost px-6 py-4">
-            <h2 className="text-lg font-bold text-text-main">Units & Tenants</h2>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted">Total Units</p>
+              <LayoutGrid className="h-4 w-4 text-primary/40 group-hover:text-primary/60" />
+            </div>
+            <p className="text-3xl font-black text-text-main">{summary.total}</p>
+          </div>
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted">Occupancy</p>
+              <Users className="h-4 w-4 text-emerald-400 group-hover:text-emerald-500" />
+            </div>
+            <p className="text-3xl font-black text-emerald-600">{summary.occupied}</p>
+          </div>
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted">Vacant</p>
+              <div className="h-2 w-2 rounded-full bg-rose-400 group-hover:animate-pulse" />
+            </div>
+            <p className="text-3xl font-black text-rose-500">{summary.vacant}</p>
+          </div>
+          <div className="group rounded-2xl border border-border-ghost bg-white p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted">Est. Revenue</p>
+              <Coins className="h-4 w-4 text-amber-400" />
+            </div>
+            <p className="text-3xl font-black text-text-main">{formatMoney(summary.revenue)}</p>
+          </div>
+        </div>
+
+        <Card className="p-0 overflow-hidden border-none ring-1 ring-border-ghost shadow-lg">
+          <div className="flex items-center justify-between border-b border-border-ghost bg-white px-8 py-6">
+            <div>
+              <h2 className="text-xl font-black tracking-tight text-text-main">Units & Tenants</h2>
+              <p className="text-xs font-medium text-text-muted mt-1">Manage individual units and lease agreements</p>
+            </div>
+            <div className="flex items-center gap-4">
+               <button className="p-2 text-text-muted hover:text-primary transition-colors">
+                 <Search className="h-5 w-5" />
+               </button>
+               <button className="p-2 text-text-muted hover:text-primary transition-colors">
+                 <MoreHorizontal className="h-5 w-5" />
+               </button>
+            </div>
           </div>
           <div className="hidden md:block">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="bg-bg-page/50 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                    <th className="px-6 py-4">Unit No</th>
-                    <th className="px-6 py-4">Tenant</th>
-                    <th className="px-6 py-4">Rent</th>
-                    <th className="px-6 py-4">Lease End</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
+                  <tr className="bg-bg-page/40 text-[10px] font-black uppercase tracking-[0.2em] text-text-muted">
+                    <th className="px-8 py-5">Unit No.</th>
+                    <th className="px-8 py-5">Tenant Information</th>
+                    <th className="px-8 py-5">Rent Amount</th>
+                    <th className="px-8 py-5">Lease End</th>
+                    <th className="px-8 py-5">Status</th>
+                    <th className="px-8 py-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-ghost">
+                <tbody className="divide-y divide-border-ghost/60">
                   {initialUnits.map((unit) => (
                     <tr
                       key={unit.id}
-                      className="group cursor-pointer transition-colors hover:bg-bg-page/50"
+                      className="group cursor-pointer transition-all hover:bg-bg-page/50"
                       onClick={() => openUnit(unit)}
                     >
-                      <td className="px-6 py-4 font-bold text-text-main">{unit.number}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-sm font-black text-primary ring-1 ring-primary/10">
+                            {unit.number}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
                         {unit.tenant !== "Vacant" ? (
-                          <div>
-                            <p className="font-medium text-text-main">{unit.tenant}</p>
-                            <p className="text-xs text-text-muted">{unit.tenantEmail}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">
+                              {unit.tenant.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                              <p className="font-bold text-text-main leading-tight">{unit.tenant}</p>
+                              <p className="text-xs font-medium text-text-muted">{unit.tenantEmail}</p>
+                            </div>
                           </div>
                         ) : (
-                          <span className="text-text-muted italic">No tenant assigned</span>
+                          <div className="flex items-center gap-2 text-text-muted italic">
+                             <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                             <span className="text-xs font-medium uppercase tracking-wider">Unassigned</span>
+                          </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 font-medium text-text-main">{unit.rent}</td>
-                      <td className="px-6 py-4 text-text-sub">{unit.leaseEnd || "-"}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-8 py-6">
+                        <span className="font-black text-text-main tracking-tight">{unit.rent}</span>
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-text-sub">
+                          <Calendar className="h-3.5 w-3.5 opacity-40" />
+                          {unit.leaseEnd || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
                         <StatusChip status={unit.status} />
                       </td>
-                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex justify-end gap-2">
+                      <td className="px-8 py-6 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           {unit.status === "vacant" ? (
                             <button
                               type="button"
                               onClick={() => openUnit(unit)}
-                              className="btn-primary h-8 px-3 text-xs"
+                              className="btn-primary h-9 px-4 text-[11px] font-bold"
                             >
-                              Assign
+                              ASSIGN TENANT
                             </button>
                           ) : (
                             <button
                               type="button"
                               onClick={() => openUnit(unit)}
-                              className="btn-outline h-8 px-3 text-xs"
+                              className="btn-outline h-9 px-4 text-[11px] font-bold"
                             >
-                              View
+                              VIEW DETAILS
                             </button>
                           )}
                         </div>
@@ -271,85 +321,118 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
       </div>
 
       {selectedUnit ? (
-        <aside className="fixed inset-y-0 right-0 z-40 flex w-full flex-col border-l border-border-ghost bg-bg-card shadow-2xl transition-all md:w-[400px]">
-          <div className="flex items-center justify-between border-b border-border-ghost px-6 py-5">
-            <h3 className="text-lg font-bold text-text-main">Unit Details</h3>
+        <aside className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-border-ghost bg-white shadow-2xl transition-all md:w-[480px]">
+          <div className="flex items-center justify-between bg-bg-page/30 border-b border-border-ghost px-8 py-6">
+            <div className="flex items-center gap-3">
+               <div className="h-8 w-8 rounded-xl bg-primary-900 flex items-center justify-center text-white">
+                 <LayoutGrid className="h-4 w-4" />
+               </div>
+               <h3 className="text-xl font-black tracking-tight text-text-main">Unit {selectedUnit.number}</h3>
+            </div>
             <button
               type="button"
               aria-label="Close details panel"
-              className="rounded-lg p-2 text-text-muted transition-colors hover:bg-bg-page hover:text-text-main"
+              className="rounded-xl p-2.5 text-text-muted transition-all hover:bg-white hover:text-error hover:shadow-sm"
               onClick={() => setSelectedUnit(null)}
             >
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-white shadow-inner">
+          <div className="flex-1 overflow-y-auto p-8 space-y-10">
+            {/* Tenant Hero */}
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary-50 text-2xl font-black text-primary shadow-inner ring-4 ring-white">
                 {selectedUnit.tenant.split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("")}
               </div>
-              <div>
-                <p className="text-xl font-bold text-text-main">{selectedUnit.tenant}</p>
-                <p className="text-sm font-medium text-text-muted">Unit {selectedUnit.number}</p>
+              <h4 className="mt-6 text-2xl font-black text-text-main">{selectedUnit.tenant}</h4>
+              <div className="mt-2 flex items-center gap-4 text-sm font-bold text-text-muted">
+                 <div className="flex items-center gap-1.5 uppercase tracking-widest text-[10px]">
+                   <Mail className="h-3 w-3" />
+                   {selectedUnit.tenantEmail}
+                 </div>
+              </div>
+              <div className="mt-6">
+                 <StatusChip status={selectedUnit.status} />
               </div>
             </div>
 
-            <div className="mt-8 space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl bg-bg-page/50 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Rent Amount</p>
-                  <p className="mt-1 font-bold text-text-main">{selectedUnit.rent}</p>
-                </div>
-                <div className="rounded-xl bg-bg-page/50 p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Status</p>
-                  <div className="mt-1">
-                    <StatusChip status={selectedUnit.status} />
+            {/* Quick Stats */}
+            <div className="grid grid-cols-2 gap-6">
+               <div className="bg-bg-page/40 rounded-2xl p-5 border border-border-ghost/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Coins className="h-3.5 w-3.5 text-amber-500" />
+                    <p className="text-[10px] font-black uppercase tracking-wider text-text-muted">Rent</p>
                   </div>
-                </div>
-              </div>
+                  <p className="text-xl font-black text-text-main">{selectedUnit.rent}</p>
+               </div>
+               <div className="bg-bg-page/40 rounded-2xl p-5 border border-border-ghost/50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Calendar className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-[10px] font-black uppercase tracking-wider text-text-muted">Expiring</p>
+                  </div>
+                  <p className="text-xl font-black text-text-main leading-none">{selectedUnit.leaseEnd.split('-')[0] || "N/A"}</p>
+                  <p className="text-[10px] font-bold text-text-muted mt-1 uppercase">{selectedUnit.leaseEnd || "No date"}</p>
+               </div>
+            </div>
 
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-text-main">Lease Information</h4>
-                <div className="rounded-xl border border-border-ghost divide-y divide-border-ghost overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 text-sm">
-                    <span className="text-text-muted">Lease Start</span>
-                    <span className="font-medium text-text-main">{selectedUnit.leaseStart}</span>
-                  </div>
-                  <div className="flex items-center justify-between px-4 py-3 text-sm">
-                    <span className="text-text-muted">Lease End</span>
-                    <span className="font-medium text-text-main">{selectedUnit.leaseEnd}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-text-main">Recent Activity</h4>
-                  <Link href="/dashboard/payments" className="text-xs font-medium text-primary hover:underline">View History</Link>
-                </div>
-                <div className="space-y-3">
-                  {selectedUnit.payments.length ? (
-                    selectedUnit.payments.map((payment) => (
-                      <div key={payment.id} className="flex items-center justify-between rounded-xl border border-border-ghost bg-white p-3 shadow-sm">
-                        <div>
-                          <p className="text-sm font-bold text-text-main">{formatMoney(payment.amount)}</p>
-                          <p className="text-[10px] text-text-muted">Due: {payment.dueDate}</p>
-                        </div>
-                        <StatusChip status={payment.status} />
+            {/* Lease Details */}
+            <div className="space-y-4">
+              <h5 className="text-xs font-black uppercase tracking-[0.2em] text-text-muted border-b border-border-ghost pb-3">Lease Information</h5>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm border border-border-ghost/50">
+                   <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <Calendar className="h-4 w-4" />
                       </div>
-                    ))
-                  ) : (
-                    <div className="rounded-xl border-2 border-dashed border-border-ghost bg-bg-page/50 p-6 text-center">
-                      <p className="text-xs text-text-muted">No payments recorded yet.</p>
-                    </div>
-                  )}
+                      <span className="text-sm font-bold text-text-sub">Started On</span>
+                   </div>
+                   <span className="text-sm font-black text-text-main tracking-tight">{selectedUnit.leaseStart}</span>
                 </div>
+                <div className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm border border-border-ghost/50">
+                   <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
+                        <Calendar className="h-4 w-4" />
+                      </div>
+                      <span className="text-sm font-bold text-text-sub">Ending On</span>
+                   </div>
+                   <span className="text-sm font-black text-text-main tracking-tight">{selectedUnit.leaseEnd}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* History */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-border-ghost pb-3">
+                <h5 className="text-xs font-black uppercase tracking-[0.2em] text-text-muted">Recent Activity</h5>
+                <Link href="/dashboard/payments" className="text-[10px] font-black text-primary hover:underline uppercase tracking-wider">Full Ledger</Link>
+              </div>
+              <div className="space-y-3">
+                {selectedUnit.payments.length ? (
+                  selectedUnit.payments.map((payment) => (
+                    <div key={payment.id} className="group flex items-center justify-between rounded-2xl border border-border-ghost bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                      <div className="flex items-center gap-4">
+                        <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-bold text-sm ${payment.status === 'paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                          P
+                        </div>
+                        <div>
+                          <p className="text-base font-black text-text-main leading-tight">{formatMoney(payment.amount)}</p>
+                          <p className="text-[10px] font-bold text-text-muted uppercase mt-1">DUE: {payment.dueDate}</p>
+                        </div>
+                      </div>
+                      <StatusChip status={payment.status} />
+                    </div>
+                  ))
+                ) : (
+                  <div className="rounded-2xl border-2 border-dashed border-border-ghost bg-bg-page/40 p-8 text-center">
+                    <p className="text-xs font-bold text-text-muted uppercase tracking-widest">No transaction history</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-          <div className="border-t border-border-ghost bg-bg-page/30 p-6">
-            <button className="btn-primary w-full py-3 shadow-lg shadow-primary/10">
-              Manage Lease
+          <div className="bg-bg-page/40 p-8 border-t border-border-ghost">
+            <button className="btn-primary w-full py-4 text-sm font-black uppercase tracking-[0.15em] shadow-xl shadow-primary/20 hover:-translate-y-0.5 transition-transform">
+              Edit Lease Agreement
             </button>
           </div>
         </aside>

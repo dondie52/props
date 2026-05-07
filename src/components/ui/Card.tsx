@@ -8,7 +8,7 @@ type CardProps = {
 export default function Card({ children, className = "" }: CardProps) {
   return (
     <div
-      className={`rounded-large border border-border-ghost bg-bg-card p-6 shadow-card transition-shadow hover:shadow-md ${className}`}
+      className={`rounded-xl border border-border-ghost bg-bg-card p-6 shadow-card transition-all duration-200 hover:shadow-card-hover ${className}`}
     >
       {children}
     </div>
