@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "bg-page": "#f4f6fa",
+                        "bg-card": "#ffffff",
+                        "text-main": "#0f2942",
+                        "text-muted": "#617084",
+                        "line-soft": "#dfe4ec",
+                        "brand": "#0d3556",
+                        "brand-soft": "#eff4f9",
+                        "accent": "#ac7405",
+                        "accent-soft": "#f6c35d"
+                    },
+                    boxShadow: {
+                        "card-soft": "0 2px 8px rgba(9, 25, 45, 0.08)",
+                        "card-strong": "0 12px 30px rgba(14, 39, 63, 0.12)"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 600, "GRAD" 0, "opsz" 24;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body class="bg-bg-page text-text-main antialiased">
+    <header class="border-b border-line-soft bg-bg-card">
+        <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+            <div class="flex items-center gap-3">
+                <img alt="PropManage BW Logo" class="h-8 w-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoXl-D94xWNftdKVLAZ9dBUyawmZbb1-FAG87Lv140MpdyV99EMZ36mtvdm8QEBh-BbQx9hbhvrcl8mdtBO4sn8QG6r_J-tzaoZ61l_sjQGD3qN4Zn2AcXQ_u6YLG7DW2asSiMdWI6vnaMxgb277SUlDnQgwfX2o37K9vAkkDVnauVp85NI6UhhGnJcdZYR6VUJ8H2tIQTiPZ7l7VMKGB41O8GzeSjGxwfVm-8sN1mCUwnB-Qo_ixiZSjm46LDc6jjTR_KE511EXY" />
+                <span class="text-xl font-semibold tracking-tight">PropManage BW</span>
+            </div>
+            <nav class="hidden items-center gap-8 text-sm text-text-muted md:flex">
+                <a class="transition-colors hover:text-text-main" href="#features">Features</a>
+                <a class="transition-colors hover:text-text-main" href="#pricing">Pricing</a>
+                <a class="transition-colors hover:text-text-main" href="#login">Login</a>
+            </nav>
+            <button class="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#0a2b45]">
+                Get Started Free
+            </button>
+        </div>
+    </header>
+
+    <main class="bg-bg-page text-text-main">
+        <section class="mx-auto grid max-w-7xl gap-8 px-6 py-16 lg:grid-cols-2">
+            <div class="flex flex-col justify-center">
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#8d99aa]">Property Management Elevated</p>
+                <h1 class="mt-5 text-4xl font-bold leading-[1.1] text-text-main md:text-5xl">
+                    Manage Your Properties<br />
+                    <span class="text-accent">With Ease</span>
+                </h1>
+                <p class="mt-5 max-w-xl text-base leading-relaxed text-text-muted">
+                    The all-in-one platform for Botswana landlords to simplify rent collection, tenant management, and property maintenance.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-3">
+                    <button class="rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0a2b45]">
+                        Start Free Trial
+                    </button>
+                    <button class="inline-flex items-center gap-2 rounded-md border border-line-soft bg-white px-5 py-2.5 text-sm font-semibold text-text-main transition hover:bg-brand-soft">
+                        <span class="material-symbols-outlined">play_circle</span>
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+            <div class="rounded-xl border border-line-soft bg-white p-3 shadow-card-soft">
+                <img alt="Dashboard Mockup" class="h-full w-full rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9qMrIkvU2pdtsA1UHFZJ8FGnTNwB1LljnNwsmkf1qTyAq04rXvoIFAQCWUL13PRkz2VGhwBb2mL_ig6DV3B6p9SW3VPBtsqMW4PI_5lDcUqF-UadLBoLWtHLIDEBy7RByASGKYjYRSM5-Wssf4M9LVSSXCWgCQ49PQxJ-1zHQd6OVkv6cVcYGBloBbtKnwWFqm7AmDUW7c4cFBXeitCZXhXn9FUO6VnJZiH5QUVEDMkAtxhP2bI4mVKbXdGYk7EPYk_O-Qx34dCg" />
+            </div>
+        </section>
+
+        <section class="border-y border-line-soft bg-[#f6f8fc] py-14" id="features">
+            <div class="mx-auto max-w-7xl px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight">Built for Operational Clarity</h2>
+                    <p class="mt-2 text-text-muted">Streamline every aspect of your real estate portfolio.</p>
+                </div>
+                <div class="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <article class="rounded-xl border border-line-soft bg-bg-card p-6 shadow-sm">
+                        <span class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-brand text-white"><span class="material-symbols-outlined">domain</span></span>
+                        <h3 class="text-xl font-semibold">Property Portfolio</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-text-muted">Organize all property details, units, and building specifications in one central location.</p>
+                    </article>
+                    <article class="rounded-xl border border-line-soft bg-bg-card p-6 shadow-sm">
+                        <span class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-accent-soft text-[#5b3f02]"><span class="material-symbols-outlined">groups</span></span>
+                        <h3 class="text-xl font-semibold">Tenant Management</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-text-muted">Keep track of tenant contacts, screening history, and seamless communication channels.</p>
+                    </article>
+                    <article class="rounded-xl border border-line-soft bg-bg-card p-6 shadow-sm">
+                        <span class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-brand text-white"><span class="material-symbols-outlined">payments</span></span>
+                        <h3 class="text-xl font-semibold">Rent Tracking</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-text-muted">Automated monitoring of incoming payments, late fee calculation, and arrears reporting.</p>
+                    </article>
+                    <article class="rounded-xl border border-line-soft bg-bg-card p-6 shadow-sm">
+                        <span class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-accent-soft text-[#5b3f02]"><span class="material-symbols-outlined">build</span></span>
+                        <h3 class="text-xl font-semibold">Maintenance Requests</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-text-muted">A streamlined digital ticket system to manage repairs from reporting to resolution.</p>
+                    </article>
+                    <article class="rounded-xl border border-line-soft bg-bg-card p-6 shadow-sm">
+                        <span class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-brand text-white"><span class="material-symbols-outlined">description</span></span>
+                        <h3 class="text-xl font-semibold">Lease Management</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-text-muted">Secure digital storage for contracts with automated alerts for upcoming renewals.</p>
+                    </article>
+                    <article class="rounded-xl border border-line-soft bg-bg-card p-6 shadow-sm">
+                        <span class="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md bg-accent-soft text-[#5b3f02]"><span class="material-symbols-outlined">account_balance</span></span>
+                        <h3 class="text-xl font-semibold">Payment History</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-text-muted">Detailed financial reporting and historical logs for every unit in your portfolio.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-bg-page py-16" id="pricing">
+            <div class="mx-auto max-w-7xl px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight">Simple Pricing for Growing Portfolios</h2>
+                    <p class="mt-2 text-text-muted">Choose the plan that fits your management scale.</p>
+                </div>
+                <div class="mt-10 grid gap-4 md:grid-cols-3">
+                    <article class="flex flex-col rounded-xl border border-line-soft bg-white p-7 text-center shadow-sm">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a96a7]">Get Started</p>
+                        <h3 class="mt-2 text-3xl font-semibold">Free Trial</h3>
+                        <p class="mt-2"><span class="text-5xl font-bold leading-none">P0</span><span class="ml-1 text-sm text-text-muted">/mo</span></p>
+                        <ul class="mt-4 grow space-y-2 text-sm text-text-muted">
+                            <li>Manage up to 3 properties</li>
+                            <li>Basic tenant logs</li>
+                            <li>Standard email support</li>
+                        </ul>
+                        <button class="mt-7 rounded-md border border-line-soft bg-white py-2.5 text-sm font-semibold text-text-main hover:bg-brand-soft">Start for Free</button>
+                    </article>
+                    <article class="relative flex flex-col rounded-xl border-2 border-accent bg-white p-7 text-center shadow-card-strong">
+                        <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">Most Popular</span>
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a96a7]">Scalable</p>
+                        <h3 class="mt-2 text-3xl font-semibold">Basic</h3>
+                        <p class="mt-2"><span class="text-5xl font-bold leading-none">P99</span><span class="ml-1 text-sm text-text-muted">/mo</span></p>
+                        <ul class="mt-4 grow space-y-2 text-sm text-text-muted">
+                            <li>Up to 10 properties</li>
+                            <li>Advanced rent tracking</li>
+                            <li>Automated reminders</li>
+                        </ul>
+                        <button class="mt-7 rounded-md bg-accent py-2.5 text-sm font-semibold text-white hover:bg-[#8f6104]">Get Basic</button>
+                    </article>
+                    <article class="flex flex-col rounded-xl border border-line-soft bg-white p-7 text-center shadow-sm">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8a96a7]">Enterprise</p>
+                        <h3 class="mt-2 text-3xl font-semibold">Pro</h3>
+                        <p class="mt-2"><span class="text-5xl font-bold leading-none">P199</span><span class="ml-1 text-sm text-text-muted">/mo</span></p>
+                        <ul class="mt-4 grow space-y-2 text-sm text-text-muted">
+                            <li>Up to 20 properties</li>
+                            <li>Full financial reporting</li>
+                            <li>Priority 24/7 support</li>
+                        </ul>
+                        <button class="mt-7 rounded-md border border-line-soft bg-white py-2.5 text-sm font-semibold text-text-main hover:bg-brand-soft">Go Pro</button>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-line-soft bg-bg-card">
+        <div class="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-10 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-center gap-2">
+                <img alt="Logo Small" class="h-6 w-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoXl-D94xWNftdKVLAZ9dBUyawmZbb1-FAG87Lv140MpdyV99EMZ36mtvdm8QEBh-BbQx9hbhvrcl8mdtBO4sn8QG6r_J-tzaoZ61l_sjQGD3qN4Zn2AcXQ_u6YLG7DW2asSiMdWI6vnaMxgb277SUlDnQgwfX2o37K9vAkkDVnauVp85NI6UhhGnJcdZYR6VUJ8H2tIQTiPZ7l7VMKGB41O8GzeSjGxwfVm-8sN1mCUwnB-Qo_ixiZSjm46LDc6jjTR_KE511EXY" />
+                <span class="text-lg font-semibold">PropManage BW</span>
+            </div>
+            <p class="text-sm text-text-muted">© 2024 PropManage BW. Built for operational clarity.</p>
+            <nav class="flex flex-wrap gap-4 text-sm text-text-muted">
+                <a class="hover:text-text-main" href="#features">Features</a>
+                <a class="hover:text-text-main" href="#pricing">Pricing</a>
+                <a class="hover:text-text-main" href="#login">Login</a>
+                <a class="hover:text-text-main" href="#">Support</a>
+                <a class="hover:text-text-main" href="#">Privacy</a>
+                <a class="hover:text-text-main" href="#">Terms</a>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>
