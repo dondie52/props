@@ -8,6 +8,11 @@ export type Database = {
         Insert: { id?: string; profile_id?: string | null; full_name: string; email: string; created_at?: string };
         Update: { id?: string; profile_id?: string | null; full_name?: string; email?: string; created_at?: string };
       };
+      houses: {
+        Row: { id: string; property_id: string; house_number: string; bedroom_count: number; created_at: string };
+        Insert: { id?: string; property_id: string; house_number: string; bedroom_count: number; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["houses"]["Insert"]>;
+      };
       maintenance_requests: {
         Row: {
           id: string;

@@ -104,6 +104,67 @@ export async function createPropertyAction(input: {
   return { propertyId: data.id };
 }
 
+export async function createPropertyWithHousesAction(input: {
+  name: string;
+  address: string;
+  city: string;
+  type: string;
+  numberOfHouses: number;
+  bedroomsPerHouse: number;
+}) {
+  const name = input.name.trim();
+  const address = input.address.trim();
+  const city = input.city.trim();
+  const type = input.type.trim();
+  const numberOfHouses = Number(input.numberOfHouses);
+  const bedroomsPerHouse = Number(input.bedroomsPerHouse);
+
+  assertNonEmpty(name, "Property name");
+  assertNonEmpty(address, "Address");
+  assertNonEmpty(city, "City");
+  assertNonEmpty(type, "Type");
+
+  if (!CITIES.includes(city as (typeof CITIES)[number])) {
+    throw new Error("Please choose a valid city.");
+  }
+  if (!PROPERTY_TYPES.includes(type as (typeof PROPERTY_TYPES)[number])) {
+    throw new Error("Please choose a valid property type.");
+  }
+  if (!Number.isInteger(numberOfHouses) || numberOfHouses < 1 || numberOfHouses > 100) {
+    throw new Error("Number of houses must be between 1 and 100.");
+  }
+  if (!Number.isInteger(bedroomsPerHouse) || bedroomsPerHouse < 1 || bedroomsPerHouse > 20) {
+    throw new Error("Bedrooms per house must be between 1 and 20.");
+  }
+
+  const supabase = createSupabaseServerActionClient();
+  const landlordId = await getCurrentLandlordId(supabase);
+  if (!landlordId) throw new Error("Admins must create properties from a landlord-scoped account.");
+
+  const { data: property, error: propertyError } = await supabase
+    .from("properties")
+    .insert({ landlord_id: landlordId, name, address, city, type })
+    .select("id")
+    .single();
+  if (propertyError) throw new Error(propertyError.message);
+
+  const houseRows = Array.from({ length: numberOfHouses }, (_, idx) => ({
+    property_id: property.id,
+    house_number: `H${idx + 1}`,
+    bedroom_count: bedroomsPerHouse,
+  }));
+
+  const { error: housesError } = await supabase.from("houses").insert(houseRows);
+  if (housesError) {
+    await supabase.from("properties").delete().eq("id", property.id);
+    throw new Error(housesError.message);
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/properties");
+  return { propertyId: property.id, housesCreated: numberOfHouses };
+}
+
 function generateUnitNumbers(pattern: "A" | "numeric", count: number) {
   if (count < 1 || count > 200) throw new Error("Units count must be between 1 and 200.");
   if (pattern === "numeric") return Array.from({ length: count }, (_, idx) => String(idx + 1));

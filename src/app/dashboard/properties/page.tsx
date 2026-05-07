@@ -13,6 +13,8 @@ type PropertyCardRow = {
   name: string;
   address: string;
   type: string;
+  totalHouses: number;
+  totalBedrooms: number;
   totalUnits: number;
   occupiedUnits: number;
   occupancy: number;
@@ -25,29 +27,41 @@ export default function Page() {
 
   useEffect(() => {
     const loadProperties = async () => {
-      const [{ data: propertyData }, { data: unitData }] = await Promise.all([
+      const [{ data: propertyData }, { data: unitData }, { data: houseData }] = await Promise.all([
         supabase.from("properties").select("id,name,address,city,type"),
         supabase.from("units").select("id,property_id,status"),
+        supabase.from("houses").select("property_id,bedroom_count"),
       ]);
 
-      const totals = new Map<string, { total: number; occupied: number }>();
+      const unitTotals = new Map<string, { total: number; occupied: number }>();
       for (const unit of unitData ?? []) {
-        const current = totals.get(unit.property_id) ?? { total: 0, occupied: 0 };
+        const current = unitTotals.get(unit.property_id) ?? { total: 0, occupied: 0 };
         current.total += 1;
         if (unit.status === "occupied") current.occupied += 1;
-        totals.set(unit.property_id, current);
+        unitTotals.set(unit.property_id, current);
+      }
+
+      const houseTotals = new Map<string, { houses: number; bedrooms: number }>();
+      for (const house of houseData ?? []) {
+        const current = houseTotals.get(house.property_id) ?? { houses: 0, bedrooms: 0 };
+        current.houses += 1;
+        current.bedrooms += Number(house.bedroom_count ?? 0);
+        houseTotals.set(house.property_id, current);
       }
 
       const rows: PropertyCardRow[] = (propertyData ?? []).map((property) => {
-        const counts = totals.get(property.id) ?? { total: 0, occupied: 0 };
-        const occupancy = counts.total ? Math.round((counts.occupied / counts.total) * 100) : 0;
+        const unitCounts = unitTotals.get(property.id) ?? { total: 0, occupied: 0 };
+        const houseCounts = houseTotals.get(property.id) ?? { houses: 0, bedrooms: 0 };
+        const occupancy = unitCounts.total ? Math.round((unitCounts.occupied / unitCounts.total) * 100) : 0;
         return {
           id: property.id,
           name: property.name,
           address: `${property.address}, ${property.city}`,
           type: property.type,
-          totalUnits: counts.total,
-          occupiedUnits: counts.occupied,
+          totalHouses: houseCounts.houses,
+          totalBedrooms: houseCounts.bedrooms,
+          totalUnits: unitCounts.total,
+          occupiedUnits: unitCounts.occupied,
           occupancy,
         };
       });
@@ -124,7 +138,11 @@ export default function Page() {
                 <p className="mt-3 inline-flex rounded-pill border border-border-ghost px-3 py-1 text-xs text-text-sub">
                   {property.type}
                 </p>
-                <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="mt-4 grid grid-cols-4 gap-2">
+                  <div className="rounded-base bg-bg-page p-2 text-center text-xs">
+                    <p className="text-text-muted">Houses</p>
+                    <p className="font-semibold text-text-main">{property.totalHouses}</p>
+                  </div>
                   <div className="rounded-base bg-bg-page p-2 text-center text-xs">
                     <p className="text-text-muted">Total</p>
                     <p className="font-semibold text-text-main">{property.totalUnits}</p>
@@ -138,6 +156,9 @@ export default function Page() {
                     <p className="font-semibold text-text-main">{property.totalUnits - property.occupiedUnits}</p>
                   </div>
                 </div>
+                {property.totalHouses > 0 ? (
+                  <p className="mt-2 text-xs text-text-muted">Bedrooms across houses: {property.totalBedrooms}</p>
+                ) : null}
                 <div className="mt-4 mb-1 h-2 rounded-full bg-bg-page">
                   <div className="h-2 rounded-full bg-primary-mid" style={{ width: `${property.occupancy}%` }} />
                 </div>
