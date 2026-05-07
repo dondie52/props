@@ -4,9 +4,33 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #f4f6f8;
-  font-family: "Inter", sans-serif;
+@layer base {
+  body {
+    @apply bg-bg-page text-text-main antialiased;
+    font-family: "Inter", sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-base bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:bg-primary-dark disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center justify-center rounded-base bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:bg-accent-dark disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-base border border-border-muted bg-white px-4 py-2 text-sm font-medium text-text-main transition-all hover:bg-bg-page hover:border-text-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .input-field {
+    @apply h-11 w-full rounded-base border border-border-muted bg-white px-3 text-sm transition-all placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50;
+  }
 }
 
 @layer utilities {

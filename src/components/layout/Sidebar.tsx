@@ -119,24 +119,31 @@ export default function Sidebar({ navItems = landlordNavItems, isOpen = false, o
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 h-screen w-[260px] border-r border-border-ghost bg-bg-card transition-transform lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-40 flex h-screen w-[260px] flex-col border-r border-border-ghost bg-bg-card transition-transform lg:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="px-6 py-6 border-b border-border-ghost">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Image src={logo} alt="PropManage BW logo" className="h-8 w-8 object-contain" />
-            <p className="text-primary font-bold text-lg">PropManage BW</p>
+      <div className="flex h-16 shrink-0 items-center px-6">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Image src={logo} alt="PropManage BW logo" className="h-5 w-5 brightness-0 invert" />
+            </div>
+            <p className="text-primary font-bold text-lg tracking-tight">PropManage BW</p>
           </div>
-          <button type="button" onClick={onClose} className="text-text-muted lg:hidden" aria-label="Close sidebar">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-text-main lg:hidden"
+            aria-label="Close sidebar"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      <div className="flex h-[calc(100%-145px)] flex-col">
-        <nav className="py-4">
+      <div className="flex flex-1 flex-col overflow-y-auto">
+        <nav className="flex-1 space-y-1 px-3 py-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -146,39 +153,46 @@ export default function Sidebar({ navItems = landlordNavItems, isOpen = false, o
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
-                className={`h-11 px-6 flex items-center gap-3 border-l-[3px] ${
+                className={`group flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-all ${
                   isActive
-                    ? "border-accent bg-bg-page text-primary font-medium"
-                    : "border-transparent text-text-sub hover:bg-bg-page"
+                    ? "bg-primary/5 text-primary"
+                    : "text-text-sub hover:bg-bg-page hover:text-text-main"
                 }`}
               >
-                <Icon className="size-4" />
+                <Icon className={`h-5 w-5 transition-colors ${
+                  isActive ? "text-primary" : "text-text-muted group-hover:text-text-main"
+                }`} />
                 <span>{item.label}</span>
+                {isActive && (
+                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <div className="mt-auto border-t border-border-ghost px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-pill bg-primary-mid text-white flex items-center justify-center font-medium">
-              {initials}
-            </div>
-            <div>
-              <p className="text-text-main font-medium">{displayName}</p>
-              <p className="text-text-muted text-sm">{displayEmail || "No email"}</p>
+        <div className="mt-auto space-y-4 px-3 py-4">
+          <div className="rounded-xl border border-border-ghost bg-bg-page/50 p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-mid text-white font-semibold ring-2 ring-white">
+                {initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-text-main leading-tight">{displayName}</p>
+                <p className="truncate text-xs text-text-muted leading-tight mt-0.5">{displayEmail || "No email"}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="mx-2 mb-4 h-11 rounded-base px-6 text-error flex items-center gap-3 hover:bg-bg-page"
-        >
-          <LogOut className="size-4" />
-          <span>Log out</span>
-        </button>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-text-sub transition-colors hover:bg-error/5 hover:text-error"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Log out</span>
+          </button>
+        </div>
       </div>
     </aside>
   );

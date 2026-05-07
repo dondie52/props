@@ -27,12 +27,12 @@ export default function DashboardShell({ title, children, variant = "landlord" }
         />
       ) : null}
 
-      <div className="h-dvh text-text-main lg:ml-[260px]">
-        <div className="fixed left-0 right-0 top-0 z-20 lg:left-[260px]">
-          <Topbar title={title} onOpenSidebar={() => setIsSidebarOpen(true)} />
-        </div>
-        <main className="mt-16 h-[calc(100dvh-4rem)] overflow-y-auto bg-bg-page p-4 text-text-main md:p-6 lg:p-8">
-          {children}
+      <div className="flex h-dvh flex-col text-text-main lg:ml-[260px]">
+        <Topbar title={title} onOpenSidebar={() => setIsSidebarOpen(true)} />
+        <main className="flex-1 overflow-y-auto bg-bg-page p-4 text-text-main md:p-6 lg:p-8">
+          <div className="mx-auto max-w-7xl">
+            {children}
+          </div>
         </main>
       </div>
     </div>

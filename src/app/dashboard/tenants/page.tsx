@@ -74,64 +74,108 @@ export default function Page() {
 
   return (
     <DashboardShell title="Tenants">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-primary">All Tenants</h1>
-              <p className="text-sm text-text-muted">{tenants.length} active tenants</p>
-            </div>
-            <Link href="/dashboard/properties" className="inline-flex h-11 items-center rounded-base bg-accent px-6 text-white">
-              Assign Tenant
-            </Link>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-text-main">Tenants</h1>
+            <p className="text-sm text-text-muted mt-1">Directory of all residents across your properties</p>
           </div>
-          <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <Link href="/dashboard/properties" className="btn-accent px-6">
+            Assign New Tenant
+          </Link>
+        </div>
+
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+          <div className="relative flex-1 max-w-md">
+            <svg
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="h-11 w-full max-w-sm rounded-base border border-border-ghost px-3"
-              placeholder="Search tenant"
+              className="input-field pl-10"
+              placeholder="Search by name or email..."
             />
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-text-sub">Filter:</span>
             <select
               value={status}
               onChange={(event) => setStatus(event.target.value)}
-              className="h-11 rounded-base border border-border-ghost px-3 text-sm"
+              className="input-field min-w-[140px]"
             >
-              <option value="all">All</option>
+              <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="expiring">Expiring</option>
               <option value="overdue">Overdue</option>
             </select>
           </div>
-          <Card>
-            <div className="hidden md:block">
-              <table className="w-full text-sm">
+        </div>
+
+        <Card className="p-0 overflow-hidden border-none shadow-md ring-1 ring-border-ghost">
+          <div className="hidden md:block">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                    <th className="pb-3">Name</th><th className="pb-3">Property</th><th className="pb-3">Unit</th><th className="pb-3">Rent</th><th className="pb-3">Lease End</th><th className="pb-3">Status</th><th className="pb-3">Actions</th>
+                  <tr className="bg-bg-page/50 text-xs font-semibold uppercase tracking-wider text-text-muted">
+                    <th className="px-6 py-4">Tenant</th>
+                    <th className="px-6 py-4">Property & Unit</th>
+                    <th className="px-6 py-4">Rent</th>
+                    <th className="px-6 py-4">Lease End</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {filtered.map((tenant, index) => (
-                    <tr key={tenant.name} className={`${index % 2 === 0 ? "bg-white" : "bg-bg-page"} border-t border-border-ghost`}>
-                      <td className="py-3">
+                <tbody className="divide-y divide-border-ghost">
+                  {filtered.map((tenant) => (
+                    <tr key={tenant.name} className="group transition-colors hover:bg-bg-page/50">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-pill bg-primary-mid text-xs font-medium text-white">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/5 text-sm font-bold text-primary ring-1 ring-inset ring-primary/10">
                             {tenant.name
                               .split(" ")
+                              .filter(Boolean)
                               .slice(0, 2)
                               .map((n) => n[0])
                               .join("")}
                           </div>
-                          <div>
-                            <p className="font-medium text-text-main">{tenant.name}</p>
-                            <p className="text-xs text-text-muted">{tenant.email}</p>
+                          <div className="min-w-0">
+                            <p className="truncate font-bold text-text-main">{tenant.name}</p>
+                            <p className="truncate text-xs text-text-muted">{tenant.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td>{tenant.property}</td><td>{tenant.unit}</td><td>{tenant.rent}</td><td>{tenant.leaseEnd}</td><td><StatusChip status={tenant.status} /></td>
-                      <td>
-                        <div className="flex items-center gap-2 text-text-muted">
-                          <button type="button" aria-label="View tenant" className="hover:text-primary"><Eye className="h-4 w-4" /></button>
-                          <button type="button" aria-label="Email tenant" className="hover:text-primary"><Mail className="h-4 w-4" /></button>
+                      <td className="px-6 py-4">
+                        <p className="font-medium text-text-main">{tenant.property}</p>
+                        <p className="text-xs text-text-muted">Unit {tenant.unit}</p>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-text-main">{tenant.rent}</td>
+                      <td className="px-6 py-4 text-text-sub">{tenant.leaseEnd}</td>
+                      <td className="px-6 py-4">
+                        <StatusChip status={tenant.status} />
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            type="button"
+                            aria-label="View tenant"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-primary"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="Email tenant"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-page hover:text-primary"
+                          >
+                            <Mail className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -139,33 +183,54 @@ export default function Page() {
                 </tbody>
               </table>
             </div>
-            <div className="space-y-3 md:hidden">
-              {filtered.map((tenant) => (
-                <article key={tenant.name} className="rounded-base border border-border-ghost bg-bg-page p-3">
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium text-text-main">{tenant.name}</p>
-                    <StatusChip status={tenant.status} />
+          </div>
+
+          <div className="space-y-4 p-4 md:hidden">
+            {filtered.map((tenant) => (
+              <article key={tenant.name} className="rounded-xl border border-border-ghost bg-bg-page/30 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/5 text-xs font-bold text-primary">
+                      {tenant.name.split(" ").filter(Boolean).slice(0, 2).map(n => n[0]).join("")}
+                    </div>
+                    <div>
+                      <p className="font-bold text-text-main leading-tight">{tenant.name}</p>
+                      <p className="text-[10px] text-text-muted mt-0.5">{tenant.email}</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-text-muted">{tenant.email}</p>
-                  <p className="mt-1 text-sm text-text-sub">
-                    {tenant.property} - Unit {tenant.unit}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    Rent {tenant.rent} - Lease End {tenant.leaseEnd}
-                  </p>
-                </article>
-              ))}
+                  <StatusChip status={tenant.status} />
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-lg bg-white p-2 border border-border-ghost">
+                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-tighter">Property</p>
+                    <p className="mt-0.5 font-medium text-text-main truncate">{tenant.property}</p>
+                  </div>
+                  <div className="rounded-lg bg-white p-2 border border-border-ghost">
+                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-tighter">Rent</p>
+                    <p className="mt-0.5 font-medium text-text-main">{tenant.rent}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="border-t border-border-ghost bg-bg-page/50 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-text-muted">
+                Showing <span className="text-text-main font-bold">{filtered.length}</span> of <span className="text-text-main font-bold">{tenants.length}</span> tenants
+              </p>
+              <div className="flex gap-2">
+                <button type="button" className="btn-outline h-8 px-3 text-xs">
+                  Previous
+                </button>
+                <button type="button" className="btn-outline h-8 px-3 text-xs">
+                  Next
+                </button>
+              </div>
             </div>
-            <div className="mt-4 flex items-center justify-between">
-              <button type="button" className="h-9 rounded-base border border-border-ghost px-3 text-sm text-text-sub">
-                Prev
-              </button>
-              <p className="text-sm text-text-muted">Page 1 of 3</p>
-              <button type="button" className="h-9 rounded-base border border-border-ghost px-3 text-sm text-text-sub">
-                Next
-              </button>
-            </div>
-          </Card>
+          </div>
+        </Card>
+      </div>
     </DashboardShell>
   );
 }

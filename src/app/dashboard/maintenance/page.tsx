@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
-import Card from "@/components/ui/Card";
 import StatusChip from "@/components/ui/StatusChip";
 import Modal from "@/components/ui/Modal";
 import { supabase } from "@/lib/supabase";
@@ -66,63 +65,149 @@ export default function Page() {
   const columns = ["open", "in-progress", "resolved"] as const;
   return (
     <DashboardShell title="Maintenance">
-          <div className="mb-6 flex flex-col gap-3 rounded-base border border-border-ghost bg-bg-card p-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Property</option></select>
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Category</option></select>
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Urgency</option></select>
-              <select className="h-11 rounded-base border border-border-ghost px-3 text-sm"><option>Status</option></select>
-            </div>
-            <button type="button" onClick={() => setIsOpen(true)} className="h-11 rounded-base bg-accent px-4 text-white">
-              New Request
-            </button>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-text-main">Maintenance Board</h1>
+            <p className="text-sm text-text-muted mt-1">Track and manage property maintenance requests</p>
           </div>
-          <div className="overflow-x-auto">
-            <div className="grid min-w-[720px] gap-6 md:min-w-0 md:grid-cols-3">
-          {columns.map((column) => (
-            <Card key={column}>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold capitalize text-primary">{column.replace("-", " ")}</h2>
-                <span className="rounded-pill bg-bg-page px-2 py-1 text-xs text-text-muted">
-                  {tickets.filter((ticket) => ticket.status === column).length}
-                </span>
-              </div>
-              <div className="space-y-3">
-                {tickets.filter((ticket) => ticket.status === column).map((ticket) => (
-                  <div key={ticket.id} className="rounded-base border border-border-ghost bg-white p-4 shadow-card">
-                    <div className="mb-2 flex items-center justify-between">
-                      <p className="text-xs text-text-muted">General</p>
-                      <StatusChip status={ticket.urgency} />
-                    </div>
-                    <p className="font-medium text-text-main">{ticket.property}</p>
-                    <p className="text-sm text-text-muted">Unit {ticket.id}B</p>
-                    <p className="mt-1 text-sm text-text-sub">{ticket.title}</p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <p className="text-xs text-text-muted">06 May 2026</p>
-                    {column !== "resolved" ? (
-                      <button type="button" onClick={() => move(ticket.id)} className="text-sm text-primary-mid">
-                        Move Forward →
-                      </button>
-                    ) : null}
-                    </div>
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="btn-accent px-6"
+          >
+            New Request
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <select className="input-field max-w-[160px]"><option>All Properties</option></select>
+          <select className="input-field max-w-[160px]"><option>All Categories</option></select>
+          <select className="input-field max-w-[160px]"><option>Any Urgency</option></select>
+        </div>
+
+        <div className="overflow-x-auto pb-6">
+          <div className="flex gap-6 min-w-[900px] lg:min-w-0">
+            {columns.map((column) => (
+              <div key={column} className="flex-1 flex flex-col min-w-[300px]">
+                <div className="mb-4 flex items-center justify-between px-2">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-sm font-bold uppercase tracking-wider text-text-sub">{column.replace("-", " ")}</h2>
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-slate-200 px-1.5 text-[10px] font-bold text-slate-600">
+                      {tickets.filter((ticket) => ticket.status === column).length}
+                    </span>
                   </div>
+                </div>
+
+                <div className="flex-1 space-y-4 rounded-2xl bg-slate-100/50 p-3 ring-1 ring-inset ring-slate-200/50 min-h-[500px]">
+                  {tickets.filter((ticket) => ticket.status === column).map((ticket) => (
+                    <div
+                      key={ticket.id}
+                      className="group relative rounded-xl border border-border-ghost bg-white p-4 shadow-sm transition-all hover:border-primary/20 hover:shadow-md"
+                    >
+                      <div className="mb-3 flex items-start justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-0.5 rounded">General</span>
+                        <StatusChip status={ticket.urgency} />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-bold text-text-main leading-tight">{ticket.property}</p>
+                        <p className="text-xs text-text-muted mt-1">Unit {ticket.id.slice(0, 4)}</p>
+                      </div>
+
+                      <p className="mt-3 text-sm text-text-sub line-clamp-2">{ticket.title}</p>
+
+                      <div className="mt-4 flex items-center justify-between border-t border-border-ghost pt-3">
+                        <span className="text-[10px] text-text-muted font-medium">06 May 2026</span>
+                        {column !== "resolved" ? (
+                          <button
+                            type="button"
+                            onClick={() => move(ticket.id)}
+                            className="text-[11px] font-bold text-primary hover:underline"
+                          >
+                            Next Stage →
+                          </button>
+                        ) : (
+                          <span className="text-[10px] font-bold text-success flex items-center gap-1">
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Resolved
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {tickets.filter((ticket) => ticket.status === column).length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-12 text-center opacity-40">
+                      <div className="h-12 w-12 rounded-full border-2 border-dashed border-slate-300 mb-3" />
+                      <p className="text-xs font-medium text-slate-400">Empty column</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Maintenance Request">
+        <div className="space-y-5">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Property & Unit</label>
+              <select className="input-field">
+                <option>Select property...</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Category</label>
+              <select className="input-field">
+                <option>Plumbing</option>
+                <option>Electrical</option>
+                <option>General Repair</option>
+                <option>Appliance</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Description</label>
+              <textarea
+                className="w-full rounded-xl border border-border-muted bg-white px-4 py-3 text-sm placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/5"
+                rows={4}
+                placeholder="Describe the issue in detail..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-text-main">Urgency Level</label>
+              <div className="flex gap-3">
+                {["Low", "Medium", "High"].map((level) => (
+                  <button
+                    key={level}
+                    type="button"
+                    className={`flex-1 h-10 rounded-lg border text-xs font-bold transition-all ${
+                      level === "Medium"
+                        ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                        : "border-border-muted text-text-sub hover:bg-bg-page"
+                    }`}
+                  >
+                    {level}
+                  </button>
                 ))}
               </div>
-            </Card>
-          ))}
             </div>
           </div>
-      
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="New Request">
-        <div className="space-y-3">
-          <select className="h-11 w-full rounded-base border border-border-ghost px-3">
-            <option>Category</option>
-          </select>
-          <textarea className="w-full rounded-base border border-border-ghost px-3 py-2" rows={4} placeholder="Description" />
-          <div className="flex gap-2">
-            <button type="button" className="h-10 rounded-pill border border-border-ghost px-4 text-sm">Low</button>
-            <button type="button" className="h-10 rounded-pill bg-primary px-4 text-sm text-white">Medium</button>
-            <button type="button" className="h-10 rounded-pill border border-border-ghost px-4 text-sm">High</button>
+
+          <div className="flex gap-3 pt-2">
+            <button type="button" onClick={() => setIsOpen(false)} className="btn-outline flex-1 h-11">
+              Cancel
+            </button>
+            <button type="button" className="btn-primary flex-1 h-11">
+              Create Request
+            </button>
           </div>
         </div>
       </Modal>

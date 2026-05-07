@@ -18,25 +18,25 @@ type StatusChipProps = {
 };
 
 const toneMap: Record<Status, string> = {
-  paid: "bg-green-100 text-green-700",
-  occupied: "bg-green-100 text-green-700",
-  active: "bg-green-100 text-green-700",
-  resolved: "bg-green-100 text-green-700",
-  pending: "bg-amber-100 text-amber-700",
-  expiring: "bg-amber-100 text-amber-700",
-  "in-progress": "bg-amber-100 text-amber-700",
-  medium: "bg-amber-100 text-amber-700",
-  overdue: "bg-red-100 text-error",
-  open: "bg-red-100 text-error",
-  high: "bg-red-100 text-error",
-  vacant: "bg-bg-page text-text-sub",
-  low: "bg-bg-page text-text-sub",
+  paid: "bg-success-light text-success-dark border-success/20",
+  occupied: "bg-success-light text-success-dark border-success/20",
+  active: "bg-success-light text-success-dark border-success/20",
+  resolved: "bg-success-light text-success-dark border-success/20",
+  pending: "bg-warning-light text-warning-dark border-warning/20",
+  expiring: "bg-warning-light text-warning-dark border-warning/20",
+  "in-progress": "bg-warning-light text-warning-dark border-warning/20",
+  medium: "bg-warning-light text-warning-dark border-warning/20",
+  overdue: "bg-error-light text-error-dark border-error/20",
+  open: "bg-error-light text-error-dark border-error/20",
+  high: "bg-error-light text-error-dark border-error/20",
+  vacant: "bg-bg-page text-text-sub border-border-muted",
+  low: "bg-bg-page text-text-sub border-border-muted",
 };
 
 export default function StatusChip({ status }: StatusChipProps) {
   return (
     <span
-      className={`inline-flex rounded-pill px-3 py-1 text-xs font-semibold capitalize ${toneMap[status]}`}
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize transition-colors ${toneMap[status]}`}
     >
       {status.replace("-", " ")}
     </span>
