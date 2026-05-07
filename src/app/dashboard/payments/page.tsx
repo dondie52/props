@@ -17,6 +17,7 @@ type PaymentRow = {
   amount: number;
   due: string;
   paid: string;
+  method: string;
   status: "paid" | "pending" | "overdue";
 };
 
@@ -34,12 +35,19 @@ export default function Page() {
 
       const { data } = await supabase
         .from("payments")
-        .select("amount,due_date,payment_date,status,tenants(full_name,units(unit_number,properties(name)))")
+        .select("amount,due_date,payment_date,method,status,tenants(full_name,units(unit_number,properties(name)))")
         .in("tenant_id", scope.tenantIds)
         .order("due_date", { ascending: false });
 
       const mapped: PaymentRow[] = (data ?? []).map((row) => {
-        const rowObj = row as unknown as { tenants?: unknown; amount?: unknown; due_date?: unknown; payment_date?: unknown; status?: unknown };
+        const rowObj = row as unknown as {
+          tenants?: unknown;
+          amount?: unknown;
+          due_date?: unknown;
+          payment_date?: unknown;
+          method?: unknown;
+          status?: unknown;
+        };
         const tenant = Array.isArray(rowObj.tenants) ? rowObj.tenants[0] : rowObj.tenants;
         const unit = tenant && Array.isArray(tenant.units) ? tenant.units[0] : tenant?.units;
         const property = unit && Array.isArray(unit.properties) ? unit.properties[0] : unit?.properties;
@@ -53,6 +61,7 @@ export default function Page() {
           amount: Number(rowObj.amount ?? 0),
           due: (rowObj.due_date as string | undefined) ?? "-",
           paid: rowObj.status === "paid" ? ((rowObj.payment_date as string | undefined) ?? "-") : "-",
+          method: String(rowObj.method ?? ""),
           status: rawStatus,
         };
       });
@@ -86,7 +95,7 @@ export default function Page() {
           </div>
           <Card>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-primary">Payment History</h2>
+              <h2 className="text-lg font-semibold text-primary">Rent Ledger</h2>
               <div className="flex flex-wrap items-center gap-3">
                 <select className="h-11 rounded-base border border-border-ghost px-3 text-sm">
                   <option>May 2026</option>
@@ -101,13 +110,19 @@ export default function Page() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
-                    <th className="pb-3">Tenant</th><th className="pb-3">Property</th><th className="pb-3">Unit</th><th className="pb-3">Amount</th><th className="pb-3">Due Date</th><th className="pb-3">Paid Date</th><th className="pb-3">Status</th><th className="pb-3">Receipt</th>
+                    <th className="pb-3">Tenant</th><th className="pb-3">Property</th><th className="pb-3">Unit</th><th className="pb-3">Amount</th><th className="pb-3">Due Date</th><th className="pb-3">Paid Date</th><th className="pb-3">Type</th><th className="pb-3">Status</th><th className="pb-3">Receipt</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((row) => (
-                    <tr key={`${row.tenant}-${row.unit}`} className="border-t border-border-ghost hover:bg-bg-page">
-                      <td className="py-3">{row.tenant}</td><td>{row.property}</td><td>{row.unit}</td><td>{formatMoney(row.amount)}</td><td>{row.due}</td><td>{row.paid}</td><td><StatusChip status={row.status} /></td>
+                    <tr key={`${row.tenant}-${row.unit}-${row.due}`} className="border-t border-border-ghost hover:bg-bg-page">
+                      <td className="py-3">{row.tenant}</td><td>{row.property}</td><td>{row.unit}</td><td>{formatMoney(row.amount)}</td><td>{row.due}</td><td>{row.paid}</td>
+                      <td>
+                        <span className="rounded-pill bg-bg-page px-2 py-1 text-xs text-text-muted">
+                          {row.method === "system" ? "Auto rent" : row.method || "Manual"}
+                        </span>
+                      </td>
+                      <td><StatusChip status={row.status} /></td>
                       <td>
                         <button type="button" aria-label="Download receipt" className="text-primary-mid">
                           <Download className="h-4 w-4" />
@@ -120,7 +135,7 @@ export default function Page() {
             </div>
             <div className="space-y-3 md:hidden">
               {rows.map((row) => (
-                <article key={`${row.tenant}-${row.unit}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
+                <article key={`${row.tenant}-${row.unit}-${row.due}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-text-main">{row.tenant}</p>
                     <StatusChip status={row.status} />
@@ -129,7 +144,9 @@ export default function Page() {
                     {row.property} - Unit {row.unit}
                   </p>
                   <p className="mt-1 text-sm text-text-main">{formatMoney(row.amount)}</p>
-                  <p className="text-xs text-text-muted">Due {row.due}</p>
+                  <p className="text-xs text-text-muted">
+                    Due {row.due} · {row.method === "system" ? "Auto rent" : row.method || "Manual"}
+                  </p>
                 </article>
               ))}
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Building2, CreditCard, Users, Wrench } from "lucide-react";
 import DashboardShell from "@/components/layout/DashboardShell";
@@ -16,37 +16,6 @@ type Props = {
 };
 
 export default function DashboardView({ stats, paymentRows, maintenanceRows, occupancyData }: Props) {
-  const onboardingRef = useRef<HTMLElement | null>(null);
-  const statsGridRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const onboardingRect = onboardingRef.current?.getBoundingClientRect();
-    const statsRect = statsGridRef.current?.getBoundingClientRect();
-    // #region agent log
-    fetch("http://127.0.0.1:7851/ingest/cfa3b922-9c8a-4c92-bfaf-18b672b0b00c", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "927419" },
-      body: JSON.stringify({
-        sessionId: "927419",
-        runId: "pre-fix",
-        hypothesisId: "H1",
-        location: "DashboardView.tsx:layoutEffect",
-        message: "Dashboard content placement metrics",
-        data: {
-          totalProperties: stats.totalProperties,
-          showsOnboarding: stats.totalProperties === 0,
-          onboardingHeight: onboardingRect?.height ?? 0,
-          onboardingTop: onboardingRect?.top ?? null,
-          statsTop: statsRect?.top ?? null,
-          statsBottom: statsRect?.bottom ?? null,
-          viewportHeight: window.innerHeight,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-  }, [stats.totalProperties]);
-
   const getOccupancyLabel = (value: unknown, index?: number) => {
     const label = String(value ?? "").trim();
     if (label) return label;
@@ -58,7 +27,7 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
   return (
     <DashboardShell title="Dashboard">
           {stats.totalProperties === 0 ? (
-            <section ref={onboardingRef} className="mb-6 rounded-large border border-border-ghost bg-bg-card p-6 shadow-card">
+            <section className="mb-6 rounded-large border border-border-ghost bg-bg-card p-6 shadow-card">
               <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                 <div>
                   <h2 className="text-lg font-semibold text-primary">Set up your first property</h2>
@@ -74,7 +43,7 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
             </section>
           ) : null}
 
-          <div ref={statsGridRef} className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
             <StatCard title="Total Properties" value={String(stats.totalProperties)} icon={<Building2 className="h-5 w-5" />} />
             <StatCard title="Occupied Units" value={stats.occupiedText} icon={<Users className="h-5 w-5" />} />
             <StatCard title="Rent Due" value={stats.rentDueText} icon={<CreditCard className="h-5 w-5" />} />

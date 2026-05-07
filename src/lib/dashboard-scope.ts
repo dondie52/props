@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-type Scope = {
+export type LandlordScope = {
   landlordId: string | null;
   propertyIds: string[];
   unitIds: string[];
@@ -11,7 +11,7 @@ function toIds(rows: Array<{ id?: unknown }> | null | undefined): string[] {
   return (rows ?? []).map((row) => String(row.id ?? "")).filter(Boolean);
 }
 
-export async function getLandlordScope(supabase: SupabaseClient): Promise<Scope> {
+export async function getLandlordScope(supabase: SupabaseClient): Promise<LandlordScope> {
   const {
     data: { user },
   } = await supabase.auth.getUser();

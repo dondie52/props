@@ -4,8 +4,11 @@ import {
   getOccupancyData,
   getRecentPayments,
 } from "@/lib/dashboard-data";
+import { getLandlordScope } from "@/lib/dashboard-scope";
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
 import DashboardView from "@/components/dashboard/DashboardView";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   let stats = { totalProperties: 0, occupiedText: "0/0", rentDueText: "P0", openMaintenance: 0 };
@@ -15,14 +18,15 @@ export default async function Page() {
 
   try {
     const supabase = createSupabaseServerComponentClient();
+    const scope = await getLandlordScope(supabase);
     [stats, paymentRows, maintenanceRows, occupancyData] = await Promise.all([
-      getDashboardStats(supabase),
-      getRecentPayments(supabase),
-      getMaintenanceSummary(supabase),
-      getOccupancyData(supabase),
+      getDashboardStats(supabase, scope),
+      getRecentPayments(supabase, scope),
+      getMaintenanceSummary(supabase, scope),
+      getOccupancyData(supabase, scope),
     ]);
-  } catch {
-    // Build-time / missing env / auth cookies: fall back to safe empty UI.
+  } catch (error) {
+    console.error("Failed to load dashboard data", error);
   }
 
   return <DashboardView stats={stats} paymentRows={paymentRows} maintenanceRows={maintenanceRows} occupancyData={occupancyData} />;

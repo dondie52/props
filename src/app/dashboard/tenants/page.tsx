@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Eye, Mail } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
@@ -78,9 +79,9 @@ export default function Page() {
               <h1 className="text-2xl font-semibold text-primary">All Tenants</h1>
               <p className="text-sm text-text-muted">{tenants.length} active tenants</p>
             </div>
-            <button type="button" className="h-11 rounded-base bg-accent px-6 text-white">
-              Add Tenant
-            </button>
+            <Link href="/dashboard/properties" className="inline-flex h-11 items-center rounded-base bg-accent px-6 text-white">
+              Assign Tenant
+            </Link>
           </div>
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <input
