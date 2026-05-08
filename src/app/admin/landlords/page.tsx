@@ -10,13 +10,13 @@ export default async function AdminLandlordsPage() {
 
   return (
     <DashboardShell title="Landlords" variant="admin">
-      <Card>
-        <div className="mb-4 flex items-center justify-between">
+      <Card className="p-0 sm:p-0">
+        <div className="mb-4 flex items-center justify-between p-4 sm:p-6">
           <h2 className="text-lg font-semibold text-primary">All Landlords</h2>
           <p className="text-sm text-text-muted">{landlords.length} total</p>
         </div>
-        <div className="hidden md:block">
-          <table className="w-full text-sm">
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full min-w-[760px] text-sm">
             <thead>
               <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
                 <th className="pb-3">Name</th>
@@ -45,7 +45,7 @@ export default async function AdminLandlordsPage() {
             </tbody>
           </table>
         </div>
-        <div className="space-y-3 md:hidden">
+        <div className="space-y-3 p-4 sm:p-6 md:hidden">
           {landlords.map((landlord) => (
             <article key={landlord.id} className="rounded-base border border-border-ghost bg-bg-page p-3">
               <p className="font-medium text-text-main">{landlord.name}</p>

@@ -53,13 +53,16 @@ export default function Page() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg-page px-4 py-10">
-      <div className="pointer-events-none absolute left-[-140px] top-1/2 hidden -translate-y-1/2 opacity-15 lg:block">
-        <Image src={logo} alt="" className="h-auto w-[560px] -scale-x-100" />
-      </div>
-
       <div className="relative z-10 w-full max-w-[680px]">
         <div className="mb-8 text-center">
-          <Image src={logo} alt="PropManage BW logo" className="mx-auto h-20 w-20 object-contain" />
+          <Image
+            src={logo}
+            alt="PropManage BW logo"
+            width={80}
+            height={80}
+            priority
+            className="mx-auto h-20 w-20 object-contain"
+          />
           <h1 className="mt-3 text-4xl font-bold text-primary">PropManage BW</h1>
           <p className="mt-2 text-sm text-text-sub">Create your secure property management workspace.</p>
         </div>

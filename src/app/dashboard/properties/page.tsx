@@ -1,10 +1,10 @@
 import PropertiesClient, { type PropertyCardRow } from "@/app/dashboard/properties/PropertiesClient";
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
-import { getLandlordScope } from "@/lib/dashboard-scope";
+import { getDashboardAuthScope } from "@/lib/dashboard-auth";
 
 export default async function Page() {
   const supabase = createSupabaseServerComponentClient();
-  const scope = await getLandlordScope(supabase);
+  const { scope } = await getDashboardAuthScope(supabase);
 
   let rows: PropertyCardRow[] = [];
   if (scope.landlordId && scope.propertyIds.length > 0) {

@@ -83,8 +83,9 @@ export async function getDashboardStats(supabase: Client, scope: LandlordScope) 
     return emptyStats;
   }
 
-  const [unitsResult, paymentsResult, maintenanceResult] = await Promise.all([
+  const [unitsResult, tenantUnitsResult, paymentsResult, maintenanceResult] = await Promise.all([
     supabase.from("units").select("id,status").in("id", scope.unitIds),
+    supabase.from("tenants").select("unit_id").in("unit_id", scope.unitIds),
     scope.tenantIds.length
       ? supabase.from("payments").select("id,amount,status").in("tenant_id", scope.tenantIds)
       : Promise.resolve({ data: [], error: null }),
@@ -92,10 +93,12 @@ export async function getDashboardStats(supabase: Client, scope: LandlordScope) 
   ]);
 
   const allUnits = requireData(unitsResult, "Dashboard units query");
+  const tenantUnits = requireData(tenantUnitsResult, "Dashboard tenant units query");
   const payments = requireData(paymentsResult, "Dashboard payments query");
   const maintenance = requireData(maintenanceResult, "Dashboard maintenance query");
 
-  const occupiedCount = allUnits.filter((unit) => unit.status === "occupied").length;
+  const occupiedUnitIds = new Set(tenantUnits.map((tenant) => String(tenant.unit_id)));
+  const occupiedCount = allUnits.filter((unit) => unit.status === "occupied" || occupiedUnitIds.has(String(unit.id))).length;
   const totalUnits = allUnits.length;
   const openMaintenance = maintenance.filter((request) => request.status !== "resolved").length;
   const pendingRent = payments

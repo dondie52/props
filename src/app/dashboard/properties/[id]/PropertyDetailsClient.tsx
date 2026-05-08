@@ -56,6 +56,7 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
   const [isAddingUnit, setIsAddingUnit] = useState(false);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState("");
+  const [inviteWarning, setInviteWarning] = useState("");
 
   const [newUnit, setNewUnit] = useState({ unitNumber: "", rentAmount: "" });
   const [tenantForm, setTenantForm] = useState({
@@ -77,6 +78,7 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
 
   const openUnit = (unit: UnitRow) => {
     setError("");
+    setInviteWarning("");
     previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (unit.status === "vacant") {
       setAssigningUnit(unit);
@@ -128,26 +130,36 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
     });
   };
 
-  const onAssignTenant = (event: FormEvent) => {
-    event.preventDefault();
+  const submitTenantAssignment = (createInvite: boolean) => {
     if (!assigningUnit) return;
     setError("");
+    setInviteWarning("");
     startTransition(async () => {
       try {
-        await assignTenantToUnitAction({
+        const result = await assignTenantToUnitAction({
           unitId: assigningUnit.id,
           fullName: tenantForm.fullName,
           email: tenantForm.email,
           leaseStart: tenantForm.leaseStart,
           leaseEnd: tenantForm.leaseEnd,
           rentAmount: tenantForm.rentAmount ? Number(tenantForm.rentAmount) : null,
+          createInvite,
         });
+        if (result.needsInvite) {
+          setInviteWarning(result.message ?? "No tenant account exists for this email yet.");
+          return;
+        }
         setAssigningUnit(null);
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to assign tenant.");
       }
     });
+  };
+
+  const onAssignTenant = (event: FormEvent) => {
+    event.preventDefault();
+    submitTenantAssignment(false);
   };
 
   return (
@@ -523,7 +535,14 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
         </form>
       </Modal>
 
-      <Modal isOpen={Boolean(assigningUnit)} onClose={() => setAssigningUnit(null)} title={`Assign Tenant to ${assigningUnit?.number}`}>
+      <Modal
+        isOpen={Boolean(assigningUnit)}
+        onClose={() => {
+          setAssigningUnit(null);
+          setInviteWarning("");
+        }}
+        title={`Assign Tenant to ${assigningUnit?.number}`}
+      >
         <form onSubmit={onAssignTenant} className="space-y-5">
           <div className="space-y-4">
             <div className="space-y-2">
@@ -585,8 +604,28 @@ export default function PropertyDetailsClient({ property, initialUnits }: { prop
               {error}
             </div>
           ) : null}
+          {inviteWarning ? (
+            <div className="rounded-lg bg-warning/10 p-3 text-xs font-medium text-warning">
+              <p>{inviteWarning}</p>
+              <button
+                type="button"
+                onClick={() => submitTenantAssignment(true)}
+                disabled={pending}
+                className="mt-3 h-9 rounded-base bg-primary px-3 text-xs font-bold text-white disabled:opacity-50"
+              >
+                Create Pending Tenant Profile
+              </button>
+            </div>
+          ) : null}
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={() => setAssigningUnit(null)} className="btn-outline flex-1 h-11">
+            <button
+              type="button"
+              onClick={() => {
+                setAssigningUnit(null);
+                setInviteWarning("");
+              }}
+              className="btn-outline flex-1 h-11"
+            >
               Cancel
             </button>
             <button type="submit" disabled={pending} className="btn-primary flex-1 h-11">

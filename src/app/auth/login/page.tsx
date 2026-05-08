@@ -6,6 +6,7 @@ import { Eye, EyeOff, Loader2, LogIn, Shield } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { routeForRole } from "@/lib/role-routing";
 import logo from "../../../../logo and brand guildeline/propmanage_bw_logo.png";
 
 export default function Page() {
@@ -35,35 +36,46 @@ export default function Page() {
       setLoading(false);
       return;
     }
-    const userEmail = signInData.user?.email?.toLowerCase();
-    const userId = signInData.user?.id;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    const user = session?.user ?? signInData.user;
+    const userEmail = user?.email?.toLowerCase();
+    const userId = user?.id;
     if (userId) {
-      let { data: profile } = await supabase.from("profiles").select("role").eq("auth_user_id", userId).maybeSingle();
+      let { data: profile } = await supabase.from("profiles").select("id,role").eq("auth_user_id", userId).maybeSingle();
       if (!profile && userEmail) {
         const { data: fallbackProfile } = await supabase
           .from("profiles")
-          .select("role")
+          .select("id,role")
           .eq("email", userEmail)
           .is("auth_user_id", null)
           .maybeSingle();
         profile = fallbackProfile;
+        if (fallbackProfile?.id) {
+          await supabase.from("profiles").update({ auth_user_id: userId }).eq("id", fallbackProfile.id);
+        }
       }
-      const targetRoute = profile?.role === "admin" ? "/admin" : profile?.role === "tenant" ? "/tenant/dashboard" : "/dashboard";
-      router.push(targetRoute);
+      router.replace(routeForRole(profile?.role));
+      router.refresh();
       return;
     }
-    router.push("/dashboard");
+    router.replace("/dashboard");
+    router.refresh();
   };
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg-page px-4 py-10">
-      <div className="pointer-events-none absolute right-[-120px] top-1/2 hidden -translate-y-1/2 opacity-20 lg:block">
-        <Image src={logo} alt="" className="h-auto w-[640px]" />
-      </div>
-
       <div className="relative z-10 w-full max-w-[560px]">
         <div className="mb-8 text-center">
-          <Image src={logo} alt="PropManage BW logo" className="mx-auto h-20 w-20 object-contain" />
+          <Image
+            src={logo}
+            alt="PropManage BW logo"
+            width={80}
+            height={80}
+            priority
+            className="mx-auto h-20 w-20 object-contain"
+          />
           <h1 className="mt-3 text-[38px] font-bold text-primary">PropManage BW</h1>
           <p className="mt-2 text-sm text-text-sub">Operational clarity for property professionals.</p>
         </div>

@@ -111,11 +111,11 @@ export default function OnboardingWizard() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <header className="rounded-large border border-border-ghost bg-bg-card p-6 shadow-card">
+      <header className="rounded-large border border-border-ghost bg-bg-card p-5 shadow-card sm:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">Quick Setup</p>
-            <h1 className="mt-2 text-3xl font-bold text-primary">Get to first value in under 3 minutes</h1>
+            <h1 className="mt-2 text-2xl font-bold text-primary sm:text-3xl">Get to first value in under 3 minutes</h1>
             <p className="mt-2 text-sm text-text-sub">
               Add your first property, generate units in one click, then invite tenants later.
             </p>
@@ -134,7 +134,7 @@ export default function OnboardingWizard() {
       </header>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-5">
-        <section className="rounded-large border border-border-ghost bg-bg-card p-6 shadow-card lg:col-span-3">
+        <section className="rounded-large border border-border-ghost bg-bg-card p-5 shadow-card sm:p-6 lg:col-span-3">
           {step === 1 ? (
             <>
               <h2 className="text-xl font-semibold text-primary">1) Create your first property</h2>

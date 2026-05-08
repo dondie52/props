@@ -4,7 +4,7 @@ import {
   getOccupancyData,
   getRecentPayments,
 } from "@/lib/dashboard-data";
-import { getLandlordScope } from "@/lib/dashboard-scope";
+import { getDashboardAuthScope } from "@/lib/dashboard-auth";
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
 import DashboardView from "@/components/dashboard/DashboardView";
 
@@ -18,7 +18,7 @@ export default async function Page() {
 
   try {
     const supabase = createSupabaseServerComponentClient();
-    const scope = await getLandlordScope(supabase);
+    const { scope } = await getDashboardAuthScope(supabase);
     [stats, paymentRows, maintenanceRows, occupancyData] = await Promise.all([
       getDashboardStats(supabase, scope),
       getRecentPayments(supabase, scope),

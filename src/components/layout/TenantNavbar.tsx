@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 export default function TenantNavbar() {
   const router = useRouter();
-  const [name, setName] = useState("Tenant");
+  const [name, setName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -19,8 +19,12 @@ export default function TenantNavbar() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user?.email) return;
-      const { data: tenant } = await supabase.from("tenants").select("full_name").eq("email", user.email.toLowerCase()).maybeSingle();
-      if (tenant?.full_name) setName(tenant.full_name);
+      const email = user.email.toLowerCase();
+      const [{ data: tenant }, { data: profile }] = await Promise.all([
+        supabase.from("tenants").select("full_name").eq("email", email).maybeSingle(),
+        supabase.from("profiles").select("full_name").eq("email", email).maybeSingle(),
+      ]);
+      setName(tenant?.full_name || profile?.full_name || email.split("@")[0] || "Tenant");
     };
     void loadProfile();
   }, []);
@@ -39,14 +43,17 @@ export default function TenantNavbar() {
 
   const navLinks = (
     <>
-      <Link className="hover:text-primary" href="/tenant/dashboard" onClick={() => setIsOpen(false)}>
+      <Link className="hover:text-primary" href="/tenant/dashboard#lease" onClick={() => setIsOpen(false)}>
         My Lease
       </Link>
-      <Link className="hover:text-primary" href="/tenant/dashboard" onClick={() => setIsOpen(false)}>
+      <Link className="hover:text-primary" href="/tenant/dashboard#payments" onClick={() => setIsOpen(false)}>
         Payments
       </Link>
-      <Link className="hover:text-primary" href="/tenant/dashboard" onClick={() => setIsOpen(false)}>
+      <Link className="hover:text-primary" href="/tenant/dashboard#maintenance" onClick={() => setIsOpen(false)}>
         Maintenance
+      </Link>
+      <Link className="hover:text-primary" href="/tenant/dashboard#messages" onClick={() => setIsOpen(false)}>
+        Messages
       </Link>
     </>
   );

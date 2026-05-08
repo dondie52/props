@@ -43,6 +43,7 @@ export async function assignTenantToUnitAction(input: {
   leaseStart: string;
   leaseEnd: string;
   rentAmount?: number | null;
+  createInvite?: boolean;
 }) {
   const unitId = requireText(input.unitId, "Unit");
   const fullName = requireText(input.fullName, "Tenant name");
@@ -65,6 +66,61 @@ export async function assignTenantToUnitAction(input: {
   if (existingError) throw new Error(existingError.message);
   if (existingTenant?.id) throw new Error("This unit already has a tenant.");
 
+  const { data: propertyUnits, error: propertyUnitsError } = await supabase
+    .from("units")
+    .select("id,unit_number,properties(name)")
+    .eq("property_id", unit.property_id);
+  if (propertyUnitsError) throw new Error(propertyUnitsError.message);
+
+  const propertyUnitIds = (propertyUnits ?? []).map((row) => row.id);
+  const { data: propertyTenants, error: propertyTenantsError } = propertyUnitIds.length
+    ? await supabase.from("tenants").select("id,email,unit_id").in("unit_id", propertyUnitIds)
+    : { data: [], error: null };
+  if (propertyTenantsError) throw new Error(propertyTenantsError.message);
+
+  const tenantWithEmail = (propertyTenants ?? []).find((tenant) => tenant.email.trim().toLowerCase() === email);
+  if (tenantWithEmail?.id) {
+    const assignedUnit = (propertyUnits ?? []).find((row) => row.id === tenantWithEmail.unit_id);
+    const row = assignedUnit as unknown as { unit_number?: unknown; properties?: unknown } | undefined;
+    const property = row?.properties && Array.isArray(row.properties) ? row.properties[0] : row?.properties;
+    const propertyObj = property as { name?: unknown } | null;
+    const assignedPlace = [propertyObj?.name, row?.unit_number ? `Unit ${row.unit_number}` : null].filter(Boolean).join(" - ");
+    throw new Error(`This tenant email is already assigned${assignedPlace ? ` to ${assignedPlace}` : " to another unit"}.`);
+  }
+
+  const { data: tenantWithEmailOutsideProperty, error: tenantEmailError } = await supabase
+    .from("tenants")
+    .select("id,email,unit_id,units(unit_number,properties(name))")
+    .ilike("email", email);
+  if (tenantEmailError) throw new Error(tenantEmailError.message);
+  const outsideMatch = (tenantWithEmailOutsideProperty ?? []).find((tenant) => String(tenant.email ?? "").trim().toLowerCase() === email);
+  if (outsideMatch?.id) {
+    const row = outsideMatch as unknown as { units?: unknown };
+    const tenantUnit = Array.isArray(row.units) ? row.units[0] : row.units;
+    const tenantUnitObj = tenantUnit as { unit_number?: unknown; properties?: unknown } | null;
+    const tenantProperty = tenantUnitObj?.properties && Array.isArray(tenantUnitObj.properties) ? tenantUnitObj.properties[0] : tenantUnitObj?.properties;
+    const tenantPropertyObj = tenantProperty as { name?: unknown } | null;
+    const assignedPlace = [tenantPropertyObj?.name, tenantUnitObj?.unit_number ? `Unit ${tenantUnitObj.unit_number}` : null]
+      .filter(Boolean)
+      .join(" - ");
+    throw new Error(`This tenant email is already assigned${assignedPlace ? ` to ${assignedPlace}` : " to another unit"}.`);
+  }
+
+  const { data: existingProfile, error: profileLookupError } = await supabase
+    .from("profiles")
+    .select("id,auth_user_id")
+    .eq("email", email)
+    .maybeSingle();
+  if (profileLookupError) throw new Error(profileLookupError.message);
+
+  if (!existingProfile?.id && !input.createInvite) {
+    return {
+      ok: false,
+      needsInvite: true,
+      message: "No tenant account exists for this email yet.",
+    };
+  }
+
   const { error: tenantError } = await supabase.from("tenants").insert({
     unit_id: unitId,
     full_name: fullName,
@@ -73,6 +129,26 @@ export async function assignTenantToUnitAction(input: {
     lease_end: leaseEnd,
   });
   if (tenantError) throw new Error(tenantError.message);
+
+  if (existingProfile?.id) {
+    const { error: profileUpdateError } = await supabase
+      .from("profiles")
+      .update({ full_name: fullName, role: "tenant" })
+      .eq("id", existingProfile.id)
+      .is("auth_user_id", null);
+    if (profileUpdateError) {
+      console.warn("Tenant profile could not be updated during assignment.", profileUpdateError.message);
+    }
+  } else {
+    const { error: profileInsertError } = await supabase.from("profiles").insert({
+      full_name: fullName,
+      email,
+      role: "tenant",
+    });
+    if (profileInsertError) {
+      console.warn("Pending tenant profile could not be created. The tenant auth signup can create it later.", profileInsertError.message);
+    }
+  }
 
   const update: { status: string; rent_amount?: number } = { status: "occupied" };
   if (input.rentAmount !== null && input.rentAmount !== undefined && String(input.rentAmount) !== "") {
@@ -86,5 +162,5 @@ export async function assignTenantToUnitAction(input: {
   revalidatePath("/dashboard/tenants");
   revalidatePath("/dashboard/properties");
   revalidatePath(`/dashboard/properties/${unit.property_id}`);
-  return { ok: true };
+  return { ok: true, needsInvite: false };
 }
