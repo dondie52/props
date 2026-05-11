@@ -19,6 +19,25 @@ export type AdminLandlordDetail = {
   paymentsTotal: number;
 };
 
+export type AdminTenantRow = {
+  id: string;
+  profileId: string;
+  name: string;
+  email: string;
+  propertyName: string | null;
+  unitNumber: string | null;
+  leaseEnd: string | null;
+};
+
+export type AdminOverviewStats = {
+  landlords: number;
+  properties: number;
+  tenants: number;
+  users: number;
+  profilesLinked: number;
+  profilesUnlinked: number;
+};
+
 export async function getAdminLandlords(supabase: Client): Promise<AdminLandlordRow[]> {
   const [{ data: landlords }, { data: properties }, { data: units }, { data: tenants }] = await Promise.all([
     supabase.from("landlords").select("id,profile_id,full_name,email,created_at"),
@@ -136,31 +155,70 @@ export async function getAdminLandlordDetail(supabase: Client, landlordId: strin
 }
 
 export async function getAdminOverviewStats(supabase: Client) {
-  const [{ count: landlordCount }, { count: propertyCount }, { data: units }, { count: tenantCount }, { data: payments }] = await Promise.all([
+  const [
+    { count: landlordCount },
+    { count: propertyCount },
+    { count: tenantCount },
+    { count: userCount },
+    { count: linkedProfileCount },
+    { count: totalProfileCount },
+  ] = await Promise.all([
     supabase.from("landlords").select("*", { count: "exact", head: true }),
     supabase.from("properties").select("*", { count: "exact", head: true }),
-    supabase.from("units").select("status"),
     supabase.from("tenants").select("*", { count: "exact", head: true }),
-    supabase.from("payments").select("amount,status,due_date"),
+    supabase.from("profiles").select("*", { count: "exact", head: true }),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).not("auth_user_id", "is", null),
+    supabase.from("profiles").select("*", { count: "exact", head: true }),
   ]);
 
-  const now = new Date();
-  const currentMonthPayments = (payments ?? []).filter((payment) => {
-    const dueDate = payment.due_date ? new Date(payment.due_date) : null;
-    return (
-      payment.status === "paid" &&
-      dueDate &&
-      dueDate.getUTCMonth() === now.getUTCMonth() &&
-      dueDate.getUTCFullYear() === now.getUTCFullYear()
-    );
-  });
+  const linked = linkedProfileCount ?? 0;
+  const totalProfiles = totalProfileCount ?? 0;
 
-  return {
+  const stats: AdminOverviewStats = {
     landlords: landlordCount ?? 0,
     properties: propertyCount ?? 0,
-    unitsTotal: units?.length ?? 0,
-    unitsOccupied: (units ?? []).filter((unit) => unit.status === "occupied").length,
     tenants: tenantCount ?? 0,
-    collectedThisMonth: currentMonthPayments.reduce((sum, payment) => sum + Number(payment.amount ?? 0), 0),
+    users: userCount ?? 0,
+    profilesLinked: linked,
+    profilesUnlinked: Math.max(totalProfiles - linked, 0),
   };
+
+  return stats;
+}
+
+export async function getAdminTenants(supabase: Client): Promise<AdminTenantRow[]> {
+  const [{ data: tenantProfiles }, { data: tenants }, { data: units }, { data: properties }] = await Promise.all([
+    supabase.from("profiles").select("id,full_name,email").eq("role", "tenant").order("created_at", { ascending: false }),
+    supabase.from("tenants").select("id,full_name,email,unit_id,lease_end"),
+    supabase.from("units").select("id,unit_number,property_id"),
+    supabase.from("properties").select("id,name"),
+  ]);
+
+  const tenantByEmail = new Map<string, { id: string; unit_id: string | null; lease_end: string | null }>();
+  for (const tenant of tenants ?? []) {
+    tenantByEmail.set(String(tenant.email).toLowerCase(), {
+      id: tenant.id,
+      unit_id: tenant.unit_id ?? null,
+      lease_end: tenant.lease_end ?? null,
+    });
+  }
+
+  const unitById = new Map((units ?? []).map((unit) => [unit.id, { unit_number: unit.unit_number, property_id: unit.property_id }]));
+  const propertyById = new Map((properties ?? []).map((property) => [property.id, property.name]));
+
+  return (tenantProfiles ?? []).map((profile) => {
+    const tenantRecord = tenantByEmail.get(String(profile.email).toLowerCase());
+    const unitRecord = tenantRecord?.unit_id ? unitById.get(tenantRecord.unit_id) : null;
+    const propertyName = unitRecord?.property_id ? propertyById.get(unitRecord.property_id) ?? null : null;
+
+    return {
+      id: tenantRecord?.id ?? profile.id,
+      profileId: profile.id,
+      name: profile.full_name,
+      email: profile.email,
+      propertyName,
+      unitNumber: unitRecord?.unit_number ?? null,
+      leaseEnd: tenantRecord?.lease_end ?? null,
+    };
+  });
 }

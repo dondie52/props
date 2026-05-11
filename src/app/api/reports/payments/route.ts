@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDashboardAuthScope } from "@/lib/dashboard-auth";
 import { fetchPaymentExportRows } from "@/lib/report-export-data";
-import { buildPaymentsXml } from "@/lib/report-xml";
+import { buildPaymentsXlsxBuffer } from "@/lib/report-xlsx";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase-route";
 
 export const dynamic = "force-dynamic";
@@ -27,17 +27,16 @@ export async function GET() {
 
   const rows = await fetchPaymentExportRows(supabase, scope);
   const generatedAt = new Date().toISOString();
-  const xml = buildPaymentsXml(rows, {
-    type: "payments",
+  const buf = buildPaymentsXlsxBuffer(rows, {
     generatedAt,
     landlordId: scope.landlordId,
   });
 
-  return new NextResponse(xml, {
+  return new NextResponse(new Uint8Array(buf), {
     status: 200,
     headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Content-Disposition": `attachment; filename="propmanage-payments-${filenameDate()}.xml"`,
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="propmanage-payments-${filenameDate()}.xlsx"`,
     },
   });
 }

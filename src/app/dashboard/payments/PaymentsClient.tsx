@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
 import DashboardShell from "@/components/layout/DashboardShell";
@@ -9,6 +10,7 @@ import StatCard from "@/components/ui/StatCard";
 import Modal from "@/components/ui/Modal";
 
 export type PaymentRow = {
+  id: string;
   tenant: string;
   property: string;
   unit: string;
@@ -90,7 +92,7 @@ export default function PaymentsClient({
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={`${row.tenant}-${row.unit}-${row.due}`} className="border-t border-border-ghost hover:bg-bg-page">
+                <tr key={row.id || `${row.tenant}-${row.unit}-${row.due}`} className="border-t border-border-ghost hover:bg-bg-page">
                   <td className="py-3">{row.tenant}</td>
                   <td>{row.property}</td>
                   <td>{row.unit}</td>
@@ -106,9 +108,20 @@ export default function PaymentsClient({
                     <StatusChip status={row.status} />
                   </td>
                   <td>
-                    <button type="button" aria-label="Download receipt" className="text-primary-mid">
-                      <Download className="h-4 w-4" />
-                    </button>
+                    {row.status === "paid" && row.id ? (
+                      <Link
+                        href={`/api/receipts/${row.id}`}
+                        download
+                        aria-label="Download receipt"
+                        className="inline-flex text-primary-mid hover:underline"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Link>
+                    ) : (
+                      <span className="text-text-muted" title="Receipt available when payment is marked paid">
+                        —
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -117,7 +130,7 @@ export default function PaymentsClient({
         </div>
         <div className="space-y-3 md:hidden">
           {rows.map((row) => (
-            <article key={`${row.tenant}-${row.unit}-${row.due}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
+            <article key={row.id || `${row.tenant}-${row.unit}-${row.due}`} className="rounded-base border border-border-ghost bg-bg-page p-3">
               <div className="flex items-center justify-between">
                 <p className="font-medium text-text-main">{row.tenant}</p>
                 <StatusChip status={row.status} />
@@ -129,6 +142,12 @@ export default function PaymentsClient({
               <p className="text-xs text-text-muted">
                 Due {row.due} - {row.method === "system" ? "Auto rent" : row.method || "Manual"}
               </p>
+              {row.status === "paid" && row.id ? (
+                <Link href={`/api/receipts/${row.id}`} download className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-mid">
+                  <Download className="h-3.5 w-3.5" />
+                  Download receipt
+                </Link>
+              ) : null}
             </article>
           ))}
         </div>
