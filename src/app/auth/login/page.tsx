@@ -43,7 +43,11 @@ export default function Page() {
     const userEmail = user?.email?.toLowerCase();
     const userId = user?.id;
     if (userId) {
-      let { data: profile } = await supabase.from("profiles").select("id,role").eq("auth_user_id", userId).maybeSingle();
+      let { data: profile } = await supabase
+        .from("profiles")
+        .select("id,role")
+        .eq("auth_user_id", userId)
+        .maybeSingle();
       if (!profile && userEmail) {
         const { data: fallbackProfile } = await supabase
           .from("profiles")

@@ -9,12 +9,16 @@ import {
   saveOnboardingStateAction,
 } from "@/app/dashboard/onboarding/actions";
 
-const CITIES = ["Gaborone", "Francistown", "Maun", "Kasane", "Lobatse", "Molepolole", "Jwaneng"] as const;
-const PROPERTY_TYPES = ["Apartment", "Complex", "House"] as const;
-
 type Step = 1 | 2 | 3;
 
-export default function OnboardingWizard() {
+type OnboardingWizardProps = {
+  cities: string[];
+  propertyTypes: string[];
+};
+
+export default function OnboardingWizard({ cities, propertyTypes }: OnboardingWizardProps) {
+  const defaultCity = cities[0] ?? "";
+  const defaultType = propertyTypes[0] ?? "";
   const [step, setStep] = useState<Step>(1);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState("");
@@ -24,8 +28,8 @@ export default function OnboardingWizard() {
   const [property, setProperty] = useState({
     name: "",
     address: "",
-    city: "Gaborone",
-    type: "Apartment",
+    city: defaultCity,
+    type: defaultType,
   });
   const [numberOfHouses, setNumberOfHouses] = useState(10);
   const [bedroomsPerHouse, setBedroomsPerHouse] = useState(2);
@@ -109,6 +113,17 @@ export default function OnboardingWizard() {
     });
   };
 
+  if (!cities.length || !propertyTypes.length) {
+    return (
+      <div className="mx-auto max-w-4xl rounded-large border border-border-ghost bg-bg-card p-8 text-center shadow-card">
+        <p className="text-sm font-medium text-text-main">Location options unavailable</p>
+        <p className="mt-2 text-xs text-text-muted">
+          Reference data failed to load. Refresh the page or contact support.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl">
       <header className="rounded-large border border-border-ghost bg-bg-card p-5 shadow-card sm:p-6">
@@ -184,7 +199,7 @@ export default function OnboardingWizard() {
                     value={property.city}
                     onChange={(e) => setProperty((p) => ({ ...p, city: e.target.value }))}
                   >
-                    {CITIES.map((city) => (
+                    {cities.map((city) => (
                       <option key={city} value={city}>
                         {city}
                       </option>
@@ -197,7 +212,7 @@ export default function OnboardingWizard() {
                     value={property.type}
                     onChange={(e) => setProperty((p) => ({ ...p, type: e.target.value }))}
                   >
-                    {PROPERTY_TYPES.map((type) => (
+                    {propertyTypes.map((type) => (
                       <option key={type} value={type}>
                         {type}
                       </option>

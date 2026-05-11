@@ -1,10 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { fetchReferenceValues } from "@/lib/fetch-reference-values";
 import { createSupabaseServerActionClient } from "@/lib/supabase-server";
-
-const CITIES = ["Gaborone", "Francistown", "Maun", "Kasane", "Lobatse", "Molepolole", "Jwaneng"] as const;
-const PROPERTY_TYPES = ["Apartment", "Complex", "House"] as const;
 const PROPERTY_PHOTOS_BUCKET = "property-photos";
 
 function assertNonEmpty(value: string, field: string) {
@@ -79,14 +77,17 @@ export async function createPropertyAction(input: {
   assertNonEmpty(city, "City");
   assertNonEmpty(type, "Type");
 
-  if (!CITIES.includes(city as (typeof CITIES)[number])) {
+  const supabase = createSupabaseServerActionClient();
+  const [allowedCities, allowedTypes] = await Promise.all([
+    fetchReferenceValues(supabase, "city"),
+    fetchReferenceValues(supabase, "property_type"),
+  ]);
+  if (!allowedCities.includes(city)) {
     throw new Error("Please choose a valid city.");
   }
-  if (!PROPERTY_TYPES.includes(type as (typeof PROPERTY_TYPES)[number])) {
+  if (!allowedTypes.includes(type)) {
     throw new Error("Please choose a valid property type.");
   }
-
-  const supabase = createSupabaseServerActionClient();
 
   const landlordId = await getCurrentLandlordId(supabase);
   if (!landlordId) throw new Error("Admins must create properties from a landlord-scoped account.");
@@ -124,10 +125,15 @@ export async function createPropertyWithHousesAction(input: {
   assertNonEmpty(city, "City");
   assertNonEmpty(type, "Type");
 
-  if (!CITIES.includes(city as (typeof CITIES)[number])) {
+  const supabase = createSupabaseServerActionClient();
+  const [allowedCities, allowedTypes] = await Promise.all([
+    fetchReferenceValues(supabase, "city"),
+    fetchReferenceValues(supabase, "property_type"),
+  ]);
+  if (!allowedCities.includes(city)) {
     throw new Error("Please choose a valid city.");
   }
-  if (!PROPERTY_TYPES.includes(type as (typeof PROPERTY_TYPES)[number])) {
+  if (!allowedTypes.includes(type)) {
     throw new Error("Please choose a valid property type.");
   }
   if (!Number.isInteger(numberOfHouses) || numberOfHouses < 1 || numberOfHouses > 100) {
@@ -137,7 +143,6 @@ export async function createPropertyWithHousesAction(input: {
     throw new Error("Bedrooms per house must be between 1 and 20.");
   }
 
-  const supabase = createSupabaseServerActionClient();
   const landlordId = await getCurrentLandlordId(supabase);
   if (!landlordId) throw new Error("Admins must create properties from a landlord-scoped account.");
 
