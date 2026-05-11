@@ -36,6 +36,7 @@ export const landlordNavItems: SidebarNavItem[] = [
 export const adminNavItems: SidebarNavItem[] = [
   { label: "Overview", href: "/admin", icon: Home },
   { label: "Landlords", href: "/admin/landlords", icon: Users },
+  { label: "Tenants", href: "/admin/tenants", icon: Users },
   { label: "Properties", href: "/admin/properties", icon: Building2 },
   { label: "Settings", href: "/dashboard/settings", icon: ShieldCheck },
 ];
