@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDashboardAuthScope } from "@/lib/dashboard-auth";
 import { fetchTenantExportRows } from "@/lib/report-export-data";
-import { buildTenantsXml } from "@/lib/report-xml";
+import { buildTenantsXlsxBuffer } from "@/lib/report-xlsx";
 import { createSupabaseRouteHandlerClient } from "@/lib/supabase-route";
 
 export const dynamic = "force-dynamic";
@@ -27,17 +27,16 @@ export async function GET() {
 
   const rows = await fetchTenantExportRows(supabase, scope);
   const generatedAt = new Date().toISOString();
-  const xml = buildTenantsXml(rows, {
-    type: "tenants",
+  const buf = buildTenantsXlsxBuffer(rows, {
     generatedAt,
     landlordId: scope.landlordId,
   });
 
-  return new NextResponse(xml, {
+  return new NextResponse(new Uint8Array(buf), {
     status: 200,
     headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Content-Disposition": `attachment; filename="propmanage-tenants-${filenameDate()}.xml"`,
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="propmanage-tenants-${filenameDate()}.xlsx"`,
     },
   });
 }

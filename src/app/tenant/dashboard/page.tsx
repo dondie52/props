@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { CalendarDays, Download, Loader2, MessageSquare, Send, ShieldCheck, UserPlus, Wrench } from "lucide-react";
 import TenantNavbar from "@/components/layout/TenantNavbar";
 import Card from "@/components/ui/Card";
@@ -95,6 +96,7 @@ export default function Page() {
   const [error, setError] = useState("");
   const [requestError, setRequestError] = useState("");
   const [messageError, setMessageError] = useState("");
+  const [conversationBootstrapError, setConversationBootstrapError] = useState("");
 
   const formatMoney = (value: number) =>
     new Intl.NumberFormat("en-BW", { style: "currency", currency: "BWP", maximumFractionDigits: 0 })
@@ -106,6 +108,8 @@ export default function Page() {
     const loadTenantDashboard = async () => {
       setIsLoading(true);
       setError("");
+      setConversationBootstrapError("");
+      setConversationId(null);
 
       const {
         data: { user },
@@ -149,15 +153,22 @@ export default function Page() {
 
       const { data: unitData } = await supabase
         .from("units")
-        .select("id,unit_number,rent_amount,properties(name,landlords(full_name,profile_id))")
+        .select("id,unit_number,rent_amount,properties(name,landlords(id,full_name,profile_id))")
         .eq("id", unitId)
         .maybeSingle();
       const unitObj = unitData as unknown as { id?: string; unit_number?: string; rent_amount?: number; properties?: unknown } | null;
       const property = unitObj?.properties && Array.isArray(unitObj.properties) ? unitObj.properties[0] : unitObj?.properties;
       const propertyObj = property as { name?: string; landlords?: unknown } | null;
       const landlord = propertyObj?.landlords && Array.isArray(propertyObj.landlords) ? propertyObj.landlords[0] : propertyObj?.landlords;
-      const landlordObj = landlord as { full_name?: string; profile_id?: string } | null;
-      const landlordProfileId = landlordObj?.profile_id ?? "";
+      const landlordObj = landlord as { id?: string; full_name?: string; profile_id?: string | null } | null;
+      let landlordProfileId = String(landlordObj?.profile_id ?? "").trim();
+      const landlordRowId = landlordObj?.id ?? "";
+
+      if (!landlordProfileId && landlordRowId) {
+        const { data: landlordRow } = await supabase.from("landlords").select("profile_id").eq("id", landlordRowId).maybeSingle();
+        const lr = landlordRow as { profile_id?: string | null } | null;
+        landlordProfileId = String(lr?.profile_id ?? "").trim();
+      }
 
       setTenantName(tenantObj?.full_name ?? "Tenant");
       setLeaseStart(tenantObj?.lease_start ?? "-");
@@ -196,7 +207,7 @@ export default function Page() {
 
       if (tenantProfileId && landlordProfileId) {
         const subject = `${propertyObj?.name ?? "Lease"} Unit ${unitObj?.unit_number ?? ""}`.trim();
-        const { data: conversation } = await supabase
+        const { data: conversation, error: conversationUpsertError } = await supabase
           .from("conversations")
           .upsert(
             {
@@ -210,6 +221,10 @@ export default function Page() {
           )
           .select("id")
           .single();
+
+        if (conversationUpsertError) {
+          setConversationBootstrapError(conversationUpsertError.message || "Could not start conversation.");
+        }
 
         if (conversation?.id) {
           setConversationId(conversation.id);
@@ -228,6 +243,8 @@ export default function Page() {
               isMine: message.sender_profile_id === tenantProfileId,
             })),
           );
+        } else if (!conversationUpsertError) {
+          setConversationBootstrapError("Conversation could not be created. Try again later.");
         }
       }
 
@@ -445,9 +462,20 @@ export default function Page() {
                       </td>
                       <td className="capitalize text-text-muted">{payment.method}</td>
                       <td>
-                        <button type="button" aria-label="Download receipt" className="rounded-base p-2 text-primary-mid hover:bg-bg-page">
-                          <Download className="h-4 w-4" />
-                        </button>
+                        {payment.status === "paid" ? (
+                          <Link
+                            href={`/api/receipts/${payment.id}`}
+                            download
+                            aria-label="Download receipt"
+                            className="inline-flex rounded-base p-2 text-primary-mid hover:bg-bg-page"
+                          >
+                            <Download className="h-4 w-4" />
+                          </Link>
+                        ) : (
+                          <span className="inline-flex p-2 text-text-muted" title="Receipt available when payment is paid">
+                            —
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -573,7 +601,15 @@ export default function Page() {
               <div className="mt-3 flex items-start gap-2 rounded-base border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
                 <p className="leading-5 [text-wrap:pretty]">
-                  Messaging will unlock after both tenant and landlord profiles are connected. You can still send maintenance reports.
+                  {conversationBootstrapError
+                    ? conversationBootstrapError
+                    : !context?.tenantProfileId
+                      ? "Your profile is not linked to this login yet. Complete registration or contact support."
+                      : !context?.landlordProfileId
+                        ? "Your property manager account is not fully linked yet. Ask them to finish signup so messaging works."
+                        : !conversationId
+                          ? "Messaging could not be started. Try refreshing the page."
+                          : "Messaging will unlock after both tenant and landlord profiles are connected. You can still send maintenance reports."}
                 </p>
               </div>
             ) : null}

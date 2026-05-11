@@ -10,7 +10,7 @@ export default function ReportsClient() {
     <DashboardShell title="Reports">
       <div className="mx-auto max-w-2xl space-y-6">
         <p className="text-sm text-text-sub">
-          Download XML exports of your portfolio data. Files include only records you are allowed to see (same scope as
+          Download Excel (.xlsx) exports of your portfolio data. Files include only records you are allowed to see (same scope as
           Payments and Tenants).
         </p>
 
@@ -24,7 +24,7 @@ export default function ReportsClient() {
                 download
               >
                 <FileDown className="h-4 w-4 shrink-0" />
-                Download payments (XML)
+                Download payments (Excel)
               </Link>
             </li>
             <li>
@@ -34,7 +34,7 @@ export default function ReportsClient() {
                 download
               >
                 <FileDown className="h-4 w-4 shrink-0" />
-                Download tenants (XML)
+                Download tenants (Excel)
               </Link>
             </li>
           </ul>

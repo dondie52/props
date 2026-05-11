@@ -18,7 +18,7 @@ export default async function Page() {
     const [{ data }, { data: tenantData }] = await Promise.all([
       supabase
         .from("payments")
-        .select("amount,due_date,payment_date,method,status,tenants(full_name,units(unit_number,properties(name)))")
+        .select("id,amount,due_date,payment_date,method,status,tenants(full_name,units(unit_number,properties(name)))")
         .in("tenant_id", scope.tenantIds)
         .order("due_date", { ascending: false }),
       supabase
@@ -30,6 +30,7 @@ export default async function Page() {
 
     rows = (data ?? []).map((row) => {
       const rowObj = row as unknown as {
+        id?: unknown;
         tenants?: unknown;
         amount?: unknown;
         due_date?: unknown;
@@ -46,6 +47,7 @@ export default async function Page() {
       const status = normalizePaymentStatus(rowObj.status);
 
       return {
+        id: String(rowObj.id ?? ""),
         tenant: String(tenantObj?.full_name ?? "Unknown"),
         property: String(propertyObj?.name ?? "Unknown"),
         unit: String(unitObj?.unit_number ?? "-"),

@@ -1,6 +1,28 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { LandlordScope } from "@/lib/dashboard-scope";
-import type { PaymentExportRow, TenantExportRow } from "@/lib/report-xml";
+
+export type PaymentExportRow = {
+  tenant: string;
+  property: string;
+  unit: string;
+  amount: number;
+  dueDate: string;
+  paymentDate: string;
+  method: string;
+  status: string;
+};
+
+export type TenantExportRow = {
+  id: string;
+  name: string;
+  email: string;
+  property: string;
+  unit: string;
+  rentAmount: number;
+  leaseStart: string;
+  leaseEnd: string;
+  status: string;
+};
 
 function normalizePaymentStatus(value: unknown): "paid" | "pending" | "overdue" {
   return value === "paid" || value === "pending" || value === "overdue" ? value : "pending";
