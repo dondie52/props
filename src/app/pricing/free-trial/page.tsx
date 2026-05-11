@@ -1,19 +1,10 @@
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
-import { fetchSiteContentPayload, parsePricingFreeTrialPayload } from "@/lib/site-content";
-
-function ContentUnavailable() {
-  return (
-    <main className="min-h-screen bg-bg-page px-6 py-14 text-text-main">
-      <p className="text-sm text-text-muted">Content unavailable.</p>
-    </main>
-  );
-}
+import { fetchSiteContentPayload, resolvePricingFreeTrialPayload } from "@/lib/site-content";
 
 export default async function FreeTrialPage() {
   const raw = await fetchSiteContentPayload("pricing_free_trial");
-  const data = parsePricingFreeTrialPayload(raw);
-  if (!data) return <ContentUnavailable />;
+  const data = resolvePricingFreeTrialPayload(raw);
 
   return (
     <main className="min-h-screen bg-bg-page px-6 py-14 text-text-main">

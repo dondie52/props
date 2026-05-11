@@ -5,18 +5,10 @@ import logo from "../../logo and brand guildeline/propmanage_bw_logo.png";
 import { getMarketingIcon } from "@/lib/marketing-icons";
 import {
   fetchSiteContentPayload,
-  parseHomePayload,
+  resolveHomePayload,
   type HomePayload,
   type HomePricingCard,
 } from "@/lib/site-content";
-
-function HomeUnavailable() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-bg-page px-6 text-text-main">
-      <p className="text-sm text-text-muted">Content unavailable.</p>
-    </main>
-  );
-}
 
 function PricingCardBlock({ card }: { card: HomePricingCard }) {
   if (card.kind === "link") {
@@ -202,7 +194,6 @@ function HomeContent({ data }: { data: HomePayload }) {
 
 export default async function Home() {
   const raw = await fetchSiteContentPayload("home");
-  const data = parseHomePayload(raw);
-  if (!data) return <HomeUnavailable />;
+  const data = resolveHomePayload(raw);
   return <HomeContent data={data} />;
 }

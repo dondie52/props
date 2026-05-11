@@ -1,4 +1,9 @@
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
+import {
+  defaultHomePayload,
+  defaultPricingFreeTrialPayload,
+  defaultPricingProPayload,
+} from "@/lib/default-marketing-content";
 
 export type HomeFeatureItem = { icon_key: string; title: string; text: string };
 
@@ -292,4 +297,16 @@ export async function fetchSiteContentPayload(slug: string): Promise<unknown | n
   const { data, error } = await supabase.from("site_content").select("payload").eq("slug", slug).maybeSingle();
   if (error || !data?.payload) return null;
   return data.payload as unknown;
+}
+
+export function resolveHomePayload(raw: unknown | null): HomePayload {
+  return parseHomePayload(raw) ?? defaultHomePayload;
+}
+
+export function resolvePricingFreeTrialPayload(raw: unknown | null): PricingFreeTrialPayload {
+  return parsePricingFreeTrialPayload(raw) ?? defaultPricingFreeTrialPayload;
+}
+
+export function resolvePricingProPayload(raw: unknown | null): PricingProPayload {
+  return parsePricingProPayload(raw) ?? defaultPricingProPayload;
 }
