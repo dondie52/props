@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ComponentType } from "react";
 import {
   Building2,
+  FileDown,
   Home,
   ShieldCheck,
   X,
@@ -28,6 +29,7 @@ export const landlordNavItems: SidebarNavItem[] = [
   { label: "Tenants", href: "/dashboard/tenants", icon: Users },
   { label: "Payments", href: "/dashboard/payments", icon: CreditCard },
   { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
+  { label: "Reports", href: "/dashboard/reports", icon: FileDown },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
