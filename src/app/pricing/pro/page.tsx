@@ -1,19 +1,10 @@
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Headset, TrendingUp } from "lucide-react";
-import { fetchSiteContentPayload, parsePricingProPayload } from "@/lib/site-content";
-
-function ContentUnavailable() {
-  return (
-    <main className="min-h-screen bg-bg-page px-6 py-14 text-text-main">
-      <p className="text-sm text-text-muted">Content unavailable.</p>
-    </main>
-  );
-}
+import { fetchSiteContentPayload, resolvePricingProPayload } from "@/lib/site-content";
 
 export default async function ProPlanPage() {
   const raw = await fetchSiteContentPayload("pricing_pro");
-  const data = parsePricingProPayload(raw);
-  if (!data) return <ContentUnavailable />;
+  const data = resolvePricingProPayload(raw);
 
   return (
     <main className="min-h-screen bg-bg-page px-6 py-14 text-text-main">
