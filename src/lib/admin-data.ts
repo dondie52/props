@@ -135,6 +135,45 @@ export async function getAdminLandlordDetail(supabase: Client, landlordId: strin
   };
 }
 
+export type AdminTenantRow = {
+  id: string;
+  name: string;
+  email: string;
+  leaseEnd: string | null;
+  unitNumber: string;
+  propertyName: string;
+  landlordName: string;
+};
+
+export async function getAdminTenants(supabase: Client): Promise<AdminTenantRow[]> {
+  const { data: tenants } = await supabase
+    .from("tenants")
+    .select(
+      "id,full_name,email,lease_end,units(unit_number,properties(name,landlords(full_name)))",
+    )
+    .order("full_name");
+
+  return (tenants ?? []).map((row) => {
+    const rawUnits = row.units as unknown;
+    const units = Array.isArray(rawUnits) ? rawUnits[0] : rawUnits;
+    const u = units as
+      | { unit_number?: string; properties?: { name?: string; landlords?: { full_name?: string } | null } | null }
+      | null
+      | undefined;
+    const property = u?.properties ?? null;
+    const landlord = property?.landlords ?? null;
+    return {
+      id: row.id,
+      name: row.full_name ?? "—",
+      email: row.email ?? "—",
+      leaseEnd: row.lease_end ?? null,
+      unitNumber: u?.unit_number ?? "—",
+      propertyName: property?.name ?? "—",
+      landlordName: landlord?.full_name ?? "—",
+    };
+  });
+}
+
 export async function getAdminOverviewStats(supabase: Client) {
   const [{ count: landlordCount }, { count: propertyCount }, { data: units }, { count: tenantCount }, { data: payments }] = await Promise.all([
     supabase.from("landlords").select("*", { count: "exact", head: true }),

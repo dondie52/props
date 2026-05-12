@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import logo from "../../logo and brand guildeline/propmanage_bw_logo.png";
 
+const demoVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL?.trim() ?? "";
+const hasDemoVideo = /^https?:\/\//i.test(demoVideoUrl);
+
 const features = [
   {
     title: "Property Portfolio",
@@ -93,13 +96,25 @@ export default function Home() {
             >
               Start Free Trial
             </Link>
-            <Link
-              href="/dashboard"
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-border-ghost bg-white px-5 text-xs font-medium text-text-main"
-            >
-              <CirclePlay className="h-4 w-4" />
-              Watch Demo
-            </Link>
+            {hasDemoVideo ? (
+              <a
+                href={demoVideoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-10 items-center gap-2 rounded-md border border-border-ghost bg-white px-5 text-xs font-medium text-text-main"
+              >
+                <CirclePlay className="h-4 w-4" />
+                Watch Demo
+              </a>
+            ) : (
+              <a
+                href="#demo"
+                className="inline-flex h-10 items-center gap-2 rounded-md border border-border-ghost bg-white px-5 text-xs font-medium text-text-main"
+              >
+                <CirclePlay className="h-4 w-4" />
+                Watch Demo
+              </a>
+            )}
           </div>
         </div>
 
@@ -114,6 +129,24 @@ export default function Home() {
           />
         </div>
       </section>
+
+      {!hasDemoVideo && (
+        <section id="demo" className="scroll-mt-24 border-b border-border-ghost bg-bg-card py-12">
+          <div className="mx-auto max-w-2xl px-6 text-center">
+            <h2 className="text-xl font-semibold text-primary">Product demo</h2>
+            <p className="mt-2 text-sm leading-6 text-text-sub">
+              A short guided video is on the way. Until then, you can explore PropManage BW with a free trial in your
+              browser.
+            </p>
+            <Link
+              href="/auth/register"
+              className="mt-5 inline-flex h-10 items-center rounded-md bg-primary px-5 text-xs font-medium text-white"
+            >
+              Start free trial
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section id="features" className="border-y border-border-ghost bg-[#f6f8fb] py-14">
         <div className="mx-auto max-w-7xl px-6">

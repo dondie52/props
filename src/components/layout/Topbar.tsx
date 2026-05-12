@@ -3,9 +3,13 @@ import { Bell, Menu, Search } from "lucide-react";
 type TopbarProps = {
   title: string;
   onOpenSidebar?: () => void;
+  /** Main line above the role chip (desktop header). */
+  userTitle?: string;
+  /** Small caps line under `userTitle` (e.g. Landlord vs Admin). */
+  userRole?: string;
 };
 
-export default function Topbar({ title, onOpenSidebar }: TopbarProps) {
+export default function Topbar({ title, onOpenSidebar, userTitle = "Property Manager", userRole = "Landlord" }: TopbarProps) {
   return (
     <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-border-ghost bg-bg-card/80 px-4 backdrop-blur-md md:px-8">
       <div className="flex items-center gap-4">
@@ -54,8 +58,8 @@ export default function Topbar({ title, onOpenSidebar }: TopbarProps) {
 
         <div className="flex items-center gap-3 pl-1">
           <div className="hidden sm:block text-right">
-            <p className="text-xs font-semibold text-text-main leading-none">Property Manager</p>
-            <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider font-bold">Landlord</p>
+            <p className="text-xs font-semibold text-text-main leading-none">{userTitle}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">{userRole}</p>
           </div>
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-mid to-primary text-white flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-white transition-transform hover:scale-105 cursor-pointer">
             PM

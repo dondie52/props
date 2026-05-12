@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ComponentType } from "react";
 import {
   Building2,
+  Contact,
   Home,
   ShieldCheck,
   X,
@@ -35,6 +36,7 @@ export const adminNavItems: SidebarNavItem[] = [
   { label: "Overview", href: "/admin", icon: Home },
   { label: "Landlords", href: "/admin/landlords", icon: Users },
   { label: "Properties", href: "/admin/properties", icon: Building2 },
+  { label: "Tenants", href: "/admin/tenants", icon: Contact },
   { label: "Settings", href: "/dashboard/settings", icon: ShieldCheck },
 ];
 
@@ -42,9 +44,16 @@ type SidebarProps = {
   navItems?: SidebarNavItem[];
   isOpen?: boolean;
   onClose?: () => void;
+  /** Home route for the logo (landlord vs admin shell). */
+  brandHref?: string;
 };
 
-export default function Sidebar({ navItems = landlordNavItems, isOpen = false, onClose }: SidebarProps) {
+export default function Sidebar({
+  navItems = landlordNavItems,
+  isOpen = false,
+  onClose,
+  brandHref = "/dashboard",
+}: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [displayName, setDisplayName] = useState("User");
@@ -125,7 +134,17 @@ export default function Sidebar({ navItems = landlordNavItems, isOpen = false, o
     >
       <div className="flex h-20 shrink-0 items-center px-8 border-b border-border-ghost/50">
         <div className="flex items-center justify-between w-full">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
+          <Link
+            href={brandHref}
+            scroll={false}
+            onClick={(event) => {
+              if (pathname === brandHref) {
+                event.preventDefault();
+                onClose?.();
+              }
+            }}
+            className="flex items-center gap-3 group"
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 transition-transform group-hover:scale-110">
               <Image src={logo} alt="PropManage BW logo" className="h-6 w-6 brightness-0 invert" />
             </div>

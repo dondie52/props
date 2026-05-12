@@ -7,6 +7,8 @@ type StatCardProps = {
   trend?: string;
   trendUp?: boolean;
   icon: ReactNode;
+  /** When set, the whole card navigates here (keyboard and screen-reader friendly). */
+  href?: string;
 };
 
 export default function StatCard({
@@ -15,9 +17,14 @@ export default function StatCard({
   trend,
   trendUp = true,
   icon,
+  href,
 }: StatCardProps) {
   return (
-    <Card className="flex flex-col justify-between overflow-hidden relative">
+    <Card
+      href={href}
+      ariaLabel={href ? `${title}: ${value}. Open details.` : undefined}
+      className="flex h-full flex-col justify-between overflow-hidden relative"
+    >
       <div className="relative z-10">
         <div className="mb-4 flex items-start justify-between">
           <p className="text-sm font-semibold tracking-tight text-text-sub uppercase">
