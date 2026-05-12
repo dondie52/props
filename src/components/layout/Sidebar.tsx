@@ -38,6 +38,8 @@ export const adminNavItems: SidebarNavItem[] = [
   { label: "Landlords", href: "/admin/landlords", icon: Users },
   { label: "Tenants", href: "/admin/tenants", icon: Users },
   { label: "Properties", href: "/admin/properties", icon: Building2 },
+  { label: "Reports", href: "/admin/reports", icon: FileDown },
+  { label: "Billing", href: "/dashboard/settings?tab=billing", icon: CreditCard },
   { label: "Settings", href: "/dashboard/settings", icon: ShieldCheck },
 ];
 

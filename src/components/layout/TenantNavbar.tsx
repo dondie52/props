@@ -55,6 +55,9 @@ export default function TenantNavbar() {
       <Link className="hover:text-primary" href="/tenant/dashboard#messages" onClick={() => setIsOpen(false)}>
         Messages
       </Link>
+      <Link className="hover:text-primary" href="/tenant/reports" onClick={() => setIsOpen(false)}>
+        Reports
+      </Link>
     </>
   );
 

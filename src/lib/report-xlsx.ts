@@ -1,17 +1,23 @@
 import * as XLSX from "xlsx";
-import type { PaymentExportRow, TenantExportRow } from "@/lib/report-export-data";
+import type { MaintenanceExportRow, PaymentExportRow, TenantExportRow } from "@/lib/report-export-data";
 
 export type ReportWorkbookMeta = {
   generatedAt: string;
-  landlordId: string | null;
+  landlordId?: string | null;
+  /** Shown in workbook metadata row when set (e.g. admin or tenant scope). */
+  scopeDescription?: string;
 };
 
 function metaRows(meta: ReportWorkbookMeta): (string | number)[][] {
-  return [
-    ["Report generated (UTC)", meta.generatedAt],
-    ["Landlord ID", meta.landlordId ?? ""],
-    [],
-  ];
+  const rows: (string | number)[][] = [["Report generated (UTC)", meta.generatedAt]];
+  if (meta.scopeDescription) {
+    rows.push(["Scope", meta.scopeDescription]);
+  }
+  if (meta.landlordId) {
+    rows.push(["Landlord ID", meta.landlordId]);
+  }
+  rows.push([]);
+  return rows;
 }
 
 export function buildPaymentsXlsxBuffer(rows: PaymentExportRow[], meta: ReportWorkbookMeta): Buffer {
@@ -41,5 +47,15 @@ export function buildTenantsXlsxBuffer(rows: TenantExportRow[], meta: ReportWork
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "tenants");
+  return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
+}
+
+export function buildMaintenanceXlsxBuffer(rows: MaintenanceExportRow[], meta: ReportWorkbookMeta): Buffer {
+  const header = ["category", "description", "status", "urgency", "createdAt"];
+  const data = rows.map((r) => [r.category, r.description, r.status, r.urgency, r.createdAt]);
+  const aoa = [...metaRows(meta), header, ...data];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "maintenance");
   return XLSX.write(wb, { type: "buffer", bookType: "xlsx" }) as Buffer;
 }

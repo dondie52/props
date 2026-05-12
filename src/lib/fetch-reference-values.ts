@@ -9,6 +9,9 @@ export async function fetchReferenceValues(
     .select("value")
     .eq("category", category)
     .order("sort_order", { ascending: true });
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.warn("[fetchReferenceValues]", category, error.message);
+    return [];
+  }
   return (data ?? []).map((row) => row.value);
 }
