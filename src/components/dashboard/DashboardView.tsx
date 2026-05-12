@@ -18,8 +18,6 @@ export default function DashboardView({ stats, paymentRows, maintenanceRows, occ
   const getOccupancyLabel = (value: unknown, index?: number) => {
     const label = String(value ?? "").trim();
     if (label) return label;
-    if (index === 0) return "CBD";
-    if (index === 1) return "West Gate";
     return `Property ${Number(index ?? 0) + 1}`;
   };
 

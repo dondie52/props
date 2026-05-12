@@ -7,6 +7,7 @@ import type { ComponentType } from "react";
 import {
   Building2,
   Contact,
+  FileDown,
   Home,
   ShieldCheck,
   X,
@@ -29,6 +30,7 @@ export const landlordNavItems: SidebarNavItem[] = [
   { label: "Tenants", href: "/dashboard/tenants", icon: Users },
   { label: "Payments", href: "/dashboard/payments", icon: CreditCard },
   { label: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
+  { label: "Reports", href: "/dashboard/reports", icon: FileDown },
   { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
@@ -37,6 +39,7 @@ export const adminNavItems: SidebarNavItem[] = [
   { label: "Landlords", href: "/admin/landlords", icon: Users },
   { label: "Properties", href: "/admin/properties", icon: Building2 },
   { label: "Tenants", href: "/admin/tenants", icon: Contact },
+  { label: "Reports", href: "/admin/reports", icon: FileDown },
   { label: "Settings", href: "/dashboard/settings", icon: ShieldCheck },
 ];
 

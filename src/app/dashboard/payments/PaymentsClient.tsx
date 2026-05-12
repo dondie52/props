@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -331,9 +332,20 @@ export default function PaymentsClient({
                     <StatusChip status={row.status} />
                   </td>
                   <td>
-                    <button type="button" aria-label="Download receipt" className="text-primary-mid">
-                      <Download className="h-4 w-4" />
-                    </button>
+                    {row.status === "paid" && row.id ? (
+                      <Link
+                        href={`/api/receipts/${row.id}`}
+                        download
+                        aria-label="Download receipt"
+                        className="inline-flex text-primary-mid hover:underline"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Link>
+                    ) : (
+                      <span className="text-text-muted" title="Receipt available when payment is marked paid">
+                        —
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -354,6 +366,12 @@ export default function PaymentsClient({
               <p className="text-xs text-text-muted">
                 Due {row.due} - {formatPaymentType(row.method)}
               </p>
+              {row.status === "paid" && row.id ? (
+                <Link href={`/api/receipts/${row.id}`} download className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-mid">
+                  <Download className="h-3.5 w-3.5" />
+                  Download receipt
+                </Link>
+              ) : null}
             </article>
           ))}
         </div>
