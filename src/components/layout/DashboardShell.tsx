@@ -17,7 +17,12 @@ export default function DashboardShell({ title, children, variant = "landlord" }
 
   return (
     <div className="h-dvh overflow-hidden bg-bg-page">
-      <Sidebar navItems={navItems} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar
+        navItems={navItems}
+        brandHref={variant === "admin" ? "/admin" : "/dashboard"}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
       {isSidebarOpen ? (
         <button
           type="button"
@@ -28,7 +33,12 @@ export default function DashboardShell({ title, children, variant = "landlord" }
       ) : null}
 
       <div className="flex h-dvh flex-col text-text-main lg:ml-[280px]">
-        <Topbar title={title} onOpenSidebar={() => setIsSidebarOpen(true)} />
+        <Topbar
+          title={title}
+          onOpenSidebar={() => setIsSidebarOpen(true)}
+          userTitle={variant === "admin" ? "Administrator" : "Property Manager"}
+          userRole={variant === "admin" ? "Admin" : "Landlord"}
+        />
         <main className="flex-1 overflow-y-auto bg-bg-page px-4 py-6 text-text-main md:px-8 md:py-8 lg:px-10">
           <div className="mx-auto max-w-[1400px]">
             {children}

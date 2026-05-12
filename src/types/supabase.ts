@@ -63,6 +63,7 @@ export type Database = {
           email: string;
           role: "admin" | "landlord" | "tenant";
           onboarding_state: Json | null;
+          avatar_path: string | null;
           created_at: string;
         };
         Insert: {
@@ -72,6 +73,7 @@ export type Database = {
           email: string;
           role: "admin" | "landlord" | "tenant";
           onboarding_state?: Json | null;
+          avatar_path?: string | null;
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;

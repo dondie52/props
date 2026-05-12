@@ -1,79 +1,15 @@
-"use client";
-
 import { Bell, Menu, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 type TopbarProps = {
   title: string;
   onOpenSidebar?: () => void;
+  /** Main line above the role chip (desktop header). */
+  userTitle?: string;
+  /** Small caps line under `userTitle` (e.g. Landlord vs Admin). */
+  userRole?: string;
 };
 
-export default function Topbar({ title, onOpenSidebar }: TopbarProps) {
-  const [displayName, setDisplayName] = useState("User");
-  const [displayRole, setDisplayRole] = useState("Member");
-
-  useEffect(() => {
-    let mounted = true;
-
-    const applyUser = async (user: { id: string; email?: string | null; user_metadata?: Record<string, unknown> } | null) => {
-      if (!mounted) return;
-      if (!user) {
-        setDisplayName("User");
-        setDisplayRole("Member");
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name,role")
-        .eq("auth_user_id", user.id)
-        .maybeSingle();
-
-      const metadataName = typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : "";
-      const profileName = typeof profile?.full_name === "string" ? profile.full_name.trim() : "";
-      const role = typeof profile?.role === "string" ? profile.role : "member";
-
-      setDisplayName(profileName || metadataName || user.email?.split("@")[0] || "User");
-      setDisplayRole(role);
-    };
-
-    const loadUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user) {
-        await applyUser(session.user);
-        return;
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      await applyUser(user);
-    };
-
-    loadUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      void applyUser(session?.user ?? null);
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const initials = useMemo(() => {
-    const parts = displayName.split(" ").filter(Boolean);
-    if (parts.length === 0) return "U";
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }, [displayName]);
-
+export default function Topbar({ title, onOpenSidebar, userTitle = "Property Manager", userRole = "Landlord" }: TopbarProps) {
   return (
     <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-border-ghost bg-bg-card/80 px-4 backdrop-blur-md md:px-8">
       <div className="flex items-center gap-4">
@@ -122,11 +58,11 @@ export default function Topbar({ title, onOpenSidebar }: TopbarProps) {
 
         <div className="flex items-center gap-3 pl-1">
           <div className="hidden sm:block text-right">
-            <p className="text-xs font-semibold text-text-main leading-none">{displayName}</p>
-            <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider font-bold">{displayRole}</p>
+            <p className="text-xs font-semibold text-text-main leading-none">{userTitle}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-text-muted">{userRole}</p>
           </div>
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-mid to-primary text-white flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-white transition-transform hover:scale-105 cursor-pointer">
-            {initials}
+            PM
           </div>
         </div>
       </div>

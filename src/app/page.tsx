@@ -56,7 +56,10 @@ function PricingCardBlock({ card }: { card: HomePricingCard }) {
   );
 }
 
-function HomeContent({ data }: { data: HomePayload }) {
+function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; hasDemoVideo: boolean; demoVideoUrl: string }) {
+  const demoButtonClass =
+    "inline-flex h-10 items-center gap-2 rounded-md border border-border-ghost bg-white px-5 text-xs font-medium text-text-main";
+
   return (
     <main className="min-h-screen bg-bg-page text-text-main">
       <header className="border-b border-border-ghost bg-bg-card">
@@ -100,13 +103,17 @@ function HomeContent({ data }: { data: HomePayload }) {
             >
               {data.heroCtaTrialLabel}
             </Link>
-            <Link
-              href={data.heroCtaDemoPath}
-              className="inline-flex h-10 items-center gap-2 rounded-md border border-border-ghost bg-white px-5 text-xs font-medium text-text-main"
-            >
-              <CirclePlay className="h-4 w-4" />
-              {data.heroCtaDemoLabel}
-            </Link>
+            {hasDemoVideo ? (
+              <a href={demoVideoUrl} target="_blank" rel="noopener noreferrer" className={demoButtonClass}>
+                <CirclePlay className="h-4 w-4" />
+                {data.heroCtaDemoLabel}
+              </a>
+            ) : (
+              <Link href="#demo" className={demoButtonClass}>
+                <CirclePlay className="h-4 w-4" />
+                {data.heroCtaDemoLabel}
+              </Link>
+            )}
           </div>
         </div>
 
@@ -121,6 +128,24 @@ function HomeContent({ data }: { data: HomePayload }) {
           />
         </div>
       </section>
+
+      {!hasDemoVideo ? (
+        <section id="demo" className="scroll-mt-24 border-b border-border-ghost bg-bg-card py-12">
+          <div className="mx-auto max-w-2xl px-6 text-center">
+            <h2 className="text-xl font-semibold text-primary">Product demo</h2>
+            <p className="mt-2 text-sm leading-6 text-text-sub">
+              A short guided video is on the way. Until then, you can explore PropManage BW with a free trial in your
+              browser.
+            </p>
+            <Link
+              href={data.heroCtaTrialPath}
+              className="mt-5 inline-flex h-10 items-center rounded-md bg-primary px-5 text-xs font-medium text-white"
+            >
+              {data.heroCtaTrialLabel}
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       <section id="features" className="border-y border-border-ghost bg-[#f6f8fb] py-14">
         <div className="mx-auto max-w-7xl px-6">
@@ -193,7 +218,11 @@ function HomeContent({ data }: { data: HomePayload }) {
 }
 
 export default async function Home() {
+  const demoVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL?.trim() ?? "";
+  const hasDemoVideo = /^https?:\/\//i.test(demoVideoUrl);
+
   const raw = await fetchSiteContentPayload("home");
   const data = resolveHomePayload(raw);
-  return <HomeContent data={data} />;
+
+  return <HomeContent data={data} hasDemoVideo={hasDemoVideo} demoVideoUrl={demoVideoUrl} />;
 }

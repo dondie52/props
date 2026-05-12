@@ -1,113 +1,195 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Camera, CreditCard, Loader2 } from "lucide-react";
+import { Camera, Loader2, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import DashboardShell from "@/components/layout/DashboardShell";
 import Card from "@/components/ui/Card";
 import { supabase } from "@/lib/supabase";
 
-const ALL_TABS = ["Profile", "Security", "Billing", "Notifications"] as const;
-type TabId = (typeof ALL_TABS)[number];
+const tabs = ["Profile", "Security", "Notifications"] as const;
 
-function SettingsContent() {
-  const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<TabId>("Profile");
-  const [role, setRole] = useState<string | null>(null);
+const AVATAR_BUCKET = "profile-avatars";
+
+function avatarObjectPath(userId: string) {
+  return `avatars/${userId}/avatar`;
+}
+
+function initialsFromName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+export default function Page() {
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("Profile");
+  const [loading, setLoading] = useState(true);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [loadError, setLoadError] = useState("");
-  const [saveMessage, setSaveMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [avatarPath, setAvatarPath] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const showBilling = role !== "tenant";
-
-  const tabs = useMemo(() => ALL_TABS.filter((t) => (t === "Billing" ? showBilling : true)), [showBilling]);
-
-  useEffect(() => {
-    const tabParam = searchParams.get("tab");
-    if (tabParam === "billing" && showBilling) {
-      setActiveTab("Billing");
+  const refreshAvatarUrl = useCallback(async (path: string | null) => {
+    if (!path) {
+      setAvatarUrl(null);
+      return;
     }
-  }, [searchParams, showBilling]);
-
-  useEffect(() => {
-    if (!tabs.includes(activeTab)) {
-      setActiveTab("Profile");
+    const { data, error: signError } = await supabase.storage
+      .from(AVATAR_BUCKET)
+      .createSignedUrl(path, 60 * 60 * 24);
+    if (signError || !data?.signedUrl) {
+      setAvatarUrl(null);
+      return;
     }
-  }, [tabs, activeTab]);
+    setAvatarUrl(data.signedUrl);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
+
     const load = async () => {
-      setIsLoading(true);
-      setLoadError("");
+      setLoading(true);
+      setError(null);
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) {
-        if (!cancelled) setIsLoading(false);
+      if (!user || cancelled) {
+        setLoading(false);
         return;
       }
-      const { data: profile, error } = await supabase
+
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("id,full_name,email,role")
+        .select("id, full_name, email, avatar_path")
         .eq("auth_user_id", user.id)
         .maybeSingle();
+
       if (cancelled) return;
-      if (error || !profile) {
-        setLoadError(error?.message ?? "Could not load your profile.");
-        setIsLoading(false);
+
+      if (profileError || !profile) {
+        setError(profileError?.message ?? "Could not load your profile.");
+        setLoading(false);
         return;
       }
+
       setProfileId(profile.id);
       setFullName(profile.full_name ?? "");
-      setEmail(profile.email ?? user.email ?? "");
-      setRole(typeof profile.role === "string" ? profile.role : null);
-      setIsLoading(false);
+      setEmail(profile.email ?? "");
+      setAvatarPath(profile.avatar_path ?? null);
+      await refreshAvatarUrl(profile.avatar_path ?? null);
+      setLoading(false);
     };
+
     void load();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refreshAvatarUrl]);
 
-  const shellVariant = role === "admin" ? "admin" : "landlord";
+  const handleAvatarPick = async (fileList: FileList | null) => {
+    setMessage(null);
+    setError(null);
+    const file = fileList?.[0];
+    if (!file) return;
 
-  const handleSaveProfile = async () => {
-    setSaveMessage("");
-    if (!profileId || !fullName.trim()) {
-      setSaveMessage("Full name is required.");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setError("You need to be signed in to upload a photo.");
       return;
     }
-    setIsSaving(true);
-    const { error } = await supabase.from("profiles").update({ full_name: fullName.trim() }).eq("id", profileId);
-    setIsSaving(false);
-    if (error) {
-      setSaveMessage(error.message);
+    if (!profileId) {
+      setError("Profile not loaded yet. Try again in a moment.");
       return;
     }
-    setSaveMessage("Saved.");
+
+    const okType = ["image/jpeg", "image/png", "image/webp"].includes(file.type);
+    if (!okType) {
+      setError("Please choose a JPG, PNG, or WebP image.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be 5MB or smaller.");
+      return;
+    }
+
+    const path = avatarObjectPath(user.id);
+    setUploading(true);
+    const { error: uploadError } = await supabase.storage.from(AVATAR_BUCKET).upload(path, file, {
+      upsert: true,
+      contentType: file.type,
+      cacheControl: "3600",
+    });
+
+    if (uploadError) {
+      setUploading(false);
+      setError(uploadError.message);
+      return;
+    }
+
+    const { error: updateError } = await supabase.from("profiles").update({ avatar_path: path }).eq("id", profileId);
+
+    setUploading(false);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    setAvatarPath(path);
+    await refreshAvatarUrl(path);
+    setMessage("Profile photo updated.");
   };
 
-  if (isLoading) {
-    return (
-      <DashboardShell title="Settings" variant={shellVariant}>
-        <div className="flex items-center justify-center gap-2 py-16 text-text-muted">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          Loading settings…
-        </div>
-      </DashboardShell>
-    );
-  }
+  const handleRemoveAvatar = async () => {
+    setMessage(null);
+    setError(null);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user || !profileId) return;
+
+    const path = avatarObjectPath(user.id);
+    setUploading(true);
+    await supabase.storage.from(AVATAR_BUCKET).remove([path]);
+    const { error: updateError } = await supabase.from("profiles").update({ avatar_path: null }).eq("id", profileId);
+    setUploading(false);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    setAvatarPath(null);
+    setAvatarUrl(null);
+    setMessage("Profile photo removed.");
+  };
+
+  const handleSaveProfile = async () => {
+    if (!profileId) return;
+    setSaving(true);
+    setMessage(null);
+    setError(null);
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ full_name: fullName.trim() || "User" })
+      .eq("id", profileId);
+    setSaving(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    setMessage("Profile saved.");
+  };
 
   return (
-    <DashboardShell title="Settings" variant={shellVariant}>
-      {loadError ? (
-        <p className="rounded-base border border-red-200 bg-red-50 px-4 py-3 text-sm text-error">{loadError}</p>
-      ) : null}
+    <DashboardShell title="Settings">
       <div className="flex flex-col gap-6 lg:flex-row">
         <Card className="w-full shrink-0 p-4 lg:w-60">
           <div className="flex gap-1 overflow-x-auto pb-1 lg:block">
@@ -126,112 +208,131 @@ function SettingsContent() {
         <Card className="flex-1 p-5 sm:p-8">
           {activeTab === "Profile" ? (
             <div>
-              <div className="group relative mb-6 h-20 w-20 overflow-hidden rounded-pill bg-primary-mid text-white">
-                <div className="flex h-full items-center justify-center text-xl font-semibold">
-                  {fullName
-                    .split(" ")
-                    .filter(Boolean)
-                    .map((p) => p[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase() || "?"}
+              {error ? <p className="mb-3 text-sm text-error">{error}</p> : null}
+              {message ? <p className="mb-3 text-sm text-success">{message}</p> : null}
+
+              {loading ? (
+                <div className="flex items-center gap-2 text-text-muted">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-sm">Loading profile…</span>
                 </div>
-                <div className="absolute inset-0 hidden items-center justify-center bg-black/30 group-hover:flex">
-                  <Camera className="h-4 w-4" aria-hidden />
-                </div>
-              </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs font-medium text-text-muted">Full name</span>
-                  <input
-                    className="h-11 w-full rounded-base border border-border-ghost px-3 focus:border-primary focus:outline-none"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    autoComplete="name"
-                  />
-                </label>
-                <label className="block md:col-span-2">
-                  <span className="mb-1 block text-xs font-medium text-text-muted">Email</span>
-                  <input
-                    className="h-11 w-full rounded-base border border-border-ghost bg-bg-page px-3 text-text-muted"
-                    value={email}
-                    readOnly
-                    title="Email is managed through your account provider."
-                  />
-                </label>
-                <p className="md:col-span-2 text-xs text-text-muted">Phone and company fields can be added later.</p>
-              </div>
-              <button
-                type="button"
-                disabled={isSaving}
-                onClick={() => void handleSaveProfile()}
-                className="mt-4 inline-flex h-11 items-center justify-center rounded-base bg-primary px-5 text-white disabled:opacity-60"
-              >
-                {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                Save changes
-              </button>
-              {saveMessage ? (
-                <p className={`mt-3 text-sm ${saveMessage === "Saved." ? "text-green-700" : "text-error"}`}>{saveMessage}</p>
-              ) : null}
+              ) : (
+                <>
+                  <div className="mb-2 flex flex-wrap items-end gap-4">
+                    <div className="relative">
+                      <label
+                        htmlFor="settings-avatar-input"
+                        className="group relative mb-1 flex h-20 w-20 cursor-pointer overflow-hidden rounded-pill bg-primary-mid text-white shadow-sm ring-2 ring-transparent transition hover:ring-primary/30"
+                      >
+                        {avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xl font-semibold">
+                            {initialsFromName(fullName)}
+                          </div>
+                        )}
+                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition group-hover:opacity-100">
+                          {uploading ? (
+                            <Loader2 className="h-6 w-6 animate-spin text-white" />
+                          ) : (
+                            <Camera className="h-5 w-5 text-white" />
+                          )}
+                        </div>
+                      </label>
+                      <input
+                        id="settings-avatar-input"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="sr-only"
+                        disabled={uploading || !profileId}
+                        onChange={(e) => {
+                          void handleAvatarPick(e.target.files);
+                          e.target.value = "";
+                        }}
+                      />
+                      <p className="max-w-[11rem] text-[11px] text-text-muted">Click photo to upload. JPG, PNG, or WebP · max 5MB</p>
+                    </div>
+                    {avatarPath ? (
+                      <button
+                        type="button"
+                        onClick={() => void handleRemoveAvatar()}
+                        disabled={uploading || !profileId}
+                        className="mb-6 inline-flex h-9 items-center gap-1.5 rounded-base border border-border-ghost px-3 text-xs font-medium text-text-sub transition hover:border-error hover:text-error disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Remove photo
+                      </button>
+                    ) : null}
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="block text-sm font-medium text-text-main">
+                      Full name
+                      <input
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="mt-1 h-11 w-full rounded-base border border-border-ghost px-3 focus:border-primary focus:outline-none"
+                        placeholder="Full Name"
+                        autoComplete="name"
+                      />
+                    </label>
+                    <label className="block text-sm font-medium text-text-main">
+                      Email
+                      <input
+                        value={email}
+                        readOnly
+                        className="mt-1 h-11 w-full cursor-not-allowed rounded-base border border-border-ghost bg-bg-page px-3 text-text-muted"
+                        placeholder="Email"
+                        title="Email is managed in your account security settings."
+                      />
+                    </label>
+                    <input
+                      className="h-11 rounded-base border border-border-ghost px-3 focus:border-primary focus:outline-none"
+                      placeholder="Phone"
+                    />
+                    <input
+                      className="h-11 rounded-base border border-border-ghost px-3 focus:border-primary focus:outline-none"
+                      placeholder="Company"
+                    />
+                    <select className="h-11 rounded-base border border-border-ghost px-3 focus:border-primary focus:outline-none">
+                      <option>Botswana</option>
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void handleSaveProfile()}
+                    disabled={saving || !profileId}
+                    className="mt-4 inline-flex h-11 items-center gap-2 rounded-base bg-primary px-5 text-white disabled:opacity-50"
+                  >
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    Save Changes
+                  </button>
+                </>
+              )}
             </div>
           ) : null}
           {activeTab === "Security" ? (
             <div className="space-y-5">
               <div>
-                <h2 className="mb-3 text-lg font-semibold text-primary">Password</h2>
-                <p className="text-sm text-text-sub">
-                  Use the Supabase / hosted auth flow to reset your password from the login page (“Forgot password”), or
-                  change it in your identity provider if your workspace uses SSO.
-                </p>
+                <h2 className="mb-3 text-lg font-semibold text-primary">Change Password</h2>
+                <div className="grid gap-3">
+                  <input className="h-11 rounded-base border border-border-ghost px-3" placeholder="Current Password" />
+                  <input className="h-11 rounded-base border border-border-ghost px-3" placeholder="New Password" />
+                  <input className="h-11 rounded-base border border-border-ghost px-3" placeholder="Confirm Password" />
+                </div>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <p className="text-text-main">Two-factor authentication</p>
-                <span className="text-xs text-text-muted">Coming soon</span>
-              </div>
-            </div>
-          ) : null}
-          {activeTab === "Billing" && showBilling ? (
-            <div>
-              <div className="rounded-base bg-primary p-6 text-white">
-                <p className="text-sm">Pro</p>
-                <p className="text-2xl font-bold">P199/month</p>
-                <p className="text-sm">Next billing: 01 Jun 2026</p>
-              </div>
-              <button type="button" className="mt-4 h-11 rounded-base bg-accent px-5 text-white">
-                Upgrade plan
-              </button>
-              <div className="mt-6 flex flex-col gap-3 rounded-base border border-border-ghost p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-primary-mid" />
-                  <p className="text-text-main">Visa ending in 4242</p>
-                </div>
-                <button type="button" className="text-sm text-primary-mid">
-                  Update
+                <button type="button" className="relative h-6 w-11 rounded-pill bg-primary-mid">
+                  <span className="absolute right-1 top-1 h-4 w-4 rounded-pill bg-white" />
                 </button>
               </div>
-              <p className="mt-4 text-xs text-text-muted">Payment integration is illustrative until connected to a billing provider.</p>
             </div>
           ) : null}
           {activeTab === "Notifications" ? <p className="text-text-sub">Notification preferences coming soon.</p> : null}
         </Card>
       </div>
     </DashboardShell>
-  );
-}
-
-export default function Page() {
-  return (
-    <Suspense
-      fallback={
-        <DashboardShell title="Settings">
-          <div className="flex items-center justify-center gap-2 py-16 text-text-muted">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            Loading…
-          </div>
-        </DashboardShell>
-      }
-    >
-      <SettingsContent />
-    </Suspense>
   );
 }
