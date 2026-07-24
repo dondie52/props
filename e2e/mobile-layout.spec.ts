@@ -10,6 +10,8 @@ const DASHBOARD_ROUTES = [
   "/dashboard/settings",
 ] as const;
 
+const PUBLIC_ROUTES = ["/", "/auth/login", "/tenant/dashboard"] as const;
+
 async function enableE2EAuth(page: Page) {
   await page.context().addCookies([
     {
@@ -35,6 +37,9 @@ async function assertMainAlignedToViewport(page: Page) {
   const box = await main.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x).toBeLessThan(32);
+
+  const innerWidth = await page.evaluate(() => window.innerWidth);
+  expect(box!.width).toBeGreaterThanOrEqual(innerWidth * 0.85);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -43,6 +48,15 @@ test.beforeEach(async ({ page }) => {
 
 for (const route of DASHBOARD_ROUTES) {
   test(`mobile layout has no horizontal shift on ${route}`, async ({ page }) => {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect(page.locator("main").first()).toBeVisible();
+    await assertNoHorizontalOverflow(page);
+    await assertMainAlignedToViewport(page);
+  });
+}
+
+for (const route of PUBLIC_ROUTES) {
+  test(`mobile layout fills viewport on ${route}`, async ({ page }) => {
     await page.goto(route, { waitUntil: "domcontentloaded" });
     await expect(page.locator("main").first()).toBeVisible();
     await assertNoHorizontalOverflow(page);
