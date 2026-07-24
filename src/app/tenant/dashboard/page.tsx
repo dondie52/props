@@ -349,9 +349,9 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen scroll-smooth bg-bg-page">
+    <div className="min-h-screen w-full min-w-0 scroll-smooth bg-bg-page">
       <TenantNavbar />
-      <main className="mx-auto max-w-7xl space-y-5 p-4 pt-20 md:p-8">
+      <main className="mx-auto w-full max-w-7xl space-y-5 p-4 pt-6 md:p-8">
         {error ? <div className="rounded-base border border-red-200 bg-red-50 px-4 py-3 text-sm text-error">{error}</div> : null}
 
         {!isLoading && !hasLease ? (
@@ -382,7 +382,7 @@ export default function Page() {
             <div className="grid gap-5 p-6 md:grid-cols-[1fr_auto] md:p-8">
               <div>
                 <p className="text-sm text-white/70">Tenant portal</p>
-                <h1 className="mt-2 text-3xl font-bold">Welcome back, {tenantName}</h1>
+                <h1 className="mt-2 text-2xl font-bold sm:text-3xl">Welcome back, {tenantName}</h1>
                 <p className="mt-2 text-sm text-white/75">
                   {propertyName} · Unit {unitName} · Managed by {landlordName}
                 </p>
@@ -441,7 +441,7 @@ export default function Page() {
               <h2 className="text-lg font-semibold text-primary">Payment History</h2>
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin text-text-muted" /> : null}
             </div>
-            <div className="overflow-x-auto">
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
                   <tr className="text-left text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -482,12 +482,34 @@ export default function Page() {
                 </tbody>
               </table>
             </div>
+            <div className="space-y-3 md:hidden">
+              {payments.map((payment) => (
+                <article key={payment.id} className="rounded-base border border-border-ghost bg-bg-page p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-medium text-text-main">{formatMoney(payment.amount)}</p>
+                    <StatusChip status={payment.status} />
+                  </div>
+                  <p className="mt-1 text-xs text-text-muted">Due {formatDate(payment.dueDate)}</p>
+                  <p className="text-xs capitalize text-text-muted">{payment.method}</p>
+                  {payment.status === "paid" ? (
+                    <Link
+                      href={`/api/receipts/${payment.id}`}
+                      download
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-mid"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download receipt
+                    </Link>
+                  ) : null}
+                </article>
+              ))}
+            </div>
             {!payments.length && !isLoading ? <p className="py-6 text-sm text-text-muted">No payments have been posted yet.</p> : null}
           </Card>
 
           <Card>
             <div id="maintenance" className="scroll-mt-24" />
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-primary">Maintenance</h2>
                 <p className="text-sm text-text-muted">Track requests and report issues from your unit.</p>
@@ -499,7 +521,7 @@ export default function Page() {
                   setIsRequestOpen(true);
                 }}
                 disabled={!canSendMaintenance}
-                className="h-10 rounded-base bg-accent px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-10 w-full rounded-base bg-accent px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
                 New Request
               </button>

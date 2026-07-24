@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { CirclePlay } from "lucide-react";
 import logo from "../../logo and brand guildeline/propmanage_bw_logo.png";
+import LandingHeader from "@/components/layout/LandingHeader";
 import { getMarketingIcon } from "@/lib/marketing-icons";
 import {
   fetchSiteContentPayload,
@@ -14,11 +15,11 @@ function PricingCardBlock({ card }: { card: HomePricingCard }) {
   if (card.kind === "link") {
     return (
       <Link href={card.href} className="group block">
-        <article className="flex h-full flex-col rounded-lg border border-border-ghost bg-white p-7 text-center transition-shadow hover:shadow-card">
+        <article className="flex h-full flex-col rounded-lg border border-border-ghost bg-white p-5 text-center transition-shadow hover:shadow-card sm:p-7">
           <p className="text-[11px] uppercase tracking-[0.14em] text-text-muted">{card.eyebrow}</p>
-          <h3 className="mt-2 text-4xl font-semibold text-primary">{card.name}</h3>
+          <h3 className="mt-2 text-3xl font-semibold text-primary sm:text-4xl">{card.name}</h3>
           <p className="mt-3 text-primary">
-            <span className="text-6xl font-bold">{card.priceMajor}</span>
+            <span className="text-4xl font-bold sm:text-6xl">{card.priceMajor}</span>
             <span className="ml-1 text-base text-text-muted">/mo</span>
           </p>
           <ul className="mt-5 grow space-y-2 text-sm text-text-sub">
@@ -34,14 +35,14 @@ function PricingCardBlock({ card }: { card: HomePricingCard }) {
     );
   }
   return (
-    <article className="relative flex flex-col rounded-lg border border-[#9a6a03] bg-white p-7 text-center shadow-modal">
+    <article className="relative flex flex-col rounded-lg border border-[#9a6a03] bg-white p-5 text-center shadow-modal sm:p-7">
       <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#9a6a03] px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
         {card.badge}
       </span>
       <p className="text-[11px] uppercase tracking-[0.14em] text-text-muted">{card.eyebrow}</p>
-      <h3 className="mt-2 text-4xl font-semibold text-primary">{card.name}</h3>
+      <h3 className="mt-2 text-3xl font-semibold text-primary sm:text-4xl">{card.name}</h3>
       <p className="mt-3 text-primary">
-        <span className="text-6xl font-bold">{card.priceMajor}</span>
+        <span className="text-4xl font-bold sm:text-6xl">{card.priceMajor}</span>
         <span className="ml-1 text-base text-text-muted">/mo</span>
       </p>
       <ul className="mt-5 grow space-y-2 text-sm text-text-sub">
@@ -61,33 +62,17 @@ function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; 
     "inline-flex h-10 items-center gap-2 rounded-md border border-border-ghost bg-white px-5 text-xs font-medium text-text-main";
 
   return (
-    <main className="min-h-screen bg-bg-page text-text-main">
-      <header className="border-b border-border-ghost bg-bg-card">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <Image src={logo} alt="PropManage BW logo" className="h-7 w-7 object-contain" />
-            <p className="text-lg font-semibold text-primary">{data.headerBrand}</p>
-          </div>
-          <nav className="hidden items-center gap-8 text-xs text-text-muted md:flex">
-            <a href="#features" className="transition-colors hover:text-primary">
-              {data.navFeaturesLabel}
-            </a>
-            <a href="#pricing" className="transition-colors hover:text-primary">
-              {data.navPricingLabel}
-            </a>
-            <Link href={data.navLoginPath} className="transition-colors hover:text-primary">
-              Login
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link href={data.headerCtaPath} className="rounded-md bg-primary px-4 py-2 text-xs font-medium text-white">
-              {data.headerCtaLabel}
-            </Link>
-          </div>
-        </div>
-      </header>
+    <main className="min-h-screen w-full min-w-0 bg-bg-page text-text-main">
+      <LandingHeader
+        brand={data.headerBrand}
+        featuresLabel={data.navFeaturesLabel}
+        pricingLabel={data.navPricingLabel}
+        loginPath={data.navLoginPath}
+        ctaPath={data.headerCtaPath}
+        ctaLabel={data.headerCtaLabel}
+      />
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center">
+      <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:items-center">
         <div className="space-y-6">
           <p className="text-xs uppercase tracking-[0.2em] text-text-muted">{data.heroKicker}</p>
           <h1 className="text-3xl font-bold leading-tight text-primary md:text-5xl">
@@ -131,7 +116,7 @@ function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; 
 
       {!hasDemoVideo ? (
         <section id="demo" className="scroll-mt-24 border-b border-border-ghost bg-bg-card py-12">
-          <div className="mx-auto max-w-2xl px-6 text-center">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6">
             <h2 className="text-xl font-semibold text-primary">Product demo</h2>
             <p className="mt-2 text-sm leading-6 text-text-sub">
               A short guided video is on the way. Until then, you can explore PropManage BW with a free trial in your
@@ -148,9 +133,9 @@ function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; 
       ) : null}
 
       <section id="features" className="border-y border-border-ghost bg-[#f6f8fb] py-14">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-10 text-center">
-            <h2 className="text-[38px] font-bold text-primary">{data.featuresTitle}</h2>
+            <h2 className="text-3xl font-bold text-primary sm:text-[38px]">{data.featuresTitle}</h2>
             <p className="mt-2 text-sm text-text-muted">{data.featuresSubtitle}</p>
           </div>
 
@@ -167,7 +152,7 @@ function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; 
                   >
                     <Icon className="h-4 w-4" />
                   </span>
-                  <h3 className="text-[30px] font-semibold leading-none text-primary">{feature.title}</h3>
+                  <h3 className="text-2xl font-semibold leading-none text-primary sm:text-[30px]">{feature.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-text-sub">{feature.text}</p>
                 </article>
               );
@@ -177,9 +162,9 @@ function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; 
       </section>
 
       <section id="pricing" className="bg-[#eceef3] py-16">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="mb-10 text-center">
-            <h2 className="text-[38px] font-bold text-primary">{data.pricingSectionTitle}</h2>
+            <h2 className="text-3xl font-bold text-primary sm:text-[38px]">{data.pricingSectionTitle}</h2>
             <p className="mt-2 text-sm text-text-muted">{data.pricingSectionSubtitle}</p>
           </div>
 
@@ -192,9 +177,9 @@ function HomeContent({ data, hasDemoVideo, demoVideoUrl }: { data: HomePayload; 
       </section>
 
       <footer className="border-t border-border-ghost bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
-            <Image src={logo} alt="PropManage BW logo" className="h-5 w-5 object-contain" />
+            <Image src={logo} alt="PropManage BW logo" width={20} height={20} className="h-5 w-5 object-contain" />
             <span className="text-base font-semibold text-primary">{data.footerBrand}</span>
           </div>
           <p className="text-xs text-text-muted">{data.footerCopyright}</p>

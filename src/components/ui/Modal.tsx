@@ -35,7 +35,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <div className="flex items-center justify-between border-b border-border-ghost px-8 py-5">
+        <div className="flex items-center justify-between border-b border-border-ghost px-4 py-5 sm:px-8">
           <h3 id={titleId} className="text-lg font-semibold text-text-main">{title}</h3>
           <button
             type="button"
@@ -46,7 +46,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="px-8 pb-8 pt-6">
+        <div className="px-4 pb-8 pt-6 sm:px-8">
           {children}
         </div>
       </div>
