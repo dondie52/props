@@ -293,10 +293,18 @@ export function parsePricingProPayload(raw: unknown): PricingProPayload | null {
 }
 
 export async function fetchSiteContentPayload(slug: string): Promise<unknown | null> {
-  const supabase = createSupabaseServerComponentClient();
-  const { data, error } = await supabase.from("site_content").select("payload").eq("slug", slug).maybeSingle();
-  if (error || !data?.payload) return null;
-  return data.payload as unknown;
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return null;
+  }
+
+  try {
+    const supabase = createSupabaseServerComponentClient();
+    const { data, error } = await supabase.from("site_content").select("payload").eq("slug", slug).maybeSingle();
+    if (error || !data?.payload) return null;
+    return data.payload as unknown;
+  } catch {
+    return null;
+  }
 }
 
 export function resolveHomePayload(raw: unknown | null): HomePayload {
