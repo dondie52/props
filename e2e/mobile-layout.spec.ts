@@ -51,14 +51,14 @@ for (const route of DASHBOARD_ROUTES) {
 }
 
 test("Quick Setup shows wizard content and opens sidebar on mobile", async ({ page }) => {
-  await page.goto("/dashboard/onboarding", { waitUntil: "domcontentloaded" });
+  await page.goto("/dashboard/onboarding", { waitUntil: "networkidle" });
 
-  await expect(page.getByRole("heading", { name: /Quick Setup/i }).first()).toBeVisible();
-  await expect(page.getByText(/Create your first property/i).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Quick Setup" })).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: /Create your first property/i })).toBeVisible();
   await assertNoHorizontalOverflow(page);
   await assertMainAlignedToViewport(page);
 
   await page.getByRole("button", { name: "Open sidebar" }).click();
   await expect(page.getByRole("button", { name: "Close sidebar overlay" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Close sidebar" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Close sidebar", exact: true })).toBeVisible();
 });

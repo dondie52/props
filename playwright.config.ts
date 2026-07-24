@@ -5,10 +5,10 @@ const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   testDir: "./e2e",
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: "list",
   use: {
     baseURL,
@@ -18,7 +18,8 @@ export default defineConfig({
     {
       name: "Mobile Chrome",
       use: {
-        ...devices["iPhone 12"],
+        ...devices["Pixel 5"],
+        browserName: "chromium",
         viewport: { width: 390, height: 844 },
       },
     },
