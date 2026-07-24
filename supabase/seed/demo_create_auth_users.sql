@@ -1,5 +1,8 @@
--- Create/reset demo auth users with password: 1
+-- Create/reset demo auth users with password: demo123
 -- NOTE: This writes directly to auth schema for demo environments.
+-- Password must be at least 6 characters (Supabase Auth policy).
+-- Emails like *@propmanage.bw are rejected by Auth signup validation,
+-- so demo users must be inserted here (not via /auth/signup).
 
 do $$
 declare
@@ -51,7 +54,7 @@ begin
         'authenticated',
         'authenticated',
         lower(v_email),
-        crypt('1', gen_salt('bf')),
+        crypt('demo123', gen_salt('bf')),
         now(),
         jsonb_build_object('provider', 'email', 'providers', array['email'], 'role', v_role),
         jsonb_build_object('full_name', v_full_name, 'role', v_role),
@@ -62,7 +65,7 @@ begin
       );
     else
       update auth.users
-      set encrypted_password = crypt('1', gen_salt('bf')),
+      set encrypted_password = crypt('demo123', gen_salt('bf')),
           email_confirmed_at = coalesce(email_confirmed_at, now()),
           raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || jsonb_build_object('provider', 'email', 'providers', array['email'], 'role', v_role),
           raw_user_meta_data = coalesce(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('full_name', v_full_name, 'role', v_role),
