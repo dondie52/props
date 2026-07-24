@@ -24,9 +24,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
+    // next dev reads E2E_BYPASS_AUTH at runtime (middleware edge builds inline env at build time).
+    command: "npm run dev -- --hostname 127.0.0.1 --port 3000",
     url: baseURL,
     reuseExistingServer: !process.env.CI,
+    timeout: 120_000,
     env: {
       ...process.env,
       E2E_BYPASS_AUTH: "1",
