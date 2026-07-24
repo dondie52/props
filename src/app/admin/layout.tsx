@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { getDashboardSession } from "@/lib/dashboard-auth";
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = createSupabaseServerComponentClient();
   const { user, profile } = await getDashboardSession(supabase);

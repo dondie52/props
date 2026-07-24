@@ -1,6 +1,8 @@
 import PropertyDetailsClient, { type PaymentPreviewRow, type UnitRow } from "@/app/dashboard/properties/[id]/PropertyDetailsClient";
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
 
+export const dynamic = "force-dynamic";
+
 type PageProps = {
   params: { id: string };
 };

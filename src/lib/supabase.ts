@@ -1,6 +1,11 @@
-import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
+import { getSupabaseClientCredentials } from "@/lib/supabase-env";
 
-export const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const { url, anonKey } = getSupabaseClientCredentials();
+
+/** Browser Supabase client (singleton via @supabase/ssr). */
+export const supabase = createBrowserClient(url, anonKey);
+
+export function createClient() {
+  return supabase;
+}

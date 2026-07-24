@@ -1,23 +1,21 @@
+import { createServerClient } from "@supabase/ssr";
 import { cookies as nextCookies } from "next/headers";
-import { createServerClient } from "@supabase/auth-helpers-nextjs";
+import { getSupabaseClientCredentials } from "@/lib/supabase-env";
 
 /** Supabase client for App Router Route Handlers (cookie session). */
 export function createSupabaseRouteHandlerClient() {
   const cookieStore = nextCookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        },
+  const { url, anonKey } = getSupabaseClientCredentials();
+  return createServerClient(url, anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookieStore.set(name, value, options);
+        });
       },
     },
-  );
+  });
 }

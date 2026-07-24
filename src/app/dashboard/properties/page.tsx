@@ -2,6 +2,8 @@ import PropertiesClient, { type PropertyCardRow } from "@/app/dashboard/properti
 import { createSupabaseServerComponentClient } from "@/lib/supabase-server";
 import { getDashboardAuthScope } from "@/lib/dashboard-auth";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const supabase = createSupabaseServerComponentClient();
   const { scope } = await getDashboardAuthScope(supabase);

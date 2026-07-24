@@ -83,7 +83,7 @@ export const defaultHomePayload: HomePayload = {
       ctaLabel: "Go Pro",
     },
   ],
-  footerCopyright: "© 2024 PropManage BW. Built for operational clarity.",
+  footerCopyright: "© 2026 PropManage BW. Built for operational clarity.",
   footerBrand: "PropManage BW",
   footerLinks: [
     { label: "Features", href: "#features" },

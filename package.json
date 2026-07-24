@@ -1,5 +1,5 @@
 {
-  "name": "temp-next-app",
+  "name": "propmanage-bw",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
-    "@supabase/auth-helpers-nextjs": "^0.15.0",
+    "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.105.3",
     "lucide-react": "^1.14.0",
     "next": "14.2.35",

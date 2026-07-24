@@ -3,6 +3,8 @@ import Topbar from "@/components/layout/Topbar";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import { getOnboardingReferenceLists } from "@/lib/app-reference";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const { cities, propertyTypes } = await getOnboardingReferenceLists();
 
