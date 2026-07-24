@@ -2,6 +2,10 @@ import { createServerClient } from "@supabase/auth-helpers-nextjs";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
+  if (process.env.E2E_BYPASS_AUTH === "1" && req.cookies.get("e2e-auth")?.value === "1") {
+    return NextResponse.next({ request: req });
+  }
+
   let res = NextResponse.next({ request: req });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
