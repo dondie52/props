@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 700" width="1020" height="700" role="img" aria-label="Data flow diagram level 1" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#9fb0bd"/></marker>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#003857"/></marker>
+</defs>
+<rect width="1020" height="700" fill="#ffffff"/>
+<text x="510.0" y="26" font-size="14" fill="#003857" font-weight="700" text-anchor="middle" >C.3  Data Flow Diagram  —  Level 1</text>
+<rect x="30" y="58" width="140" height="54" rx="8" fill="#f4f6f8" stroke="#003857" stroke-width="1.4"/>
+<text x="100.0" y="89.55" font-size="13" fill="#1a1c1e" font-weight="700" text-anchor="middle" >Landlord</text>
+<rect x="30" y="300" width="140" height="54" rx="8" fill="#f4f6f8" stroke="#003857" stroke-width="1.4"/>
+<text x="100.0" y="331.55" font-size="13" fill="#1a1c1e" font-weight="700" text-anchor="middle" >Scheduler</text>
+<rect x="30" y="420" width="140" height="54" rx="8" fill="#f4f6f8" stroke="#003857" stroke-width="1.4"/>
+<text x="100.0" y="451.55" font-size="13" fill="#1a1c1e" font-weight="700" text-anchor="middle" >Tenant</text>
+<rect x="30" y="540" width="140" height="54" rx="8" fill="#f4f6f8" stroke="#003857" stroke-width="1.4"/>
+<text x="100.0" y="571.55" font-size="13" fill="#1a1c1e" font-weight="700" text-anchor="middle" >Administrator</text>
+<rect x="380" y="58" width="220" height="76" rx="38" fill="#ffffff" stroke="#003857" stroke-width="1.6"/>
+<text x="490.0" y="84.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >1.0</text>
+<text x="490.0" y="100.375" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >Manage accounts</text>
+<text x="490.0" y="115.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >and access</text>
+<rect x="380" y="176" width="220" height="76" rx="38" fill="#ffffff" stroke="#003857" stroke-width="1.6"/>
+<text x="490.0" y="202.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >2.0</text>
+<text x="490.0" y="218.375" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >Manage portfolio</text>
+<text x="490.0" y="233.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >and tenancies</text>
+<rect x="380" y="294" width="220" height="76" rx="38" fill="#ffffff" stroke="#003857" stroke-width="1.6"/>
+<text x="490.0" y="320.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >3.0</text>
+<text x="490.0" y="336.375" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >Run rent cycle and</text>
+<text x="490.0" y="351.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >record payments</text>
+<rect x="380" y="412" width="220" height="76" rx="38" fill="#ffffff" stroke="#003857" stroke-width="1.6"/>
+<text x="490.0" y="438.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >4.0</text>
+<text x="490.0" y="454.375" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >Handle maintenance</text>
+<text x="490.0" y="469.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >and messaging</text>
+<rect x="380" y="530" width="220" height="76" rx="38" fill="#ffffff" stroke="#003857" stroke-width="1.6"/>
+<text x="490.0" y="556.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >5.0</text>
+<text x="490.0" y="572.375" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >Produce dashboards,</text>
+<text x="490.0" y="587.875" font-size="12.5" fill="#1a1c1e" font-weight="600" text-anchor="middle" >reports and receipts</text>
+<rect x="760" y="58" width="230" height="60" rx="3" fill="#eef3f7" stroke="#c9d4dc" stroke-width="1.4"/>
+<line x1="794" y1="58" x2="794" y2="118" stroke="#c9d4dc" stroke-width="1.4"/>
+<text x="777" y="92.0" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >D1</text>
+<text x="892.0" y="92.2" font-size="12" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Profiles and landlords</text>
+<rect x="760" y="152" width="230" height="60" rx="3" fill="#eef3f7" stroke="#c9d4dc" stroke-width="1.4"/>
+<line x1="794" y1="152" x2="794" y2="212" stroke="#c9d4dc" stroke-width="1.4"/>
+<text x="777" y="186.0" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >D2</text>
+<text x="892.0" y="186.2" font-size="12" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Properties, houses, units</text>
+<rect x="760" y="246" width="230" height="60" rx="3" fill="#eef3f7" stroke="#c9d4dc" stroke-width="1.4"/>
+<line x1="794" y1="246" x2="794" y2="306" stroke="#c9d4dc" stroke-width="1.4"/>
+<text x="777" y="280.0" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >D3</text>
+<text x="892.0" y="280.2" font-size="12" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Tenants and leases</text>
+<rect x="760" y="340" width="230" height="60" rx="3" fill="#eef3f7" stroke="#c9d4dc" stroke-width="1.4"/>
+<line x1="794" y1="340" x2="794" y2="400" stroke="#c9d4dc" stroke-width="1.4"/>
+<text x="777" y="374.0" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >D4</text>
+<text x="892.0" y="374.2" font-size="12" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Payments</text>
+<rect x="760" y="434" width="230" height="60" rx="3" fill="#eef3f7" stroke="#c9d4dc" stroke-width="1.4"/>
+<line x1="794" y1="434" x2="794" y2="494" stroke="#c9d4dc" stroke-width="1.4"/>
+<text x="777" y="468.0" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >D5</text>
+<text x="892.0" y="468.2" font-size="12" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Maintenance requests</text>
+<rect x="760" y="528" width="230" height="60" rx="3" fill="#eef3f7" stroke="#c9d4dc" stroke-width="1.4"/>
+<line x1="794" y1="528" x2="794" y2="588" stroke="#c9d4dc" stroke-width="1.4"/>
+<text x="777" y="562.0" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >D6</text>
+<text x="892.0" y="562.2" font-size="12" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Conversations and messages</text>
+<line x1="170" y1="76" x2="380" y2="84" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="276" y="68" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">credentials</text>
+<line x1="170" y1="92" x2="380" y2="200" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="272" y="140" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">portfolio and</text>
+<text x="272" y="151" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">tenancy details</text>
+<line x1="170" y1="100" x2="380" y2="320" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="258" y="232" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">payments received</text>
+<line x1="170" y1="108" x2="380" y2="440" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="330" y="380" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">status changes</text>
+<line x1="170" y1="116" x2="380" y2="560" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="238" y="430" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">report requests,</text>
+<text x="238" y="441" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">indicators returned</text>
+<line x1="170" y1="327" x2="380" y2="332" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)"/>
+<text x="276" y="318" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">daily trigger</text>
+<line x1="170" y1="440" x2="380" y2="100" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="300" y="262" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">credentials</text>
+<line x1="170" y1="448" x2="380" y2="455" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="276" y="462" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">requests, messages</text>
+<line x1="170" y1="460" x2="380" y2="575" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="268" y="528" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">tenancy views</text>
+<line x1="170" y1="560" x2="380" y2="112" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="316" y="352" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">credentials</text>
+<line x1="170" y1="578" x2="380" y2="590" stroke="#9fb0bd" stroke-width="1.3" marker-end="url(#a)" marker-start="url(#a)"/>
+<text x="272" y="596" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">oversight, exports</text>
+<line x1="600" y1="96.0" x2="760" y2="88.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="214.0" x2="760" y2="182.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="214.0" x2="760" y2="276.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="332.0" x2="760" y2="276.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="332.0" x2="760" y2="370.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="450.0" x2="760" y2="464.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="450.0" x2="760" y2="558.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="568.0" x2="760" y2="370.0" stroke="#9fb0bd" stroke-width="1.1" marker-end="url(#a)" marker-start="url(#a)"/>
+<line x1="600" y1="550" x2="760" y2="88.0" stroke="#9fb0bd" stroke-width="1.0" stroke-dasharray="4 3"/>
+<line x1="600" y1="560" x2="760" y2="182.0" stroke="#9fb0bd" stroke-width="1.0" stroke-dasharray="4 3"/>
+<line x1="600" y1="570" x2="760" y2="276.0" stroke="#9fb0bd" stroke-width="1.0" stroke-dasharray="4 3"/>
+<line x1="600" y1="580" x2="760" y2="464.0" stroke="#9fb0bd" stroke-width="1.0" stroke-dasharray="4 3"/>
+<text x="660" y="660" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">Solid lines: read and write.   Dashed lines: read only, for reporting.</text>
+<text x="510.0" y="684" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">Level 0 of this model is the system context diagram at C.1.</text>
+</svg>

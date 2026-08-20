@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 800" width="1040" height="800" role="img" aria-label="Use case diagram" font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#9fb0bd"/></marker>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#003857"/></marker>
+</defs>
+<rect width="1040" height="800" fill="#ffffff"/>
+<text x="520.0" y="26" font-size="14" fill="#003857" font-weight="700" text-anchor="middle" >C.2  Use Case Diagram</text>
+<rect x="250" y="44" width="640" height="690" rx="10" fill="#f4f6f8" stroke="#c9d4dc" stroke-width="1.6"/>
+<text x="570.0" y="66" font-size="13" fill="#52606d" font-weight="700" text-anchor="middle" >PropManage BW  —  system boundary</text>
+<line x1="144" y1="104" x2="292" y2="110" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="104" x2="292" y2="178" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="292" y2="246" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="292" y2="314" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="292" y2="382" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="292" y2="450" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="292" y2="518" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="292" y2="586" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="632" y2="110" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="632" y2="246" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="324" x2="632" y2="382" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="554" x2="292" y2="246" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="554" x2="632" y2="178" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="554" x2="632" y2="246" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="554" x2="632" y2="314" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="554" x2="632" y2="110" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="144" y1="554" x2="632" y2="382" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="936" y1="144" x2="508" y2="246" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="936" y1="144" x2="848" y2="450" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="936" y1="144" x2="848" y2="382" stroke="#9fb0bd" stroke-width="1.0"/>
+<line x1="936" y1="634" x2="848" y2="586" stroke="#9fb0bd" stroke-width="1.0"/>
+<ellipse cx="400" cy="110" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="107.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-18</text>
+<text x="400" y="121.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Browse public site</text>
+<ellipse cx="400" cy="178" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="175.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-01</text>
+<text x="400" y="189.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Register an account</text>
+<ellipse cx="400" cy="246" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="243.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-02</text>
+<text x="400" y="257.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Sign in</text>
+<ellipse cx="400" cy="314" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="304.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-04</text>
+<text x="400" y="318.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Complete</text>
+<text x="400" y="332.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >guided onboarding</text>
+<ellipse cx="400" cy="382" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="372.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-06</text>
+<text x="400" y="386.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Assign a tenant</text>
+<text x="400" y="400.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >to a unit</text>
+<ellipse cx="400" cy="450" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="447.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-07</text>
+<text x="400" y="461.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >View portfolio dashboard</text>
+<ellipse cx="400" cy="518" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="515.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-09</text>
+<text x="400" y="529.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Record a rent payment</text>
+<ellipse cx="400" cy="586" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="400" y="576.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-12</text>
+<text x="400" y="590.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Progress a</text>
+<text x="400" y="604.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >maintenance request</text>
+<ellipse cx="740" cy="110" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="107.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-10</text>
+<text x="740" y="121.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Download a rent receipt</text>
+<ellipse cx="740" cy="178" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="168.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-11</text>
+<text x="740" y="182.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Submit a</text>
+<text x="740" y="196.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >maintenance request</text>
+<ellipse cx="740" cy="246" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="243.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-13</text>
+<text x="740" y="257.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Exchange messages</text>
+<ellipse cx="740" cy="314" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="311.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-16</text>
+<text x="740" y="325.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >View tenancy summary</text>
+<ellipse cx="740" cy="382" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="379.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-14</text>
+<text x="740" y="393.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Export a report</text>
+<ellipse cx="740" cy="450" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="447.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-15</text>
+<text x="740" y="461.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Monitor the platform</text>
+<ellipse cx="740" cy="586" rx="108" ry="28" fill="#ffffff" stroke="#003857" stroke-width="1.4"/>
+<text x="740" y="576.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >UC-08</text>
+<text x="740" y="590.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >Generate monthly</text>
+<text x="740" y="604.375" font-size="12.5" fill="#1a1c1e" font-weight="500" text-anchor="middle" >rent obligations</text>
+<g stroke="#003857" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="120" cy="84" r="9" fill="#ffffff"/><line x1="120" y1="93" x2="120" y2="114"/><line x1="107" y1="101" x2="133" y2="101"/><line x1="120" y1="114" x2="109" y2="131"/><line x1="120" y1="114" x2="131" y2="131"/></g>
+<text x="120" y="148" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >Prospective</text>
+<text x="120" y="162" font-size="12" fill="#52606d" font-weight="500" text-anchor="middle" >customer</text>
+<g stroke="#003857" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="120" cy="304" r="9" fill="#ffffff"/><line x1="120" y1="313" x2="120" y2="334"/><line x1="107" y1="321" x2="133" y2="321"/><line x1="120" y1="334" x2="109" y2="351"/><line x1="120" y1="334" x2="131" y2="351"/></g>
+<text x="120" y="368" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >Landlord</text>
+<g stroke="#003857" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="120" cy="534" r="9" fill="#ffffff"/><line x1="120" y1="543" x2="120" y2="564"/><line x1="107" y1="551" x2="133" y2="551"/><line x1="120" y1="564" x2="109" y2="581"/><line x1="120" y1="564" x2="131" y2="581"/></g>
+<text x="120" y="598" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >Tenant</text>
+<g stroke="#003857" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="960" cy="124" r="9" fill="#ffffff"/><line x1="960" y1="133" x2="960" y2="154"/><line x1="947" y1="141" x2="973" y2="141"/><line x1="960" y1="154" x2="949" y2="171"/><line x1="960" y1="154" x2="971" y2="171"/></g>
+<text x="960" y="188" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >Administrator</text>
+<g stroke="#003857" stroke-width="1.8" fill="none" stroke-linecap="round"><circle cx="960" cy="614" r="9" fill="#ffffff"/><line x1="960" y1="623" x2="960" y2="644"/><line x1="947" y1="631" x2="973" y2="631"/><line x1="960" y1="644" x2="949" y2="661"/><line x1="960" y1="644" x2="971" y2="661"/></g>
+<text x="960" y="678" font-size="13" fill="#003857" font-weight="700" text-anchor="middle" >Scheduler</text>
+<text x="960" y="692" font-size="12" fill="#52606d" font-weight="500" text-anchor="middle" >(system actor)</text>
+<text x="520.0" y="780" font-size="11.5" fill="#52606d" font-weight="600" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round">Lines show which actors take part in which use cases; see section 4.2 for the full list.</text>
+</svg>
